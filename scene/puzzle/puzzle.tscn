@@ -16,8 +16,7 @@ var puzzle_node: Node = null
 func _ready() -> void:
 	if  Globals.debug:
 		print(\"DEBUG -> handle_popup_menu_selections.gd -> _ready()\")
-	# Connect the PopupMenu selection signal
-	id_pressed.connect(_on_id_pressed)
+
 	
 	# Search dynamically up the tree to find the root 'game_scene'
 	var current = self

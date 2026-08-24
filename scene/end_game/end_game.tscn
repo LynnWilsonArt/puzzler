@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://b4sjnmt2qw0sb"]
 
+[ext_resource type="Script" uid="uid://ynqfgka36xx3" path="res://scene/end_game/end_game.gd" id="1_m6udu"]
 [ext_resource type="Texture2D" uid="uid://dxj3lumqyl3l4" path="res://assets/images/end_game2.jpg" id="1_naqc7"]
 [ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://scene/main/start_button.gd" id="2_srgtl"]
 [ext_resource type="Texture2D" uid="uid://7u6on6qpyp2s" path="res://assets/images/menu_image_blank.png" id="2_yyfi8"]
@@ -7,6 +8,7 @@
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="3_exftr"]
 [ext_resource type="Script" uid="uid://dd252nfjg618x" path="res://assets/shared_scripts/toggle_hud_button.gd" id="3_srgtl"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="4_yyfi8"]
+[ext_resource type="PackedScene" uid="uid://dhvlvj4dfjn5u" path="res://scene/select_level/select_level.tscn" id="8_exftr"]
 
 [sub_resource type="GDScript" id="GDScript_srgtl"]
 script/source = "extends Button
@@ -19,10 +21,9 @@ func _on_pressed() -> void:
 "
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
+script = ExtResource("1_m6udu")
 
-[node name="background" type="CanvasLayer" parent="." unique_id=145244571]
-
-[node name="TextureRect" type="TextureRect" parent="background" unique_id=251827440]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=251827440]
 offset_left = 1.0
 offset_top = -3.0
 offset_right = 1153.0
@@ -31,11 +32,11 @@ size_flags_horizontal = 4
 texture = ExtResource("1_naqc7")
 metadata/_edit_use_anchors_ = true
 
-[node name="Sprite2D" type="Sprite2D" parent="background/TextureRect" unique_id=521220793]
+[node name="Sprite2D" type="Sprite2D" parent="TextureRect" unique_id=521220793]
 position = Vector2(560, 435)
 texture = ExtResource("2_yyfi8")
 
-[node name="New_Puzzle_Button" type="Button" parent="background/TextureRect/Sprite2D" unique_id=1002687122]
+[node name="New_Puzzle_Button" type="Button" parent="TextureRect/Sprite2D" unique_id=1002687122]
 anchors_preset = -1
 anchor_left = 0.48697916
 anchor_top = 0.40432099
@@ -54,7 +55,7 @@ text = "New Puzzle"
 script = ExtResource("2_srgtl")
 metadata/_edit_use_anchors_ = true
 
-[node name="Scoreboard_Button" type="Button" parent="background/TextureRect/Sprite2D" unique_id=130458505]
+[node name="Scoreboard_Button" type="Button" parent="TextureRect/Sprite2D" unique_id=130458505]
 offset_left = -138.0
 offset_top = -33.0
 offset_right = 137.0
@@ -65,17 +66,7 @@ theme_override_styles/hover = ExtResource("4_yyfi8")
 text = "Scoreboard"
 script = ExtResource("3_srgtl")
 
-[node name="Select_Level" type="Button" parent="background/TextureRect/Sprite2D" unique_id=1962448511]
-offset_left = -126.0
-offset_top = 28.0
-offset_right = 131.0
-offset_bottom = 71.0
-theme = ExtResource("3_exftr")
-theme_override_styles/normal = ExtResource("4_yyfi8")
-theme_override_styles/hover = ExtResource("4_yyfi8")
-text = "Select Level"
-
-[node name="Quit_Button" type="Button" parent="background/TextureRect/Sprite2D" unique_id=221247992]
+[node name="Quit_Button" type="Button" parent="TextureRect/Sprite2D" unique_id=221247992]
 offset_left = -136.0
 offset_top = 80.0
 offset_right = 139.0
@@ -86,8 +77,12 @@ theme_override_styles/hover = ExtResource("4_yyfi8")
 text = "Quit Game"
 script = SubResource("GDScript_srgtl")
 
-[node name="HUD" parent="." unique_id=1708948339 instance=ExtResource("3_0vy4c")]
+[node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("3_0vy4c")]
 
-[connection signal="pressed" from="background/TextureRect/Sprite2D/New_Puzzle_Button" to="background/TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
-[connection signal="pressed" from="background/TextureRect/Sprite2D/Scoreboard_Button" to="background/TextureRect/Sprite2D/Scoreboard_Button" method="_on_button_pressed"]
-[connection signal="pressed" from="background/TextureRect/Sprite2D/Quit_Button" to="background/TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]
+[node name="SelectLevelMenu" parent="." unique_id=734487808 instance=ExtResource("8_exftr")]
+offset = Vector2(471, 445)
+transform = Transform2D(1, 0, 0, 1, 471, 445)
+
+[connection signal="pressed" from="TextureRect/Sprite2D/New_Puzzle_Button" to="TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
+[connection signal="pressed" from="TextureRect/Sprite2D/Scoreboard_Button" to="TextureRect/Sprite2D/Scoreboard_Button" method="_on_button_pressed"]
+[connection signal="pressed" from="TextureRect/Sprite2D/Quit_Button" to="TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]

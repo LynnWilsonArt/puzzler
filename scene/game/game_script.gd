@@ -266,6 +266,7 @@ func _check_win_condition() -> void:
 	_trigger_victory()
 
 func _trigger_victory() -> void:
+		
 	# Program debuging toggle
 	if Globals.debug:
 		print("DEBUG -> _game_script.gd -> _trigger_victory()")
