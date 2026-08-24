@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d3rfjsjw07yeq"]
 
 [ext_resource type="Script" uid="uid://cfhuhnrns6v4c" path="res://scene/puzzle/toggle_puzzle_display.gd" id="1_uyv4d"]
+[ext_resource type="Texture2D" uid="uid://dd4hsealiiskr" path="res://assets/images/game_bg.jpg" id="2_36cdp"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
 [ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://scene/puzzle/open_menu_button.gd" id="3_in6qw"]
 
@@ -73,6 +74,27 @@ offset_left = 576.0
 offset_top = 324.0
 offset_right = 576.0
 offset_bottom = 324.0
+
+[node name="Background" type="Sprite2D" parent="Puzzle" unique_id=284341722]
+texture = ExtResource("2_36cdp")
+
+[node name="LoadingTtext" type="Label" parent="Puzzle/Background" unique_id=1284662570]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -897.5
+offset_top = -455.5
+offset_right = -254.5
+offset_bottom = -192.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_in6qw")
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 100
+text = "Loading Puzzle
+Please Wait!"
 
 [node name="puzzle_image" type="Sprite2D" parent="Puzzle" unique_id=1222416129]
 
