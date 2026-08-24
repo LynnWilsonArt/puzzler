@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://d3rfjsjw07yeq"]
+
+[ext_resource type="Script" uid="uid://cfhuhnrns6v4c" path="res://scene/puzzle/toggle_puzzle_display.gd" id="1_uyv4d"]
+[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
+[ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://scene/puzzle/open_menu_button.gd" id="3_in6qw"]
+
+[sub_resource type="GDScript" id="GDScript_in6qw"]
+script/source = "# res://scene/puzzle/handle_popup_menu_selections.gd
+extends PopupMenu
+
+# Re-initialized dynamically inside _ready()
+var game_scene: Node = null
+var puzzle_node: Node = null
+
+
+func _ready() -> void:
+	if  Globals.debug:
+		print(\"DEBUG -> handle_popup_menu_selections.gd -> _ready()\")
+	# Connect the PopupMenu selection signal
+	id_pressed.connect(_on_id_pressed)
+	
+	# Search dynamically up the tree to find the root 'game_scene'
+	var current = self
+	while current != null:
+		if current.name == \"game_scene\":
+			game_scene = current
+			# Look for the Puzzle node child inside game_scene
+			puzzle_node = current.get_node_or_null(\"Puzzle\") 
+			break
+		current = current.get_parent()
+	
+	# Safety checks to log if nodes are missing from the scene layout
+	if game_scene == null:
+		print(\"Warning: Could not find game_scene root node up the tree layout.\")
+	if puzzle_node == null:
+		print(\"Warning: Could not find Puzzle node child inside game_scene.\")
+
+
+func _on_id_pressed(id: int) -> void:
+	if  Globals.debug:
+		print(\"DEBUG -> handle_popup_menu_selections.gd -> _on_id_pressed()\")
+	match id:
+		0: 
+			print(\"Toggle Original Selected: \", id)
+			if is_instance_valid(puzzle_node) and puzzle_node.has_method(\"_on_show_original_image_pressed\"):
+				puzzle_node._on_show_original_image_pressed()
+			else:
+				print(\"Warning: Puzzle node or _on_show_original_image_pressed function not found!\")
+		1: 
+			print(\"Skip Selected: \", id)
+			if is_instance_valid(game_scene) and game_scene.has_method(\"_on_get_puzzle\"):
+				game_scene._on_get_puzzle()
+				$\"../../Puzzle\".visible = true
+				
+			else:
+				print(\"Warning: game_scene node or _on_get_puzzle() function not found!\")
+		2: 
+			print(\"Save Puzzle Selected: \", id)
+		3: 
+			print(\"Quit Selected: \", id)
+			print(\"Quit button pressed\")
+			get_tree().quit()
+"
+
+[node name="Puzzle" type="CanvasLayer" unique_id=762871596 groups=["hud_display"]]
+script = ExtResource("1_uyv4d")
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=520237538]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Puzzle" type="ColorRect" parent="." unique_id=1900942044]
+offset_left = 576.0
+offset_top = 324.0
+offset_right = 576.0
+offset_bottom = 324.0
+
+[node name="puzzle_image" type="Sprite2D" parent="Puzzle" unique_id=1222416129]
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=17323899]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 125.0
+offset_bottom = 50.0
+
+[node name="PopupMenu" type="PopupMenu" parent="PanelContainer" unique_id=1208084737]
+oversampling_override = 1.0
+position = Vector2i(20, 20)
+size = Vector2i(212, 144)
+visible = true
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 18
+item_count = 4
+item_0/text = "Toggle Original"
+item_0/id = 0
+item_1/text = "Skip"
+item_1/id = 1
+item_2/text = "Save Puzzle"
+item_2/id = 2
+item_3/text = "Quit"
+item_3/id = 3
+script = SubResource("GDScript_in6qw")
+
+[node name="OpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
+layout_mode = 2
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 18
+text = "Open Menu"
+script = ExtResource("3_in6qw")
+
+[connection signal="id_pressed" from="PanelContainer/PopupMenu" to="PanelContainer/PopupMenu" method="_on_id_pressed"]
+[connection signal="pressed" from="PanelContainer/OpenMenuButton" to="PanelContainer/OpenMenuButton" method="_on_pressed"]
