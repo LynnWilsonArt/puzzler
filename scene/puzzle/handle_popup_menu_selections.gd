@@ -2,7 +2,7 @@
 extends PopupMenu
 
 @onready var puzzle_node: Node = get_node_or_null("../..")
-@onready var game_scene: Node = get_node_or_null("../..")
+@onready var game_scene: Node = get_node_or_null("../../..")
 
 func _ready() -> void:
 	id_pressed.connect(_on_id_pressed)
