@@ -28,7 +28,7 @@ func _gui_input(event: InputEvent) -> void:
 #   • run that style in a Tween
 #   • call `callback` when finished
 # -------------------------------------------------------
-func animate_swap(target_piece: TextureRect, callback: Callable) -> void:
+func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	# FIXED: Check if the current tween is running using Godot 4 syntax
 	if active_tween and active_tween.is_running():
 		return

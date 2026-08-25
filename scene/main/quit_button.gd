@@ -3,9 +3,12 @@ extends Button
 
 
 func _on_pressed() -> void:
-	if  Globals.debug:
-		print("DEBUG -> quit_button.gd -> _on_pressed()")
-		
-	print("Quit button pressed")
-	
-	get_tree().quit()
+	print("Quitting game...")
+	if OS.has_feature("web"):  
+		# Attempt to close the browser window/tab  
+		# Attempt to close the browser window/tab  
+		var win = JavaScriptBridge.get_interface("window")
+		win.location.href = "https://puzzler.lynnwilsonart.com"  
+	else:  
+		# Standard behavior for Android, Windows, macOS, etc.  
+		get_tree().quit()

@@ -9,6 +9,7 @@ signal change_puzzle_image(image: Texture2D)
 @export var game_scene_path : String = "res://scene/end_game/end_game.tscn"
 @export var puzzle_image = Image.new()
 
+const SAVE_PATH := "user://puzzle_state.save"
 
 # FIXED: Change to an array of Dictionaries to hold textures alongside their correct indexes
 var pieces_data : Array[Dictionary] = []
@@ -175,26 +176,31 @@ func _place_pieces_on_grid() -> void:
 	# FIXED: Track slot positions explicitly from 0 to total pieces
 	for slot_idx in range(pieces_data.size()):
 		var data = pieces_data[slot_idx]
-		var rect = TextureRect.new()
-		rect.texture = data["texture"]
-		rect.mouse_filter = Control.MOUSE_FILTER_STOP
-		
-		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		rect.stretch_mode = TextureRect.STRETCH_SCALE
-		rect.custom_minimum_size = Vector2(piece_width, piece_height)
-		
-		rect.set_script(piece_script)
-		
-		# INITIALIZE: Tell the script its slot placement and current texture ID
-		if rect.has_method("initialize_piece_meta"):
-			rect.initialize_piece_meta(slot_idx, data["id"])
-		else:
-			# Fallback if metadata wrapper fields are handled inside meta fields
-			rect.set_meta("correct_slot_id", slot_idx)
-			rect.set_meta("current_texture_id", data["id"])
-		
-		rect.piece_clicked.connect(_on_piece_clicked)
-		grid.add_child(rect)
+		_build_piece(grid, slot_idx, data["texture"], data["id"], piece_width, piece_height, piece_script)
+
+# ----------  SHARED PIECE-BUILDING HELPER  ----------
+# Used by both _place_pieces_on_grid() (fresh puzzle) and load_puzzle()
+# (restored puzzle) so every piece is wired up identically.
+func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id: int, piece_width: float, piece_height: float, piece_script: GDScript) -> TextureRect:
+	var rect = TextureRect.new()
+	rect.texture = tex
+	rect.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.custom_minimum_size = Vector2(piece_width, piece_height)
+
+	rect.set_script(piece_script)
+
+	if rect.has_method("initialize_piece_meta"):
+		rect.initialize_piece_meta(slot_idx, texture_id)
+	else:
+		rect.set_meta("correct_slot_id", slot_idx)
+		rect.set_meta("current_texture_id", texture_id)
+
+	rect.piece_clicked.connect(_on_piece_clicked)
+	grid.add_child(rect)
+	return rect
 
 # ----------  SWAP LOGIC  ----------
 func _on_piece_clicked(piece : TextureRect) -> void:
@@ -342,3 +348,104 @@ func _process_and_start_game(img: Image) -> void:
 	_slice_image(tex)
 	_randomize_pieces()
 	_place_pieces_on_grid()
+
+
+# ======================================================================
+# SAVE / LOAD — persists the CURRENT grid arrangement (not the original
+# shuffle), so resuming puts every piece back exactly where you left it,
+# fully clickable and swappable.
+# ======================================================================
+func save_puzzle() -> void:
+	var grid : GridContainer = $Puzzle/GridContainer
+	if grid.get_child_count() == 0:
+		push_error("Nothing to save — grid is empty.")
+		return
+
+	var grid_state : Array = []
+	for rect in grid.get_children():
+		if not (rect is TextureRect):
+			continue
+		var img : Image = null
+		if rect.texture:
+			img = rect.texture.get_image()
+		grid_state.append({
+			"tex_bytes"      : img.save_png_to_buffer() if img else PackedByteArray(),
+			"correct_slot_id"   : rect.get_meta("correct_slot_id"),
+			"current_texture_id": rect.get_meta("current_texture_id"),
+		})
+
+	var state := {
+		"image_bytes": puzzle_image.save_png_to_buffer() if puzzle_image else PackedByteArray(),
+		"num_columns": num_columns,
+		"num_rows"   : num_rows,
+		"grid"       : grid_state,
+	}
+
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file:
+		file.store_var(state)
+		file.close()
+		print("Puzzle saved to ", SAVE_PATH)
+	else:
+		push_error("Could not open file for writing: " + SAVE_PATH)
+
+
+func load_puzzle() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		push_error("No saved puzzle found at " + SAVE_PATH)
+		return
+
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var state = file.get_var()
+	file.close()
+
+	if state == null or not state.has("grid") or not state.has("image_bytes"):
+		push_error("Save file is corrupt or in an unexpected format.")
+		return
+
+	num_columns = state.get("num_columns", num_columns)
+	num_rows = state.get("num_rows", num_rows)
+
+	# Restore the full reference image (used by the preview popup).
+	var img_bytes : PackedByteArray = state["image_bytes"]
+	if img_bytes.size() > 0:
+		var full_img := Image.new()
+		if full_img.load_png_from_buffer(img_bytes) == OK:
+			puzzle_image = full_img
+			change_puzzle_image.emit(ImageTexture.create_from_image(full_img))
+		else:
+			push_error("Could not decode saved reference image.")
+
+	var grid : GridContainer = $Puzzle/GridContainer
+	grid.columns = num_columns
+	grid.add_theme_constant_override("h_separation", 0)
+	grid.add_theme_constant_override("v_separation", 0)
+
+	for child in grid.get_children():
+		grid.remove_child(child)
+		child.queue_free()
+
+	first_selected_piece = null
+	swapping = false
+
+	var piece_width = grid_size.x / num_columns
+	var piece_height = grid_size.y / num_rows
+	var piece_script = load("res://scene/game/puzzle_piece_swap.gd")
+
+	var grid_state : Array = state["grid"]
+	for slot_idx in range(grid_state.size()):
+		var piece_data : Dictionary = grid_state[slot_idx]
+		var tex_bytes : PackedByteArray = piece_data.get("tex_bytes", PackedByteArray())
+
+		var piece_tex : Texture2D = null
+		if tex_bytes.size() > 0:
+			var piece_img := Image.new()
+			if piece_img.load_png_from_buffer(tex_bytes) == OK:
+				piece_tex = ImageTexture.create_from_image(piece_img)
+			else:
+				push_error("Could not decode saved piece texture at slot " + str(slot_idx))
+
+		var texture_id : int = piece_data.get("current_texture_id", slot_idx)
+		_build_piece(grid, slot_idx, piece_tex, texture_id, piece_width, piece_height, piece_script)
+
+	print("Puzzle loaded from ", SAVE_PATH)

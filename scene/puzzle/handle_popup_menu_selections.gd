@@ -6,6 +6,7 @@ extends PopupMenu
 
 func _ready() -> void:
 	id_pressed.connect(_on_id_pressed)
+	print(" This the original script handle_popup_menu_selection")
 
 func _on_id_pressed(id: int) -> void:
 	if Globals.debug:
@@ -29,10 +30,36 @@ func _on_id_pressed(id: int) -> void:
 				print("Finished skip")
 			else:
 				print("Warning: game_scene node or _on_get_puzzle() function not found!")
-
+				
 		2:
-			print("Save Puzzle Selected: ", id)
+			print("Toggle Sound")
+			if Globals.sound_mode:
+				Globals.sound_mode = false   # Turn sound off
+			else:
+				Globals.sound_mode = true   # Turn sound on
+			
 
 		3:
+			print("Load Puzzle Selected: ", id)
+			# Load Puzzle
+			if puzzle_node and puzzle_node.has_method("load_puzzle"):
+				puzzle_node.load_puzzle()
+			else:
+				print("Puzzle node or load_puzzle() not found!")
+				
+		4:
 			print("Quit Selected: ", id)
-			get_tree().quit()
+			if OS.has_feature("web"):  
+				print("Quiting game web!")
+				if puzzle_node and puzzle_node.has_method("save_puzzle"):
+					print("Puzzle saved!")
+					puzzle_node.save_puzzle()
+			
+				# Attempt to close the browser window/tab  
+				JavaScriptBridge.eval("window.location.href = 'https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html'")  
+			else:  
+				print("Quiting game android!")
+				if puzzle_node and puzzle_node.has_method("save_puzzle"):
+					puzzle_node.save_puzzle()
+					print("Puzzle saved!")
+					get_tree().quit()

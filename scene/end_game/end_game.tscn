@@ -17,7 +17,14 @@ script/source = "extends Button
 
 func _on_pressed() -> void:
 	print(\"Quitting game...\")
-	get_tree().quit()
+	if OS.has_feature(\"web\"):  
+		# Attempt to close the browser window/tab  
+		# Attempt to close the browser window/tab  
+		var win = JavaScriptBridge.get_interface(\"window\")
+		win.location.href = \"https://lynnwilsonart.com\" 
+	else:  
+		# Standard behavior for Android, Windows, macOS, etc.  
+		get_tree().quit()
 "
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
