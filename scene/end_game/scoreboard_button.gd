@@ -10,7 +10,7 @@ func _ready() -> void:
 	pressed.connect(_on_button_pressed)
 	
 	# Fixed path: Looks up one level to game_scene, then down to Puzzle
-	var Puzzle_node = get_node_or_null("../../../../Puzzle")
+	var puzzle_node = get_node_or_null("../../../../Puzzle")
 	
 	if puzzle_node:
 		toggle_puzzle_display.connect(puzzle_node._on_puzzle_toggle_requested)

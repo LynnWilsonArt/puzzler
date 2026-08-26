@@ -31,7 +31,3 @@ func _on_pressed() -> void:
 			push_error("Failed to switch scenes! Error code: ", error_code)
 	else:
 		push_error("The game scene path string is completely empty!")
-
-
-func _on_unused_pressed() -> void:
-	pass # Replace with function body.

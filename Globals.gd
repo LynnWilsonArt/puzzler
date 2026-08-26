@@ -7,7 +7,8 @@ var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
 const SAVE_PATH := "user://puzzle_state.save"
-var  auto_save_time: int = 15     # Autosave puzzle every x seconds
+var  auto_save_time: int = 60     # Autosave puzzle every x seconds
+var debug: bool = true
 
 # This node handles background music globally across all scenes
 var music_player: AudioStreamPlayer
@@ -88,19 +89,11 @@ func _on_timer_timeout(method: int) -> void:
 	match method:
 		1:
 			print("Globals -> _timer() -> method 1")
-			_save_puzzle( )
+			g_save_puzzle( )
 				
 			
 		
-##################################################
-# Save the Puzzle	
-func _save_puzzle() -> void:
-	print("Global timer finished!")
-	print("Do something")
-	g_save_puzzle()
-	print("Saved puzzle from globals")
-		
-		
+
 		
 ##################################################
 # --------------------------------------------------------------------

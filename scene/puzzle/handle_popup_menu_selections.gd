@@ -8,6 +8,7 @@ func _ready() -> void:
 
 	print(" This the original script handle_popup_menu_selection")
 
+
 func _on_id_pressed(id: int) -> void:
 	print("handle_popup_menu_selections -> _on_id_pressed()")
 
@@ -31,7 +32,7 @@ func _on_id_pressed(id: int) -> void:
 				print("Warning: game_scene node or _on_get_puzzle() function not found!")
 				
 		2:
-			print("Toggle Sound")
+			print("DEBUG -> Toggle Sound from Puzzle -> PupupMenu")
 			if Globals.sound_mode:
 				Globals.sound_mode = false   # Turn sound off
 			else:
@@ -44,26 +45,28 @@ func _on_id_pressed(id: int) -> void:
 			if puzzle_node and puzzle_node.has_method("load_puzzle"):
 				puzzle_node.load_puzzle()
 			else:
-				print("Puzzle node or load_puzzle() not found!")
+				print("ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		4:
+			
+			print("DEBUG -> Saving puzzle from Puzzle -> PopupMenu -> Save button")
+			Globals.g_save_puzzle()
+				
+		5:
 			print("Quit Selected: ", id)
 			if OS.has_feature("web"):  
-				print("Quiting game web!")
-				if puzzle_node and puzzle_node.has_method("save_puzzle"):
-					print("Puzzle saved!")
-					puzzle_node.save_puzzle()
-			
+				print("DEBUG -> Quiting game saving puzzle from Puzzle -> PopupMenu for web!")
+				Globals.g_save_puzzle()
+				
 				# Attempt to close the browser window/tab  
-				JavaScriptBridge.eval("window.location.href = 'https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html'")  
+				var win = JavaScriptBridge.get_interface("window")
+				win.location.href = "https://puzzler.lynnwilsonart.com"  
+				  
 			else:  
-				print("Quiting game android!")
-				if puzzle_node and puzzle_node.has_method("save_puzzle"):
-					puzzle_node.save_puzzle()
-					print("Puzzle saved!")
-					get_tree().quit()
+				print("DEBUG ->Quiting game - saving puzzle from Puzzle -> PopupMenu for android!")
+				Globals.g_save_puzzle()
 					
-		5:
-			
-			print("Tring to save puzzle from popupMenu")
-			Globals.g_save_puzzle()
+				print("Puzzle saved! -> from Puzzle -> PopupMenu")
+				get_tree().quit()
+					
+		

@@ -20,23 +20,28 @@ var http_request : HTTPRequest
 
 
 func _ready() -> void:
-	
-	print("DEBUG -> game_script.gd ->  _ready()")
-		
-	# Establish the connection immediately at startup
+	if Globals.debug:
+		print("DEBUG -> game_script.gd ->  _ready()")
+
 	if $Puzzle:
 		puzzle_toggle_requested.connect($Puzzle._on_puzzle_toggle_requested)
 		change_puzzle_image.connect($Puzzle._on_change_puzzle_image_requested)
 		print("✅ Connection Successful: game_scene linked to Puzzle script!")
 	else:
 		print("❌ Connection Failed: Could not find Puzzle node at path '$Puzzle'")
-		
+
 	http_request = HTTPRequest.new()
 	add_child(http_request)
-	
-	# Get initial puzzle
-	_on_get_puzzle()
+	http_request.set_use_threads(true)
+	http_request.set_max_redirects(5)
+	http_request.request_completed.connect(_on_request_completed)
 
+	# Resume a saved puzzle if one exists, otherwise fetch a fresh one.
+	if FileAccess.file_exists(SAVE_PATH):
+		print("Found saved puzzle — loading instead of fetching a new one.")
+		load_puzzle()
+	else:
+		_on_get_puzzle()
 	
 	
 	# Enable redirect following and background thread usage
