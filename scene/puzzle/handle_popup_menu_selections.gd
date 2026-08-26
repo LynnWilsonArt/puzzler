@@ -5,12 +5,11 @@ extends PopupMenu
 @onready var game_scene: Node = get_node_or_null("../../..")
 
 func _ready() -> void:
-	id_pressed.connect(_on_id_pressed)
+
 	print(" This the original script handle_popup_menu_selection")
 
 func _on_id_pressed(id: int) -> void:
-	if Globals.debug:
-		print("DEBUG -> handle_popup_menu_selections -> _on_id_pressed()")
+	print("handle_popup_menu_selections -> _on_id_pressed()")
 
 	match id:
 		0:
@@ -63,3 +62,8 @@ func _on_id_pressed(id: int) -> void:
 					puzzle_node.save_puzzle()
 					print("Puzzle saved!")
 					get_tree().quit()
+					
+		5:
+			
+			print("Tring to save puzzle from popupMenu")
+			Globals.g_save_puzzle()

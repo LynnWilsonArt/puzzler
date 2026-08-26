@@ -16,12 +16,10 @@ var toggle_puzzle : bool = false
 var timer_token  : int   = 0
 
 func _ready() -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _ready()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _ready()")
 
 func _on_right_click_triggered() -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _on_right_click_triggered()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _on_right_click_triggered()")
 	toggle_puzzle = !toggle_puzzle
 	print("Puzzle Toggled via Right-Click ", toggle_puzzle)
 	$Puzzle.visible = toggle_puzzle
@@ -31,8 +29,7 @@ func _input(event):
 		_on_right_click_triggered()
 
 func _start_puzzle_timer() -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _start_puzzle_timer()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _start_puzzle_timer()")
 	timer_token += 1
 	var my_token = timer_token
 	print("Puzzle Display Timer started!")
@@ -42,22 +39,19 @@ func _start_puzzle_timer() -> void:
 	_on_timer_timeout()
 
 func _on_timer_timeout() -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _on_timer_timeout()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _on_timer_timeout()")
 	if toggle_puzzle:
 		print("Puzzle preview time's up! -> hiding reference image")
 		toggle_puzzle = false
 		$Puzzle.visible = false
 
 func _on_puzzle_toggle_requested(state: bool) -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _on_puzzle_toggle_requested()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _on_puzzle_toggle_requested()")
 	toggle_puzzle = state
 	$Puzzle.visible = toggle_puzzle
 
 func _on_change_puzzle_image_requested(img: Texture2D) -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _on_change_puzzle_image_requested()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _on_change_puzzle_image_requested()")
 	if img == null:
 		push_error("Received null texture!")
 		return
@@ -68,8 +62,7 @@ func _on_change_puzzle_image_requested(img: Texture2D) -> void:
 	print("Changed puzzle_image")
 
 func _on_show_original_image_pressed() -> void:
-	if Globals.debug:
-		print("DEBUG -> toggle_puzzle_display.gd -> _on_show_original_image_pressed()")
+	print("DEBUG -> toggle_puzzle_display.gd -> _on_show_original_image_pressed()")
 	toggle_puzzle = !toggle_puzzle
 	print("Show original image for reference: ", toggle_puzzle)
 	$Puzzle.visible = toggle_puzzle

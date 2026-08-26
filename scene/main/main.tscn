@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://scene/main/start_button.gd" id="2_6vuhr"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_qtsyf"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="4_qtsyf"]
+[ext_resource type="Script" uid="uid://w1cm2u8dnbap" path="res://scene/main/unused.gd" id="5_b8g54"]
 [ext_resource type="Script" uid="uid://dha8cc3xrxh3v" path="res://scene/main/quit_button.gd" id="7_si3g0"]
 [ext_resource type="PackedScene" uid="uid://dhvlvj4dfjn5u" path="res://scene/select_level/select_level.tscn" id="8_onf7c"]
 
@@ -52,6 +53,7 @@ theme_override_styles/normal = ExtResource("4_qtsyf")
 theme_override_styles/hover = ExtResource("4_qtsyf")
 text = "Unused
 "
+script = ExtResource("5_b8g54")
 
 [node name="QuitButton" type="Button" parent="main/TextureRect" unique_id=930054890]
 layout_mode = 0
@@ -70,4 +72,5 @@ offset = Vector2(488, 410)
 transform = Transform2D(1, 0, 0, 1, 488, 410)
 
 [connection signal="pressed" from="main/TextureRect/StartButton" to="main/TextureRect/StartButton" method="_on_pressed"]
+[connection signal="pressed" from="main/TextureRect/Unused" to="main/TextureRect/Unused" method="_on_pressed"]
 [connection signal="pressed" from="main/TextureRect/QuitButton" to="main/TextureRect/QuitButton" method="_on_pressed"]

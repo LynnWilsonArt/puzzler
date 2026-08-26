@@ -9,21 +9,19 @@ signal change_puzzle_image(image: Texture2D)
 @export var game_scene_path : String = "res://scene/end_game/end_game.tscn"
 @export var puzzle_image = Image.new()
 
+
 const SAVE_PATH := "user://puzzle_state.save"
 
 # FIXED: Change to an array of Dictionaries to hold textures alongside their correct indexes
 var pieces_data : Array[Dictionary] = []
 var first_selected_piece : TextureRect = null
 var swapping : bool = false
-
 var http_request : HTTPRequest
 
 
 func _ready() -> void:
 	
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> game_script.gd ->  _ready()")
+	print("DEBUG -> game_script.gd ->  _ready()")
 		
 	# Establish the connection immediately at startup
 	if $Puzzle:
@@ -43,8 +41,7 @@ func _ready() -> void:
 	
 	# Enable redirect following and background thread usage
 func _on_get_puzzle()-> void:
-	# Program debuging toggle
-	if  Globals.debug:
+	
 		print("DEBUG -> _game_script.gd -> _on_get_puzzle()")
 
 		http_request.set_use_threads(true)
@@ -78,10 +75,8 @@ func _on_get_puzzle()-> void:
 
 
 func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _on_request_completed()")
 	
+	print("DEBUG -> _game_script.gd -> _on_request_completed()")
 	# Check if the HTTP request completely failed, timed out, or returned a bad server code
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
 		print("⚠️ Network error or file missing (HTTP %d). Loading fallback asset..." % response_code)
@@ -120,9 +115,8 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 
 
 func _slice_image(tex : Texture2D) -> void:
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd ->  _slice_image(tex: Texture2D)")
+	
+	print("DEBUG -> _game_script.gd ->  _slice_image(tex: Texture2D)")
 	
 	pieces_data.clear()
 	var img = tex.get_image()
@@ -146,16 +140,14 @@ func _slice_image(tex : Texture2D) -> void:
 			index += 1
 
 func _randomize_pieces() -> void:
-	# Program Globals.debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _randomize_pieces()")
+	
+	print("DEBUG -> _game_script.gd -> _randomize_pieces()")
 		
 	pieces_data.shuffle()
 
 func _place_pieces_on_grid() -> void:
-	# Program Globals.debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd ->  _place_pieces_on_grid()")
+	
+	print("DEBUG -> _game_script.gd ->  _place_pieces_on_grid()")
 		
 	first_selected_piece = null   # clear stale selection from previous puzzle
 	swapping = false              # Add this: just in case a swap was mid-flight when Skip was pressed
@@ -204,9 +196,8 @@ func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id
 
 # ----------  SWAP LOGIC  ----------
 func _on_piece_clicked(piece : TextureRect) -> void:
-	# Program Globals.debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _on_piece_clicked()")
+	
+	print("DEBUG -> _game_script.gd -> _on_piece_clicked()")
 		
 	if swapping:
 		return
@@ -254,9 +245,8 @@ func _on_piece_clicked(piece : TextureRect) -> void:
 
 # ----------  ENDGAME CHECK  ----------
 func _check_win_condition() -> void:
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _check_win_condition()")
+	
+	print("DEBUG -> _game_script.gd -> _check_win_condition()")
 		
 	var grid : GridContainer = $Puzzle/GridContainer
 	
@@ -273,9 +263,8 @@ func _check_win_condition() -> void:
 
 func _trigger_victory() -> void:
 		
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _trigger_victory()")
+	
+	print("DEBUG -> _game_script.gd -> _trigger_victory()")
 		
 	print("Puzzle Complete! All pieces are in the correct place!")
 	# Disable interaction entirely
@@ -290,13 +279,11 @@ func _trigger_victory() -> void:
 		# Check if Godot ran into an error while transitioning
 		if error_code != OK:
 			push_error("Failed to switch scenes! Error code: ", error_code)
-		else:
-			push_error("The game scene path string is completely empty!")
+
 			
 func _load_local_fallback() -> void:
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> _game_script.gd -> _load_local_fallback() -> internet or website unreachablle")
+	
+	print("DEBUG -> _game_script.gd -> _load_local_fallback() -> internet or website unreachablle")
 		
 	print("📦 Network down or file missing. Scanning local assets for a random puzzle image...")
 	

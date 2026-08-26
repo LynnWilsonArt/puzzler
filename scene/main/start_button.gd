@@ -16,9 +16,8 @@ func _on_pressed() -> void:
 			else:
 				Globals.music_player.play()
 	
-	# Program debuging toggle
-	if Globals.debug:
-		print("DEBUG -> start_button.gd ->_on_pressed()")
+	
+	print("DEBUG -> start_button.gd ->_on_pressed()")
 
 	# Add a print statement to verify the button physically registers your click
 	print("Play button was pressed! Attempting to load: ", game_scene_path)
@@ -32,3 +31,7 @@ func _on_pressed() -> void:
 			push_error("Failed to switch scenes! Error code: ", error_code)
 	else:
 		push_error("The game scene path string is completely empty!")
+
+
+func _on_unused_pressed() -> void:
+	pass # Replace with function body.

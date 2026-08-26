@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://dhvlvj4dfjn5u"]
 
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_jmnsq"]
-[ext_resource type="Script" uid="uid://deh084x8taufe" path="res://android/select_level/level_popup_menu.gd" id="2_vxwsp"]
+[ext_resource type="Script" uid="uid://deh084x8taufe" path="res://scene/select_level/level_popup_menu.gd" id="2_vxwsp"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="3_u7ow7"]
-[ext_resource type="Script" uid="uid://dyuqtpbijaq0j" path="res://scene/puzzle/open_menu_button.gd" id="3_vxwsp"]
+[ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://scene/puzzle/open_menu_button.gd" id="3_vxwsp"]
 
 [node name="SelectLevelMenu" type="CanvasLayer" unique_id=734487808]
 

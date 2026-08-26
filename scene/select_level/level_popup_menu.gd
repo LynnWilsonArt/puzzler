@@ -4,16 +4,14 @@ extends PopupMenu
 
 
 func _ready() -> void:
-	if  Globals.debug:
-		print("DEBUG -> handle_popup_menu_selections.gd -> _ready()")
+	print("DEBUG -> handle_popup_menu_selections.gd -> _ready()")
 	# Connect the PopupMenu selection signal
 	
 	
 
 
 func _on_id_pressed(id: int) -> void:
-	if  Globals.debug:
-		print("DEBUG -> handle_popup_menu_selections.gd -> _on_id_pressed()")
+	print("DEBUG -> handle_popup_menu_selections.gd -> _on_id_pressed()")
 	match id:
 		0: 
 			print(" 1 level selected")

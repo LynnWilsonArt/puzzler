@@ -5,16 +5,15 @@ extends Button
 @onready var popup_menu : PopupMenu = $"../PopupMenu"
 
 func _ready() -> void:
-	if  Globals.debug:
-		print("DEBUG -> open_menu_button.gd -> _ready()")
+	
+	print("DEBUG -> open_menu_button.gd -> _ready()")
 		
 	# Hide on startup
 	popup_menu.hide()
 
 
 func _on_pressed() -> void:
-	if  Globals.debug:
-		print("DEBUG -> open_menu_button.gd -> _on_pressed()")
+	print("DEBUG -> open_menu_button.gd -> _on_pressed()")
 	
 	print(" popup Item pressed")
 	# Display the popup menu

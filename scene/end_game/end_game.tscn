@@ -33,6 +33,7 @@ script = ExtResource("1_m6udu")
 [node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("3_0vy4c")]
 
 [node name="TextureRect" type="TextureRect" parent="Puzzle" unique_id=251827440]
+layout_mode = 0
 offset_left = 1.0
 offset_top = -3.0
 offset_right = 1153.0
@@ -72,7 +73,7 @@ offset_bottom = 17.0
 theme = ExtResource("3_exftr")
 theme_override_styles/normal = ExtResource("4_yyfi8")
 theme_override_styles/hover = ExtResource("4_yyfi8")
-text = "Scoreboard"
+text = "Unused"
 script = ExtResource("3_srgtl")
 
 [node name="Quit_Button" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=221247992]
