@@ -64,7 +64,7 @@ func _on_get_puzzle()-> void:
 		var random_image_name = puzzle_pool[randi() % puzzle_pool.size()]
 
 		# 3. Combine into your secure server path string
-		var random_image_url = "https://picsum.photos/1152/648"
+		var random_image_url = Globals.REMOTE_IMAGE_PATH
 		#var random_image_url = "https://puzzler.lynnwilsonart.com/1951Puzzles/whimiscal/%s" % random_image_name
 		print("Fetching custom puzzle artwork from: ", random_image_url)
 
