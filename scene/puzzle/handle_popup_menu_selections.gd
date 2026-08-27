@@ -24,6 +24,9 @@ func _on_id_pressed(id: int) -> void:
 			print("Skip Selected: ", id)
 			if game_scene and game_scene.has_method("_on_get_puzzle"):
 				print(" Getting new image")
+				print("Level: ",Globals.columns," , ",Globals.rows)
+				game_scene.num_columns = Globals.columns
+				game_scene.num_rows = Globals.rows
 				game_scene._on_get_puzzle()
 				if puzzle_node and puzzle_node.has_method("_start_puzzle_timer"):
 					puzzle_node._start_puzzle_timer()
@@ -53,20 +56,41 @@ func _on_id_pressed(id: int) -> void:
 			Globals.g_save_puzzle()
 				
 		5:
-			print("Quit Selected: ", id)
+			print("New Game Selected: ", id)
 			if OS.has_feature("web"):  
-				print("DEBUG -> Quiting game saving puzzle from Puzzle -> PopupMenu for web!")
-				Globals.g_save_puzzle()
+				print("DEBUG -> New Game -> game deleting puzzle from Puzzle -> PopupMenu for web!")
+				# Delete current puzzle and start a new game
+				Globals.g_delete_puzzle()
+				print("Puzzle deleted! -> from Puzzle -> PopupMenu")
 				
-				# Attempt to close the browser window/tab  
+				# reloading game  
 				var win = JavaScriptBridge.get_interface("window")
-				win.location.href = "https://puzzler.lynnwilsonart.com"  
+				win.location.href = Globals.game_url
 				  
 			else:  
-				print("DEBUG ->Quiting game - saving puzzle from Puzzle -> PopupMenu for android!")
+				print("DEBUG ->ERROR! - could not delete puzzle file -> PopupMenu for android!")
+			
+			
+			# Delete current puzzle and start a new game
+			Globals.g_delete_puzzle()
+			print("Puzzle deleted! -> from Puzzle -> PopupMenu")
+			Globals.switch_scene("res://scene/main/main.tscn")
+				
+		6:
+			if OS.has_feature("web"):  
+				print("DEBUG -> Quit -> game saving puzzle from Puzzle -> PopupMenu for web!")
+				Globals.g_save_puzzle()
+			
+				# Attempt to close the browser window/tab  
+				var win = JavaScriptBridge.get_interface("window")
+				win.location.href = Globals.web_home_page
+			  
+			else:  
+				print("DEBUG ->Quit- saving puzzle from Puzzle -> PopupMenu for android!")
 				Globals.g_save_puzzle()
 					
 				print("Puzzle saved! -> from Puzzle -> PopupMenu")
 				get_tree().quit()
+				
 					
 		

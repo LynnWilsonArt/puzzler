@@ -22,7 +22,7 @@ Globals="*uid://bg53ye4aj2s38"
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep_width"
 window/handheld/orientation=4
 
 [input]

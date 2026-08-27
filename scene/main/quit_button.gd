@@ -7,7 +7,7 @@ func _on_pressed() -> void:
 	if OS.has_feature("web"): 
 		# Attempt to close the browser window/tab  
 		var win = JavaScriptBridge.get_interface("window")
-		win.location.href = "https://puzzler.lynnwilsonart.com"  
+		win.location.href =  Globals.web_home_page
 	else:  
 		# Standard behavior for Android, Windows, macOS, etc. 
 		get_tree().quit()

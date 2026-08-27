@@ -2,13 +2,17 @@ extends Node
 
 # Global variables accessible from any script
 # "res://Globals.gd"
-var collums = 4
+var columns = 4
 var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
 const SAVE_PATH := "user://puzzle_state.save"
-var  auto_save_time: int = 60     # Autosave puzzle every x seconds
+var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 var debug: bool = true
+var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
+var web_home_page = "https://puzzler.lynnwilsonart.com"
+# Scene manager
+var current_scene = null
 
 # This node handles background music globally across all scenes
 var music_player: AudioStreamPlayer
@@ -20,6 +24,8 @@ var sound_mode: bool = false:
 		_update_music_status()
 
 func _ready() -> void:
+	
+
 	# 1. Programmatically create the player so it exists everywhere
 	music_player = AudioStreamPlayer.new()
 	add_child(music_player)
@@ -121,3 +127,35 @@ func g_load_puzzle() -> void:
 func _on_autosave_timeout() -> void:
 	print("Globals -> autosave puzzle -> saving puzzle")
 	g_save_puzzle()
+
+
+
+
+# Method to delete the puzzle file
+# Method to delete the puzzle file
+func g_delete_puzzle() -> void:
+	var error: Error = OK
+	
+	# FIX: Use FileAccess.file_exists (static) instead of DirAccess.file_exists
+	if FileAccess.file_exists(SAVE_PATH):
+		error = DirAccess.remove_absolute(SAVE_PATH)
+		
+		if error == OK:
+			print("File deleted successfully!")
+		else:
+			print("Failed to delete file. Error code: ", error)
+	else:
+		print("Delete skipped: No save file exists at ", SAVE_PATH)
+
+
+	
+##################################################
+# Scene switcher
+
+func switch_scene(game_scene_path):
+# Switch directly via the file string path
+		var error_code = get_tree().change_scene_to_file(game_scene_path)
+		
+		# Check if Godot ran into an error while transitioning
+		if error_code != OK:
+			push_error("Failed to switch scenes! Error code: ", error_code)

@@ -3,7 +3,7 @@ extends Node2D
 
 signal puzzle_toggle_requested(is_visible: bool)
 signal change_puzzle_image(image: Texture2D)
-@export var num_columns : int = Globals.collums
+@export var num_columns : int = Globals.columns
 @export var num_rows    : int = Globals.rows
 @export var grid_size   : Vector2 = Vector2(1152, 648)
 @export var game_scene_path : String = "res://scene/end_game/end_game.tscn"
