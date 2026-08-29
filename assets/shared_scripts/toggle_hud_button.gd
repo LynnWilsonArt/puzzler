@@ -6,9 +6,7 @@ signal toggle_puzzle_display(state: bool)
 @export var toggle_puzzle: bool = false
 
 func _ready() -> void:
-	# Connect the button's built-in pressed signal to our custom function below
-	pressed.connect(_on_button_pressed)
-	
+
 	# Fixed path: Looks up one level to game_scene, then down to Puzzle
 	var puzzle_node = get_node_or_null("../../../../Puzzle")
 	# connect to Puzzle function

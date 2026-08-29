@@ -64,7 +64,7 @@ offset_bottom = 50.0
 [node name="PopupMenu" type="PopupMenu" parent="PanelContainer" unique_id=1208084737]
 oversampling_override = 1.0
 position = Vector2i(20, 20)
-size = Vector2i(212, 190)
+size = Vector2i(212, 197)
 visible = true
 theme = ExtResource("2_in6qw")
 theme_override_font_sizes/font_size = 18
@@ -79,7 +79,7 @@ item_3/text = "Load Puzzle "
 item_3/id = 3
 item_4/text = "Save Puzzle"
 item_4/id = 4
-item_5/text = "New Game"
+item_5/text = "New Puzzle"
 item_5/id = 5
 item_6/text = "Quit"
 item_6/id = 6

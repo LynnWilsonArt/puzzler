@@ -23,6 +23,7 @@ func _on_pressed() -> void:
 	print("Play button was pressed! Attempting to load: ", game_scene_path)
 	
 	if game_scene_path != "":
+
 		# Switch directly via the file string path
 		var error_code = get_tree().change_scene_to_file(game_scene_path)
 		

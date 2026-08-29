@@ -52,7 +52,7 @@ func _on_get_puzzle()-> void:
 		http_request.set_use_threads(true)
 		http_request.set_max_redirects(5) 
 	
-		http_request.request_completed.connect(_on_request_completed)
+		#http_request.request_completed.connect(_on_request_completed)
 
 		# 1. Define a list of image filenames available on your website directory
 		var puzzle_pool: Array[String] = ["p1.jpg", "p2.jpg", "p3.jpg", "p4.jpg", "p5.jpg","p6.jpg"]

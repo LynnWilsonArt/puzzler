@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://py648hbne1on"]
 
-[ext_resource type="Script" uid="uid://c2a8sr04bswr1" path="res://scene/game/game_script.gd" id="1_8xedm"]
+[ext_resource type="Script" uid="uid://4li1ltcu5ncv" path="res://scene/game/game_script.gd" id="1_8xedm"]
 [ext_resource type="PackedScene" uid="uid://d3rfjsjw07yeq" path="res://scene/puzzle/puzzle.tscn" id="2_pw1yp"]
 
 [node name="game_scene" type="Node2D" unique_id=1452070747]

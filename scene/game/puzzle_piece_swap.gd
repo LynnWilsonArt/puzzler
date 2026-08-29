@@ -12,6 +12,9 @@ var original_texture: Texture2D
 # Keep track of active tweens safely in Godot 4
 var active_tween: Tween = null
 
+# Transition time
+var trans_time: float = 0.4
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	original_texture = texture
@@ -54,12 +57,12 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 func _fade_animation(tween: Tween,callback: Callable) -> void:
 	# FIXED: Make both tweens run at the same time using parallel loops
 	tween.set_parallel(true)
-	tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	tween.tween_property(self, "modulate:a", 0.0, trans_time)
 	
 	# Clean up opacity reset chained when the total sequence concludes
 	tween.chain().tween_property(self, "modulate:a", 1.0, 0.0)
 	
-	# FIXED: Godot 4 signal connection
+	print("Fade transition")
 	tween.finished.connect(callback)
 
 # ------------------------------------------------------------------
@@ -70,9 +73,9 @@ func _scale_animation(tween: Tween, callback: Callable) -> void:
 	pivot_offset = size / 2
 	var orig_scale = scale 
 	
-	tween.tween_property(self, "scale", Vector2.ZERO, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(self, "scale", orig_scale, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	
+	tween.tween_property(self, "scale", Vector2.ZERO, trans_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "scale", orig_scale, trans_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	print("Scale transition")
 	tween.finished.connect(callback) 
 
 # ------------------------------------------------------------------
@@ -83,11 +86,11 @@ func _rotate_animation(tween: Tween, callback: Callable) -> void:
 	pivot_offset = size / 2
 	var orig_rotation = rotation
 	
-	tween.tween_property(self, "rotation", orig_rotation + PI, 0.25).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "rotation", orig_rotation + PI, trans_time).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
 	
 	# Clean up rotation values back to default after layout swaps textures
 	tween.chain().tween_property(self, "rotation", orig_rotation, 0.0)
-
+	print("Rotate transition")
 	tween.finished.connect(callback)
 
 # ------------------------------------------------------------------
@@ -98,9 +101,9 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	pivot_offset = size / 2
 	var orig_scale = scale
 	
-	tween.tween_property(self, "scale:x", -orig_scale.x, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "scale:x", orig_scale.x, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	
+	tween.tween_property(self, "scale:x", -orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "scale:x", orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	print("Flip transition")
 	tween.finished.connect(callback)
 	
 	# Add this inside res://scene/game/puzzle_piece_swap.gd
