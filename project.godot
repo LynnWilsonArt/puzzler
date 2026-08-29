@@ -13,8 +13,11 @@ config_version=5
 config/name="Puzzler"
 run/main_scene="uid://cc88466fw4qg8"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/bg_color=Color(0.20664564, 0.096994065, 0.17802015, 1)
 boot_splash/stretch_mode=0
+boot_splash/image="uid://chbbju2ttap7y"
 config/icon="uid://cewahu5j0d8d8"
+boot_splash/minimum_display_time=2000
 
 [autoload]
 
