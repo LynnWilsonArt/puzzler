@@ -9,14 +9,13 @@ var autosave_timer: Timer
 var REMOTE_IMAGE_PATH: String ="https://loremflickr.com/1152/648/stilllife"
 const SAVE_PATH := "user://puzzle_state.save"
 var  auto_save_time: int = 30     # Autosave puzzle every x seconds
-var debug: bool = true
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
 # Scene manager
 var current_scene = null
-
 # This node handles background music globally across all scenes
 var music_player: AudioStreamPlayer
+
 
 # Automatically monitors changes to sound_mode
 var sound_mode: bool = false:
@@ -63,7 +62,7 @@ func _ready() -> void:
 	_update_music_status()
 
 func _update_music_status() -> void:
-	print("Globals -> _update_music_status()")
+	print("Globals -> Globals.gd -> _update_music_status()")
 		
 	if not is_instance_valid(music_player):
 		return
@@ -79,23 +78,23 @@ func _update_music_status() -> void:
 # Globak Timmer
 
 func _timer(method: int,seconds: int) -> void:
-	print("DEBUG -> Globals -> _timer()")
+	print("Globals -> Globals.gd -> _timer()")
 	timer_token += 1
 	var my_token = timer_token
-	print("Global timer() started!")
+	print("Globals -> Globals.gd ->timer() started!")
 	await get_tree().create_timer(seconds).timeout
 	if my_token != timer_token:
 		return
 	_on_timer_timeout(method)
 
 func _on_timer_timeout(method: int) -> void:
-	print("DEBUG -> Globals -> _on_timer_timeout()")
+	print("Globals -> Globals.gd -> _on_timer_timeout()")
 		
 		# Do something here
 		# Methods to run
 	match method:
 		1:
-			print("Globals -> _timer() -> method 1")
+			print("Globals -> Globals.gd ->_timer() -> method 1")
 			g_save_puzzle( )
 				
 			
@@ -111,22 +110,22 @@ func g_save_puzzle() -> void:
 	var game_root = get_tree().current_scene
 	if game_root and game_root.has_method("save_puzzle"):
 		game_root.save_puzzle()
-		print("Saved puzzle from Globals")
+		print("Globals -> Globals.gd ->Saved puzzle from Globals")
 	else:
-		push_error("Could not find game_script.gd on current scene to save the puzzle.")
+		push_error("Globals -> Could not find game_script.gd on current scene to save the puzzle.")
 
 
 func g_load_puzzle() -> void:
 	var game_root = get_parent().current_scene
 	if game_root and game_root.has_method("load_puzzle"):
-		print("Loaded puzzle from Globals")
+		print("Globals -> Globals.gd -> Loaded puzzle from Globals")
 		game_root.load_puzzle()
 	else:
-		push_error("Could not find game_script.gd on parent node to load the puzzle.")
+		push_error("Globals -> Globals.gd -> Could not find game_script.gd on parent node to load the puzzle.")
 		
 		
 func _on_autosave_timeout() -> void:
-	print("Globals -> autosave puzzle -> saving puzzle")
+	print("Globals -> Globals.gd -> autosave puzzle -> saving puzzle")
 	g_save_puzzle()
 
 
@@ -142,11 +141,11 @@ func g_delete_puzzle() -> void:
 		error = DirAccess.remove_absolute(SAVE_PATH)
 		
 		if error == OK:
-			print("File deleted successfully!")
+			print("Globals -> Globals.gd -> File deleted successfully!")
 		else:
-			print("Failed to delete file. Error code: ", error)
+			print("Globals -> Globals.gd -> Failed to delete file. Error code: ", error)
 	else:
-		print("Delete skipped: No save file exists at ", SAVE_PATH)
+		print("Globals -> Globals.gd -> Delete skipped: No save file exists at ", SAVE_PATH)
 
 
 	
@@ -159,4 +158,4 @@ func switch_scene(game_scene_path):
 		
 		# Check if Godot ran into an error while transitioning
 		if error_code != OK:
-			push_error("Failed to switch scenes! Error code: ", error_code)
+			push_error("Globals -> Globals.gd -> Failed to switch scenes! Error code: ", error_code)
