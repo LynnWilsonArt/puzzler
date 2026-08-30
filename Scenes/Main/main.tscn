@@ -83,6 +83,8 @@ theme = ExtResource("1_8em3v")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "V1r"
 
+[node name="HTTPRequest" type="HTTPRequest" parent="main" unique_id=1532807641]
+
 [connection signal="pressed" from="main/TextureRect/StartButton" to="main/TextureRect/StartButton" method="_on_pressed"]
 [connection signal="pressed" from="main/TextureRect/Unused" to="main/TextureRect/Unused" method="_on_pressed"]
 [connection signal="pressed" from="main/TextureRect/QuitButton" to="main/TextureRect/QuitButton" method="_on_pressed"]

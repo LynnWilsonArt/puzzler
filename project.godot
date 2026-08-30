@@ -22,6 +22,7 @@ boot_splash/minimum_display_time=2000
 [autoload]
 
 Globals="*uid://bg53ye4aj2s38"
+ApiData="*uid://do80ij2j83t6d"
 
 [display]
 
