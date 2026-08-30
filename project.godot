@@ -23,6 +23,7 @@ boot_splash/minimum_display_time=2000
 
 Globals="*uid://bg53ye4aj2s38"
 ApiData="*uid://do80ij2j83t6d"
+AppId="*uid://bvcjgbnv1ajk5"
 
 [display]
 

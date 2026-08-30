@@ -17,19 +17,6 @@ var current_scene = null
 var music_player: AudioStreamPlayer
 var quit_wait_time: float= 1.0
 
-# App data for  logs on https://puzzler.lynnwilsonart.com/api_19511969/game_events.log
-var app_open_data := {
-	"type": "app_open",                            # Can be "app_open" or "app_closed"
-	"timestamp": int(Time.get_unix_time_from_system()), # Current Unix timestamp
-	"app_id": "website" #Unique app id
-}
-
-var app_closed_data := {
-	"type": "app_closed",                            # Can be "app_open" or "app_closed"
-	"timestamp": int(Time.get_unix_time_from_system()), # Current Unix timestamp
-	"app_id": "website" #Unique app id
-}
-
 
 # Automatically monitors changes to sound_mode
 var sound_mode: bool = false:
