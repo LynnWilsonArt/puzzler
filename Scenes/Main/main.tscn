@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://Scenes/Main/start_button.gd" id="4_4e88x"]
 [ext_resource type="Script" uid="uid://dha8cc3xrxh3v" path="res://Scenes/Main/quit_button.gd" id="5_4bx0a"]
 [ext_resource type="PackedScene" uid="uid://dhvlvj4dfjn5u" path="res://Scenes/Select_level/select_level.tscn" id="6_mg8qx"]
+[ext_resource type="PackedScene" uid="uid://ctu8okumy35hp" path="res://Scenes/Select_Category/category.tscn" id="7_xlvfx"]
 
 [node name="Main" type="Node2D" unique_id=1371017269]
 
@@ -41,18 +42,6 @@ theme_override_styles/hover = ExtResource("3_hq80f")
 text = "Play"
 script = ExtResource("4_4e88x")
 
-[node name="Unused" type="Button" parent="main/TextureRect" unique_id=690882194]
-layout_mode = 0
-offset_left = 484.0
-offset_top = 478.0
-offset_right = 666.0
-offset_bottom = 516.0
-theme = ExtResource("1_8em3v")
-theme_override_styles/normal = ExtResource("3_hq80f")
-theme_override_styles/hover = ExtResource("3_hq80f")
-text = "Unused
-"
-
 [node name="QuitButton" type="Button" parent="main/TextureRect" unique_id=930054890]
 layout_mode = 0
 offset_left = 488.0
@@ -83,8 +72,11 @@ theme = ExtResource("1_8em3v")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "V1r"
 
+[node name="Category" parent="main/TextureRect" unique_id=1906510130 instance=ExtResource("7_xlvfx")]
+offset = Vector2(460, 460)
+transform = Transform2D(1, 0, 0, 1, 460, 460)
+
 [node name="HTTPRequest" type="HTTPRequest" parent="main" unique_id=1532807641]
 
 [connection signal="pressed" from="main/TextureRect/StartButton" to="main/TextureRect/StartButton" method="_on_pressed"]
-[connection signal="pressed" from="main/TextureRect/Unused" to="main/TextureRect/Unused" method="_on_pressed"]
 [connection signal="pressed" from="main/TextureRect/QuitButton" to="main/TextureRect/QuitButton" method="_on_pressed"]

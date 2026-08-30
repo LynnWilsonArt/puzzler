@@ -17,6 +17,7 @@ theme_override_styles/panel = ExtResource("3_u7ow7")
 [node name="PopupMenu" type="PopupMenu" parent="PanelContainer" unique_id=747482595]
 oversampling_override = 1.0
 position = Vector2i(500, 460)
+size = Vector2i(288, 416)
 theme = ExtResource("1_jmnsq")
 item_count = 12
 item_0/text = "Level 1 Tutorial"

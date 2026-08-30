@@ -47,16 +47,6 @@ text = "New Puzzle"
 script = ExtResource("7_wbltp")
 metadata/_edit_use_anchors_ = true
 
-[node name="Scoreboard_Button" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=130458505]
-offset_left = -138.0
-offset_top = -33.0
-offset_right = 137.0
-offset_bottom = 17.0
-theme = ExtResource("5_agdlo")
-theme_override_styles/normal = ExtResource("6_tsnm7")
-theme_override_styles/hover = ExtResource("6_tsnm7")
-text = "Unused"
-
 [node name="Quit_Button" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=221247992]
 offset_left = -136.0
 offset_top = 80.0
@@ -69,5 +59,4 @@ text = "Quit Game"
 script = ExtResource("8_tfboq")
 
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" to="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Scoreboard_Button" to="Puzzle/TextureRect/Sprite2D/Scoreboard_Button" method="_on_button_pressed"]
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Quit_Button" to="Puzzle/TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]

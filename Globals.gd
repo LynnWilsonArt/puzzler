@@ -6,7 +6,8 @@ var columns = 4
 var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
-var REMOTE_IMAGE_PATH: String ="https://loremflickr.com/1152/648/stilllife"
+var image_url: String = "https://loremflickr.com/1152/648/"
+var REMOTE_IMAGE_PATH: String = image_url
 const SAVE_PATH := "user://puzzle_state.save"
 var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
