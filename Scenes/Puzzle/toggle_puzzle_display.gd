@@ -22,7 +22,6 @@ func _ready() -> void:
 	count = 0
 	
 func _on_right_click_triggered() -> void:
-	# DEBUG
 	print(" Puzzle -> toggle_puzzle_display.gd -> _on_right_click_triggered()")
 		
 	toggle_puzzle = !toggle_puzzle
@@ -49,7 +48,6 @@ func _start_puzzle_timer() -> void:
 	_on_timer_timeout()
 
 func _on_timer_timeout() -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_timer_timeout()")
 		
 	if toggle_puzzle:
@@ -58,14 +56,12 @@ func _on_timer_timeout() -> void:
 		$Puzzle.visible = false
 
 func _on_puzzle_toggle_requested(state: bool) -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_puzzle_toggle_requested()")
 		
 	toggle_puzzle = state
 	$Puzzle.visible = toggle_puzzle
 
 func _on_change_puzzle_image_requested(img: Texture2D) -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_change_puzzle_image_requested()")
 		
 	if img == null:
@@ -78,7 +74,6 @@ func _on_change_puzzle_image_requested(img: Texture2D) -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> Changed puzzle_image")
 
 func _on_show_original_image_pressed() -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_show_original_image_pressed()")
 		
 	toggle_puzzle = !toggle_puzzle
@@ -90,7 +85,6 @@ func _on_show_original_image_pressed() -> void:
 # (game_script.gd), since $Puzzle is a child of that node.
 # --------------------------------------------------------------------
 func save_puzzle() -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> save_puzzle()")
 		
 	var game_root = get_parent()
@@ -100,7 +94,6 @@ func save_puzzle() -> void:
 		push_error("Puzzle -> toggle_puzzle_display.gd -> Could not find game_script.gd on parent node to save the puzzle.")
 
 func load_puzzle() -> void:
-	# DEBUG
 	print("Puzzle -> toggle_puzzle_display.gd -> load_puzzle()")
 	var game_root = get_parent()
 	if game_root and game_root.has_method("load_puzzle"):

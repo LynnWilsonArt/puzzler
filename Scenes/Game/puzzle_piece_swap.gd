@@ -27,7 +27,6 @@ func _ready() -> void:
 # Detect mouse clicks on the whole control
 func _gui_input(event: InputEvent) -> void:
 
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> _gui_input(event: InputEvent)")
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -41,7 +40,6 @@ func _gui_input(event: InputEvent) -> void:
 #   • call `callback` when finished
 # -------------------------------------------------------
 func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> animate_swap()")
 		
 	# FIXED: Check if the current tween is running using Godot 4 syntax
@@ -67,7 +65,6 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 # 1️⃣  Fade: old piece fades out, new piece fades in
 # ------------------------------------------------------------------
 func _fade_animation(tween: Tween,callback: Callable) -> void:
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> _fade_animation()")
 		
 	# FIXED: Make both tweens run at the same time using parallel loops
@@ -84,7 +81,6 @@ func _fade_animation(tween: Tween,callback: Callable) -> void:
 # 2️⃣  Scale: shrink to 0, then grow to normal size
 # ------------------------------------------------------------------
 func _scale_animation(tween: Tween, callback: Callable) -> void:
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> _sacle_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
@@ -100,7 +96,6 @@ func _scale_animation(tween: Tween, callback: Callable) -> void:
 # 3️⃣  Rotate: rotate 180° around the centre
 # ------------------------------------------------------------------
 func _rotate_animation(tween: Tween, callback: Callable) -> void:
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> _rotate_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
@@ -118,7 +113,6 @@ func _rotate_animation(tween: Tween, callback: Callable) -> void:
 # 4️⃣  Flip: a horizontal “mirror” flip (scale.x = -1)
 # ------------------------------------------------------------------
 func _flip_animation(tween: Tween, callback: Callable) -> void:
-	# DEBUG
 	print("Game -> puzzle_piece_swap.gd -> _flip_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
@@ -132,12 +126,7 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	
 	# Add this inside res://Scenes/Game/puzzle_piece_swap.gd
 func initialize_piece_meta(slot_id: int, original_texture_id: int) -> void:
-
-	# DEBUG
-	
 	print("Game -> puzzle_piece_swap.gd -> initilaize_piece_meta()")
-		
-		
-		
+	
 	set_meta("correct_slot_id", slot_id)
 	set_meta("current_texture_id", original_texture_id)

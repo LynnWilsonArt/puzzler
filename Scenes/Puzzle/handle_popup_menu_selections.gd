@@ -10,12 +10,10 @@ extends PopupMenu
 
 
 func _ready() -> void:
-	# DEBUG
 	print("Puzzle -> handle_popup_menu_selections.gd -> ready()")
 
 
 func _on_id_pressed(id: int) -> void:
-	# DEBUG
 	print("Puzzle -> handle_popup_menu_selections.gd -> _on_id_pressed()")
 
 	match id:
@@ -89,5 +87,5 @@ func _on_id_pressed(id: int) -> void:
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle saved! -> from Puzzle -> PopupMenu")
 				# Pause for exactly x seconds
 				await get_tree().create_timer(Globals.quit_wait_time).timeout
-				get_tree().quit()
+				BackButtonHandler._on_back_pressed()
 			

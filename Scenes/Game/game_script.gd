@@ -20,7 +20,6 @@ var http_request : HTTPRequest
 var count = 0
 
 func _ready() -> void:
-	# DEBUG
 	print("Game -> game_script.gd ->  _ready()")
 
 	if $Puzzle:
@@ -46,7 +45,6 @@ func _ready() -> void:
 	
 	# Enable redirect following and background thread usage
 func _on_get_puzzle()-> void:
-		# DEBUG
 		print("Game -> _game_script.gd -> _on_get_puzzle()")
 
 		http_request.set_use_threads(true)
@@ -72,7 +70,6 @@ func _on_get_puzzle()-> void:
 
 
 func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	# DEBUG
 	print("Game -> _game_script.gd -> _on_request_completed()")
 	# Check if the HTTP request completely failed, timed out, or returned a bad server code
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
@@ -108,7 +105,6 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 	
 
 func _slice_image(tex : Texture2D) -> void:
-	# DEBUG
 	print("Game -> _game_script.gd ->  _slice_image(tex: Texture2D)")
 	
 	pieces_data.clear()
@@ -133,13 +129,11 @@ func _slice_image(tex : Texture2D) -> void:
 			index += 1
 
 func _randomize_pieces() -> void:
-	# DEBUG
 	print("Game -> _game_script.gd -> _randomize_pieces()")
 		
 	pieces_data.shuffle()
 
 func _place_pieces_on_grid() -> void:
-	# DEBUG
 	print("Game -> _game_script.gd ->  _place_pieces_on_grid()")
 		
 	first_selected_piece = null   # clear stale selection from previous puzzle
@@ -169,7 +163,6 @@ func _place_pieces_on_grid() -> void:
 func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id: int, piece_width: float, piece_height: float, piece_script: GDScript) -> TextureRect:
 	count += 1
 	if count == 1:
-		# DEBUG
 		print("Game -> game_script.gd -> _build_piece()")
 		
 	var rect = TextureRect.new()
@@ -194,7 +187,6 @@ func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id
 
 # ----------  SWAP LOGIC  ----------
 func _on_piece_clicked(piece : TextureRect) -> void:
-	# DEBUG
 	print("Game -> _game_script.gd -> _on_piece_clicked()")
 		
 	if swapping:
@@ -220,7 +212,6 @@ func _on_piece_clicked(piece : TextureRect) -> void:
 	var state = {"finished": 0}
 	
 	var finish_callback = func():
-		# DEBUG
 		print("Game -> game_script.gd -> finish_callback()")
 		state["finished"] += 1
 		if state["finished"] == 2:
@@ -245,7 +236,6 @@ func _on_piece_clicked(piece : TextureRect) -> void:
 
 # ----------  ENDGAME CHECK  ----------
 func _check_win_condition() -> void:
-	# DEBUG
 	print("Game -> _game_script.gd -> _check_win_condition()")
 		
 	var grid : GridContainer = $Puzzle/GridContainer
@@ -262,7 +252,6 @@ func _check_win_condition() -> void:
 	_trigger_victory()
 
 func _trigger_victory() -> void:
-	# DEBUG	
 	print("Game -> _game_script.gd -> _trigger_victory()")
 		
 	print("Game -> game_script.gd -> Puzzle Complete! All pieces are in the correct place!")
@@ -281,7 +270,6 @@ func _trigger_victory() -> void:
 
 			
 func _load_local_fallback() -> void:
-	# DEBUG
 	print("Game -> _game_script.gd -> _load_local_fallback() -> internet or website unreachablle")
 		
 	print("Game -> game_script.gd -> 📦 Network down or file missing. Scanning local assets for a random puzzle image...")
@@ -328,7 +316,6 @@ func _load_local_fallback() -> void:
 		push_error("Game -> game_script.gd -> ❌ Critical Error: Failed to load local asset texture: " + chosen_image_path)
 			
 func _process_and_start_game(img: Image) -> void:
-	# DEBUG
 	print("Game -> game_script -> _process_and_start_game()")
 		
 	img.convert(Image.FORMAT_RGBA8)
@@ -346,7 +333,6 @@ func _process_and_start_game(img: Image) -> void:
 # fully clickable and swappable.
 # ======================================================================
 func save_puzzle() -> void:
-	# DEBUG
 	print("Game -> game_script -> save_puzzle()")
 	
 	var grid : GridContainer = $Puzzle/GridContainer
@@ -384,7 +370,6 @@ func save_puzzle() -> void:
 
 
 func load_puzzle() -> void:
-	# DEBUG
 	print("Game -> game_script.gd -> load_puzzle()")
 	if not FileAccess.file_exists(SAVE_PATH):
 		push_error("Game -> game_script.gd -> No saved puzzle found at " + SAVE_PATH)

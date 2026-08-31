@@ -65,6 +65,10 @@ func _ready() -> void:
 
 	_update_music_status()
 
+
+	
+	
+
 func _update_music_status() -> void:
 	print("Globals -> Globals.gd -> _update_music_status()")
 		

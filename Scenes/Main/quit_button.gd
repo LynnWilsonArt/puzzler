@@ -3,7 +3,6 @@ extends Button
 
 	
 func _on_pressed() -> void:
-	# DEBUG
 	print("Main -> quit_button.gd -> _on_pressed()")
 		
 	if OS.has_feature("web"): 
@@ -20,4 +19,5 @@ func _on_pressed() -> void:
 		# Standard behavior for Android, Windows, macOS, etc. 
 		# Pause for exactly x seconds
 		await get_tree().create_timer(Globals.quit_wait_time).timeout
-		get_tree().quit()
+		BackButtonHandler._move_app_to_background()
+	

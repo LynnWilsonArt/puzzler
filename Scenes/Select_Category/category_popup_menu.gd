@@ -3,7 +3,6 @@ extends PopupMenu
 
 
 func _on_id_pressed(id: int) -> void:
-	# DEBUG
 	print("Select_Category -> category_popup_menu.gd -> _on_id_pressed(id: int)")
 	# reset the url back to base url
 	Globals.REMOTE_IMAGE_PATH = Globals.image_url

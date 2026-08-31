@@ -7,7 +7,6 @@ extends Button
 @export_file("*.tscn") var game_scene_path: String = "res://Scenes/Game/game.tscn"
 
 func _on_pressed() -> void:
-	# DEBUG
 	print("Main -> start_button.gd -> _on_pressed()")
 		
 	# Web start music if Globals.sound_mode = true

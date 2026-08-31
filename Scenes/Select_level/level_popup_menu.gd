@@ -3,7 +3,7 @@ extends PopupMenu
 
 
 func _on_id_pressed(id: int) -> void:
-	# DEBUG
+	
 	print("Select_level -> handle_popup_menu_selections.gd -> _on_id_pressed(id: int)")
 	match id:
 		0: 

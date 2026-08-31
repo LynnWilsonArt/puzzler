@@ -5,7 +5,6 @@ extends Button
 @onready var popup_menu : PopupMenu = $"../CategoryPopupMenu"
 
 func _ready() -> void:
-	# DEBUG
 	print("Select_level -> open_menu_button.gd -> _ready()")
 		
 	# Hide on startup
@@ -13,7 +12,6 @@ func _ready() -> void:
 
 
 func _on_pressed() -> void:
-	# DEBUG
 	print("Select_level -> open_menu_button.gd -> _on_pressed()")
 	
 	# Display the popup menu

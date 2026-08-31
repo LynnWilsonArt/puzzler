@@ -1,6 +1,9 @@
+
+# Puzzle/TextureRect/Sprite2D/Quit_Button
 extends Button
 
 func _on_pressed()-> void:
+	# Handle web OS
 	if OS.has_feature("web"): 
 		print("End_game -> quit_button.gd -> _on_pressed() -> Web ->Delete saved Game")
 		# Delete the saved game 
@@ -14,6 +17,7 @@ func _on_pressed()-> void:
 		win.location.href =  Globals.web_home_page
 		
 	else: 
+		# Handle Android OS
 		print("End_game -> quit_button.gd -> _on_pressed() -> Android -> Delete saved Game")
 		# Delete the saved game 
 		Globals.g_delete_puzzle() 
@@ -23,5 +27,5 @@ func _on_pressed()-> void:
 		# Standard behavior for Android, Windows, macOS, etc.
 		# Pause for exactly 3 seconds
 		await get_tree().create_timer(Globals.quit_wait_time).timeout
-		get_tree().quit()
+		BackButtonHandler._move_app_to_background()		
 		
