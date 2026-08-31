@@ -109,6 +109,15 @@ func _on_timer_timeout(method: int) -> void:
 		
 
 		
+# in Globals.gd
+func start_autosave() -> void:
+	print(" Globals _> Auto save timer started")
+	autosave_timer.start()
+
+func stop_autosave() -> void:
+	print(" Globals -> Auto save timer stoped")
+	autosave_timer.stop()
+	
 ##################################################
 # --------------------------------------------------------------------
 # Forwarders — the real save/load logic lives on the game root
@@ -116,6 +125,7 @@ func _on_timer_timeout(method: int) -> void:
 # --------------------------------------------------------------------
 func g_save_puzzle() -> void:
 	var game_root = get_tree().current_scene
+	print(" game_root: ", game_root)
 	if game_root and game_root.has_method("save_puzzle"):
 		game_root.save_puzzle()
 		print("Globals -> Globals.gd ->Saved puzzle from Globals")

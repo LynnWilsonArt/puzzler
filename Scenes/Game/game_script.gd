@@ -21,6 +21,7 @@ var count = 0
 
 func _ready() -> void:
 	print("Game -> game_script.gd ->  _ready()")
+	Globals.start_autosave()
 
 	if $Puzzle:
 		puzzle_toggle_requested.connect($Puzzle._on_puzzle_toggle_requested)

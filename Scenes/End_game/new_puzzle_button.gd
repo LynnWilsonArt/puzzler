@@ -7,20 +7,17 @@ func _on_pressed() -> void:
 	print("End_game -> new_puzzle_button.gd  -> _on_pressed()")
 	
 	if OS.has_feature("web"):  
-		print("End_game -> WEB -> new_puzzle_button.gd  -> deleting puzzle from Puzzle -> PopupMenu for web!")
-		# Delete current puzzle and start a new game
+		print("Puzzle -> handle_popup_menu_selections.gd -> New Game -> game deleting puzzle from Puzzle -> PopupMenu for web!")
 		Globals.g_delete_puzzle()
-		print("End_game -> WEB -> new_puzzle_button.gd  -> Saved Puzzle deleted!")
-		
-		# reloading game  
+		print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
+		# need to swithch scenes not restart app
 		var win = JavaScriptBridge.get_interface("window")
-		win.location.href = Globals.game_url
-		  
+		if win:
+			Globals.stop_autosave()
+			get_tree().change_scene_to_file("res://Scenes/Main/main.tscn")
 	else:  
-		print("End_game -> new_puzzle_button.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
-	
-	
-	# Delete current puzzle and start a new game
-	Globals.g_delete_puzzle()
-	print("End_game -> new_puzzle_button.gd -> Puzzle deleted! -> APP ->from Puzzle -> PopupMenu")
-	Globals.switch_scene("res://Scenes/Main/main.tscn")
+		Globals.stop_autosave()
+		print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
+		Globals.g_delete_puzzle()
+		print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
+		Globals.switch_scene("res://Scenes/Main/main.tscn")

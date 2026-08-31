@@ -1,49 +1,55 @@
 extends Node
 
+
 func _ready() -> void:
 	# Turn off Godot's default "back = quit" behavior
 	get_tree().set_quit_on_go_back(false)
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_on_back_pressed()
+	match what:
+		NOTIFICATION_WM_GO_BACK_REQUEST:
+			_on_back_pressed()
+		NOTIFICATION_APPLICATION_PAUSED:
+			_on_app_backgrounded()
+		NOTIFICATION_APPLICATION_RESUMED:
+			_on_app_returned_from_background()
 
 func _on_back_pressed() -> void:
+	print("BackButtonHandler -> Back button pressed")
 	if is_on_main_menu():
 		_move_app_to_background()
 	else:
 		_go_back_one_screen()
 
 func _move_app_to_background() -> void:
+	print("BackButtonHandler -> Move App to background")
 	if OS.get_name() != "Android":
 		return # no-op on desktop/editor
-
 	var android_runtime = Engine.get_singleton("AndroidRuntime")
 	if android_runtime == null:
-		push_warning("AndroidRuntime singleton not available")
+		push_warning("BackButtonHandler -> AndroidRuntime singleton not available")
 		return
-
 	var activity = android_runtime.getActivity()
 	activity.moveTaskToBack(true)
 
 func _go_back_one_screen() -> void:
 	# your existing menu/scene navigation logic
+	print("BackButtonHandler -> Back up one scene")
 	pass
 
 func is_on_main_menu() -> bool:
 	# your existing check, e.g. get_tree().current_scene.name == "MainMenu"
+	print("BackButtonHandler -> Is on Main scene")
 	return true
-	
-func background_app() -> void:
-	if OS.get_name() != "Android":
-		get_tree().quit()   # Not Android just quit 
-		#return # only applies on Android
 
-	var android_runtime = Engine.get_singleton("AndroidRuntime")
-	if android_runtime == null:
-		push_warning("AndroidRuntime singleton not available")
-		return
+func _on_app_backgrounded() -> void:
+	# Called when app goes to background (Home, back-to-background, task switch, etc.)
+	# e.g. pause game, save state, mute audio, pause timers
+	print("BackButtonHandler -> Sent to background!")
+	ApiData._send_api_data(false) # send app closed
 
-	var activity = android_runtime.getActivity()
-	activity.moveTaskToBack(true)
-	BackButtonHandler.background_app()
+func _on_app_returned_from_background() -> void:
+	# Called when app comes back to foreground
+	# e.g. resume game, refresh data, unmute audio, resync timers
+	print("BackButtonHandler -> Returned to foreground!")
+	ApiData._send_api_data(true) # send app open

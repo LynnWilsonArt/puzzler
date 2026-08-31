@@ -59,11 +59,13 @@ func _on_id_pressed(id: int) -> void:
 				print("Puzzle -> handle_popup_menu_selections.gd -> New Game -> game deleting puzzle from Puzzle -> PopupMenu for web!")
 				Globals.g_delete_puzzle()
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
-				
+				# need to swithch scenes not restart app
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
-					win.location.href = Globals.game_url
+					Globals.stop_autosave()
+					get_tree().change_scene_to_file("res://Scenes/Main/main.tscn")
 			else:  
+				Globals.stop_autosave()
 				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
 				Globals.g_delete_puzzle()
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
@@ -72,10 +74,9 @@ func _on_id_pressed(id: int) -> void:
 		6:
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit -> game saving puzzle from Puzzle -> PopupMenu for web!")
-				Globals.g_save_puzzle()
+				Globals.g_save_puzzle()				
 				# Log to webserver end session
-				ApiData._send_api_data(false)
-				# Pause for exactly x seconds
+				ApiData._send_api_data(false)		
 				await get_tree().create_timer(Globals.quit_wait_time).timeout
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
@@ -83,9 +84,16 @@ func _on_id_pressed(id: int) -> void:
 			else:  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit- saving puzzle from Puzzle -> PopupMenu for android!")
 				Globals.g_save_puzzle()
-				ApiData._send_api_data(false)
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle saved! -> from Puzzle -> PopupMenu")
 				# Pause for exactly x seconds
 				await get_tree().create_timer(Globals.quit_wait_time).timeout
-				BackButtonHandler._on_back_pressed()
+				if OS.has_feature("android"):
+					Globals.stop_autosave()
+					BackButtonHandler._move_app_to_background()
+				else:
+					# Standard behavior for Android, Windows, macOS, etc.
+					# Pause for exactly 3 seconds for data to be sent
+					ApiData._send_api_data(false)
+					await get_tree().create_timer(Globals.quit_wait_time).timeout
+					get_tree().quit()
 			

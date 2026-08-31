@@ -26,9 +26,7 @@ func _ready() -> void:
 
 # Detect mouse clicks on the whole control
 func _gui_input(event: InputEvent) -> void:
-
-	print("Game -> puzzle_piece_swap.gd -> _gui_input(event: InputEvent)")
-		
+	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		piece_clicked.emit(self)
 
@@ -126,7 +124,6 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	
 	# Add this inside res://Scenes/Game/puzzle_piece_swap.gd
 func initialize_piece_meta(slot_id: int, original_texture_id: int) -> void:
-	print("Game -> puzzle_piece_swap.gd -> initilaize_piece_meta()")
 	
 	set_meta("correct_slot_id", slot_id)
 	set_meta("current_texture_id", original_texture_id)
