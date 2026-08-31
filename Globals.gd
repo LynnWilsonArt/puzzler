@@ -9,14 +9,16 @@ var autosave_timer: Timer
 var image_url: String = "https://loremflickr.com/1152/648/"
 var REMOTE_IMAGE_PATH: String = image_url
 const SAVE_PATH := "user://puzzle_state.save"
-var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
+var lwa_url: String = "https://lynnwilsonart.com"
+var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 # Scene manager
 var current_scene = null
 # This node handles background music globally across all scenes
 var music_player: AudioStreamPlayer
 var quit_wait_time: float= 1.0
+
 
 
 # Automatically monitors changes to sound_mode
