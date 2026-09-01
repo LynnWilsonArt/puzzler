@@ -1,5 +1,5 @@
+# res://Scenes/Puzzle/open_menu_button.gd
 extends Button
-# File: res://scene/Puzzle/open_menu_button.gd
 
 # The PopupMenu is a sibling of this Button:
 @onready var popup_menu : PopupMenu = $"../PopupMenu"

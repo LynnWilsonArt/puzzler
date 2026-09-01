@@ -1,7 +1,6 @@
+# res://Scenes/Main/quit_button.gd
 extends Button
-# "res://scene/main/quit_button.gd"
 
-	
 func _on_pressed() -> void:
 	print("Main -> quit_button.gd -> _on_pressed()")
 		

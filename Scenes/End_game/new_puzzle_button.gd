@@ -1,6 +1,5 @@
-extends Button  
 # res://Scenes/End_game/new_puzzle_button.gd
-
+extends Button  
 
 func _on_pressed() -> void:
 	

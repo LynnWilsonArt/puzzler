@@ -1,5 +1,5 @@
+# res://Scenes/Main/start_button.gd
 extends Button  
-# File: res://Scenes/Main/select_level_button.gd
 
 # Play_Button Script
 # We use a simple text string for the file path to completely avoid loading loops

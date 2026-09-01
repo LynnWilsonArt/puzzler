@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://drkttt5dhqqjn" path="res://Scenes/End_game/new_puzzle_button.gd" id="7_wbltp"]
 [ext_resource type="Script" uid="uid://blah1dx52kgho" path="res://Scenes/End_game/quit_button.gd" id="8_tfboq"]
 [ext_resource type="Script" uid="uid://p6aufe0i8aqb" path="res://Scenes/End_game/lwnn_wilson_art_link.gd" id="9_mue7e"]
+[ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form.gd" id="10_7g37k"]
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
 script = ExtResource("1_vhhfn")
@@ -71,6 +72,18 @@ theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "My Art Page"
 script = ExtResource("9_mue7e")
 
+[node name="ContactForm" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=464553988]
+offset_left = -116.0
+offset_top = 25.0
+offset_right = 108.0
+offset_bottom = 63.0
+theme = ExtResource("5_agdlo")
+theme_override_styles/normal = ExtResource("6_tsnm7")
+theme_override_styles/hover = ExtResource("6_tsnm7")
+text = "Contact Us"
+script = ExtResource("10_7g37k")
+
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" to="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Quit_Button" to="Puzzle/TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Lynn_Wilson_Art_Link" to="Puzzle/TextureRect/Sprite2D/Lynn_Wilson_Art_Link" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/ContactForm" to="Puzzle/TextureRect/Sprite2D/ContactForm" method="_on_pressed"]

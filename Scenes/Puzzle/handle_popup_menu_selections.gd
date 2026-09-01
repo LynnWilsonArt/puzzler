@@ -1,4 +1,4 @@
-# res://scene/puzzle/handle_popup_menu_selections.gd
+# res://Scenes/Puzzle/handle_popup_menu_selections.gd
 extends PopupMenu
 
 @onready var puzzle_node: Node = get_node_or_null("../..")

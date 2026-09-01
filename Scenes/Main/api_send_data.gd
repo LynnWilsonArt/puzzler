@@ -78,7 +78,6 @@ func get_app_closed_data() -> Dictionary:
 			"app_id": str(app_number_to_send)
 		}
 
-
 func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	# Check if the network request actually went through
 	if result != HTTPRequest.RESULT_SUCCESS:
@@ -98,8 +97,7 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 		print("Failed to parse the server's response. Raw string: ", body.get_string_from_utf8())
 		
 func _get_app_number():
-	
-	
+		
 	if FileAccess.file_exists(app_id_file_path):
 		var file = FileAccess.open(app_id_file_path, FileAccess.READ)
 		if file:
@@ -117,8 +115,13 @@ func _get_app_number():
 
 		var file = FileAccess.open(app_id_file_path, FileAccess.WRITE)
 		if file:
-			file.store_line(str(app_id)) # convert to string before saving
-			file.close()
+			if OS.has_feature("web"):
+				app_id = "WEBSITE"
+				file.store_line(str(app_id)) # convert to string before saving
+				file.close()
+			else:
+				file.store_line(str(app_id)) # convert to string before saving
+				file.close()
 
 		# Proceed to main program
 		app_number_to_send = app_id

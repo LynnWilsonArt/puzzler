@@ -1,4 +1,4 @@
-
+# res://Scenes/End_game/quit_button.gd
 # Puzzle/TextureRect/Sprite2D/Quit_Button
 extends Button
 

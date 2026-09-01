@@ -1,5 +1,5 @@
+#res://helper_scripts/BackButtonHandler.gd
 extends Node
-
 
 func _ready() -> void:
 	# Turn off Godot's default "back = quit" behavior

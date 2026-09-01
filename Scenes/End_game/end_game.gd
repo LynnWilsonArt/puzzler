@@ -1,3 +1,4 @@
+# res://Scenes/End_game/end_game.gd
 extends Node2D
 
 var end_game: Node = null

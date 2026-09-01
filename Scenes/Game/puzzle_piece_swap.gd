@@ -1,8 +1,6 @@
+# res://Scenes/Game/puzzle_piece_swap.gd
 extends TextureRect
 # puzzle_piece_swap script to swap the puzzle pieces
-# included into puzzle_main script
-
-
 # Signal that we use to tell the parent puzzle that this piece was clicked
 signal piece_clicked(clicked_node: TextureRect)
 

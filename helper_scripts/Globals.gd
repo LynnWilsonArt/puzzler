@@ -1,7 +1,7 @@
+# "res://Globals.gd"
 extends Node
 
 # Global variables accessible from any script
-# "res://Globals.gd"
 var columns = 4
 var rows = 4
 var timer_token  : int   = 0
@@ -12,6 +12,7 @@ const SAVE_PATH := "user://puzzle_state.save"
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
 var lwa_url: String = "https://lynnwilsonart.com"
+var lwa_contact_url: String = "https://lynnwilsonart.com/contact/"
 var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 # Scene manager
 var current_scene = null

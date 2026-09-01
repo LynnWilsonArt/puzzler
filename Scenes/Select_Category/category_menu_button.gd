@@ -1,5 +1,5 @@
-extends Button
 # res://Scenes/Select_Category/category_menu_button.gd
+extends Button
 
 # The PopupMenu is a sibling of this Button:
 @onready var popup_menu : PopupMenu = $"../CategoryPopupMenu"

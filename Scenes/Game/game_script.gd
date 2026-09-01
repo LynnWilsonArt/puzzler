@@ -1,5 +1,5 @@
+# res://Scenes/Game/game_script.gd
 extends Node2D
-# File: res://Scenes/Game/game.tscn
 
 signal puzzle_toggle_requested(is_visible: bool)
 signal change_puzzle_image(image: Texture2D)
@@ -251,10 +251,20 @@ func _check_win_condition() -> void:
 				return
 				
 	_trigger_victory()
-
+# Alert popup
+func _alert_top_left_dialog() ->void:
+	print("Game -> game_script.gd -> _alert_top_left_dialog()")
+	$Alert_Dialog.popup()
+	$Alert_Dialog.popup()
+	
+	
 func _trigger_victory() -> void:
 	print("Game -> _game_script.gd -> _trigger_victory()")
-		
+	print("Pause game until ok clicked")
+	_alert_top_left_dialog()
+	await $Alert_Dialog.confirmed
+	
+	
 	print("Game -> game_script.gd -> Puzzle Complete! All pieces are in the correct place!")
 	# Disable interaction entirely
 	swapping = true 
