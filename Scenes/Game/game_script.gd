@@ -47,6 +47,11 @@ func _ready() -> void:
 	# Enable redirect following and background thread usage
 func _on_get_puzzle()-> void:
 		print("Game -> _game_script.gd -> _on_get_puzzle()")
+		# Set default image url
+		print("Set default image_url")
+		if Globals.image_url == "https://loremflickr.com/1152/648/":
+			Globals.image_url = "https://loremflickr.com/1152/648/stillife"
+			print("Default image_url: ",Globals.image_url)
 
 		http_request.set_use_threads(true)
 		http_request.set_max_redirects(5) 
@@ -55,7 +60,7 @@ func _on_get_puzzle()-> void:
 		randomize() # Seeds the random number generator
 		
 		# 3. Combine into your secure server path string
-		var random_image_url = Globals.REMOTE_IMAGE_PATH
+		var random_image_url = Globals.image_url
 		#var random_image_url = "https://puzzler.lynnwilsonart.com/1951Puzzles/whimiscal/%s" % random_image_name
 		print("Game -> game_script.gd -> Fetching custom puzzle artwork from: ", random_image_url)
 

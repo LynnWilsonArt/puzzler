@@ -16,6 +16,5 @@ oversampling_override = 1.0
 title = ""
 position = Vector2i(20, 45)
 size = Vector2i(120, 100)
-visible = true
 theme = ExtResource("3_qikps")
-dialog_text = "Finished!"
+dialog_text = "Finished"

@@ -10,7 +10,6 @@ var rng =  RandomNumberGenerator.new()
 var app_id_file_path = "user://app_id.txt"
 
 
-
 func _ready() -> void:
 	# sets the initial app state to running state = true
 	if !app_state:
@@ -20,7 +19,7 @@ func _ready() -> void:
 		app_number_to_send = _get_app_number()
 		print("Ready() app_number_to_send: ",app_number_to_send)
 		_send_api_data(app_state)
-	
+
 	
 	
 func _send_api_data(state) -> void:

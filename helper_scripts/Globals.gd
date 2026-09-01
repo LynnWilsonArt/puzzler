@@ -7,7 +7,6 @@ var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
 var image_url: String = "https://loremflickr.com/1152/648/"
-var REMOTE_IMAGE_PATH: String = image_url
 const SAVE_PATH := "user://puzzle_state.save"
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
