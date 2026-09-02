@@ -11,10 +11,10 @@ script = ExtResource("1_veq38")
 
 [node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("2_ahsyf")]
 
-[node name="Alert_Dialog" type="AcceptDialog" parent="." unique_id=1092249957]
+[node name="Alert_Completed" type="AcceptDialog" parent="." unique_id=1092249957]
 oversampling_override = 1.0
 title = ""
-position = Vector2i(20, 45)
-size = Vector2i(120, 100)
+position = Vector2i(25, 50)
+size = Vector2i(200, 100)
 theme = ExtResource("3_qikps")
-dialog_text = "Finished"
+dialog_text = "        Great Job!"

@@ -8,6 +8,7 @@ extends Button
 
 func _on_pressed() -> void:
 	print("Main -> start_button.gd -> _on_pressed()")
+
 		
 	# Web start music if Globals.sound_mode = true
 	if OS.has_feature("web"):  

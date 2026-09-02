@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://b4sjnmt2qw0sb"]
 
-[ext_resource type="Script" uid="uid://ynqfgka36xx3" path="res://Scenes/End_game/end_game.gd" id="1_vhhfn"]
 [ext_resource type="PackedScene" uid="uid://d3rfjsjw07yeq" path="res://Scenes/Puzzle/Puzzle.tscn" id="2_guqs7"]
 [ext_resource type="Texture2D" uid="uid://dxj3lumqyl3l4" path="res://assets/images/end_game2.jpg" id="3_v7bga"]
 [ext_resource type="Texture2D" uid="uid://7u6on6qpyp2s" path="res://assets/images/menu_image_blank.png" id="4_aldbl"]
@@ -12,7 +11,6 @@
 [ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form.gd" id="10_7g37k"]
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
-script = ExtResource("1_vhhfn")
 
 [node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("2_guqs7")]
 

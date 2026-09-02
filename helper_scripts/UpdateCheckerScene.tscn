@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://pl38lp1mn5l6"]
+
+[ext_resource type="Script" uid="uid://7giiukky8u5i" path="res://helper_scripts/update_checker.gd" id="1_85hxs"]
+[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_ajw46"]
+
+[node name="Node" type="Node" unique_id=1619180841]
+script = ExtResource("1_85hxs")
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=235576634]
+oversampling_override = 1.0
+title = "Alert!"
+size = Vector2i(313, 100)
+ok_button_text = "Update  Now"
+dialog_text = "New App Version Availible"
+
+[node name="Panel" type="Panel" parent="." unique_id=1360075878]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=1820527151]
+layout_mode = 0
+offset_left = 69.0
+offset_top = 13.0
+offset_right = 315.0
+offset_bottom = 47.0
+theme = ExtResource("2_ajw46")
+text = "Download progress: "
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel/Label" unique_id=851847055]
+layout_mode = 0
+offset_left = 248.0
+offset_top = -1.0
+offset_right = 326.0
+offset_bottom = 37.0
+
+[connection signal="canceled" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_canceled"]

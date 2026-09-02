@@ -6,7 +6,8 @@ var columns = 4
 var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
-var image_url: String = "https://loremflickr.com/1152/648/"
+const PUZZLER_BASE_URL:= "https://loremflickr.com/1152/648/"
+var image_url: String = "https://loremflickr.com/1152/648/stilllife"
 const SAVE_PATH := "user://puzzle_state.save"
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
@@ -29,7 +30,7 @@ var sound_mode: bool = false:
 
 func _ready() -> void:
 	
-
+	
 	# 1. Programmatically create the player so it exists everywhere
 	music_player = AudioStreamPlayer.new()
 	add_child(music_player)
@@ -65,8 +66,6 @@ func _ready() -> void:
 
 	_update_music_status()
 
-
-	
 	
 
 func _update_music_status() -> void:

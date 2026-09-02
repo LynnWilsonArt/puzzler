@@ -47,12 +47,7 @@ func _ready() -> void:
 	# Enable redirect following and background thread usage
 func _on_get_puzzle()-> void:
 		print("Game -> _game_script.gd -> _on_get_puzzle()")
-		# Set default image url
-		print("Set default image_url")
-		if Globals.image_url == "https://loremflickr.com/1152/648/":
-			Globals.image_url = "https://loremflickr.com/1152/648/stillife"
-			print("Default image_url: ",Globals.image_url)
-
+	
 		http_request.set_use_threads(true)
 		http_request.set_max_redirects(5) 
 	
@@ -61,7 +56,7 @@ func _on_get_puzzle()-> void:
 		
 		# 3. Combine into your secure server path string
 		var random_image_url = Globals.image_url
-		#var random_image_url = "https://puzzler.lynnwilsonart.com/1951Puzzles/whimiscal/%s" % random_image_name
+			
 		print("Game -> game_script.gd -> Fetching custom puzzle artwork from: ", random_image_url)
 
 		var err = http_request.request(random_image_url)
@@ -81,8 +76,7 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
 		print("Game -> game_script.gd -> ⚠️ Network error or file missing (HTTP %d). Loading fallback asset..." % response_code)
 		# 🎯 CALL IT HERE: Triggers on website timeouts, bad hosting paths, or offline status codes
-		# ToDo: No internet fall back to my website
-		# 
+	
 		
 		# No internet fall to local in app image
 		_load_local_fallback()
@@ -259,15 +253,15 @@ func _check_win_condition() -> void:
 # Alert popup
 func _alert_top_left_dialog() ->void:
 	print("Game -> game_script.gd -> _alert_top_left_dialog()")
-	$Alert_Dialog.popup()
-	$Alert_Dialog.popup()
+	$Alert_Completed.popup()
+	$Alert_Completed.popup()
 	
 	
 func _trigger_victory() -> void:
 	print("Game -> _game_script.gd -> _trigger_victory()")
 	print("Pause game until ok clicked")
 	_alert_top_left_dialog()
-	await $Alert_Dialog.confirmed
+	await $Alert_Completed.confirmed
 	
 	
 	print("Game -> game_script.gd -> Puzzle Complete! All pieces are in the correct place!")

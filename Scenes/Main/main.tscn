@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cc88466fw4qg8"]
 
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_8em3v"]
+[ext_resource type="Script" uid="uid://cywhkanar6hfu" path="res://Scenes/Main/main.gd" id="1_y3v7k"]
 [ext_resource type="Texture2D" uid="uid://cn64hfxxs0h6b" path="res://assets/images/splash_screen.jpg" id="2_8nv4e"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="3_hq80f"]
 [ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://Scenes/Main/start_button.gd" id="4_4e88x"]
@@ -8,7 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://dhvlvj4dfjn5u" path="res://Scenes/Select_level/select_level.tscn" id="6_mg8qx"]
 [ext_resource type="PackedScene" uid="uid://ctu8okumy35hp" path="res://Scenes/Select_Category/category.tscn" id="7_xlvfx"]
 
-[node name="Main" type="Node2D" unique_id=1371017269]
+[node name="Main" type="Node2D" unique_id=582144786]
+script = ExtResource("1_y3v7k")
 
 [node name="main" type="CanvasLayer" parent="." unique_id=1991471373]
 
@@ -70,7 +72,7 @@ offset_bottom = -2.0
 grow_vertical = 0
 theme = ExtResource("1_8em3v")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "V1r"
+text = "V100r"
 
 [node name="Category" parent="main/TextureRect" unique_id=1906510130 instance=ExtResource("7_xlvfx")]
 offset = Vector2(460, 460)
