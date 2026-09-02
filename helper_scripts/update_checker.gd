@@ -51,10 +51,7 @@ func _on_update_progress(downloaded: int, total: int) -> void:
 		progress_bar.value = percent
 		progress_label.text = "Downloading update: %.1f%%" % percent
 		
-		
-		# temp await to be able to see the progress, remove for production
-		await get_tree().create_timer(2.5).timeout
-		print("DOWNLOADING")
+			
 		# Hide the panel automatically when the download finishes
 		if downloaded >= total:
 			panel.visible = false
