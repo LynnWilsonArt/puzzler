@@ -12,10 +12,10 @@ func _on_pressed() -> void:
 		# need to swithch scenes not restart app
 		var win = JavaScriptBridge.get_interface("window")
 		if win:
-			Globals.stop_autosave()
+			Globals.stop_autosave_timer()
 			get_tree().change_scene_to_file("res://Scenes/Main/main.tscn")
 	else:  
-		Globals.stop_autosave()
+		Globals.stop_autosave_timer()
 		print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
 		Globals.g_delete_puzzle()
 		print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")

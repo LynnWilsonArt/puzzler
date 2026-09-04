@@ -3,8 +3,6 @@ extends PopupMenu
 
 @onready var puzzle_node: Node = get_node_or_null("../..")
 @onready var game_scene: Node = get_node_or_null("../../..")
-
-# FIX 1: Added leading slash for an absolute engine root path
 @onready var main_node: Node = get_node_or_null("/root/Main") 
 
 
@@ -20,6 +18,8 @@ func _on_id_pressed(id: int) -> void:
 		0:
 			print("Puzzle -> handle_popup_menu_selections.gd -> Toggle Original Selected: ", id)
 			if puzzle_node and puzzle_node.has_method("_on_show_original_image_pressed"):
+				puzzle_node.toggle_puzzle = !puzzle_node.toggle_puzzle  # comes in false 
+				print(" Menu Selection 0: ",puzzle_node.toggle_puzzle)
 				puzzle_node._on_show_original_image_pressed()
 			else:
 				print("Puzzle -> handle_popup_menu_selections.gd -> Warning: Puzzle node or _on_show_original_image_pressed function not found!")
@@ -62,10 +62,10 @@ func _on_id_pressed(id: int) -> void:
 				# need to swithch scenes not restart app
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
-					Globals.stop_autosave()
+					Globals.stop_autosave_timer()
 					get_tree().change_scene_to_file("res://Scenes/Main/main.tscn")
 			else:  
-				Globals.stop_autosave()
+				Globals.stop_autosave_timer()
 				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
 				Globals.g_delete_puzzle()
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
@@ -74,7 +74,7 @@ func _on_id_pressed(id: int) -> void:
 		6:
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - web!")
-				Globals.stop_autosave()
+				Globals.stop_autosave_timer()
 				Globals.g_save_puzzle()
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
@@ -82,13 +82,13 @@ func _on_id_pressed(id: int) -> void:
 			else:  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - android!")
 				if OS.has_feature("android"):
-					Globals.stop_autosave()
+					Globals.stop_autosave_timer()
 					Globals.g_save_puzzle()					
 					BackButtonHandler._move_app_to_background()
 				else:
 					# Standard behavior for Android, Windows, macOS, etc.
 					print("Puzzle -> handle_popup_menu_selections.gd -> Quit - Desktop")
-					Globals.stop_autosave()
+					Globals.stop_autosave_timer()
 					Globals.g_save_puzzle()
 					get_tree().quit()
 			

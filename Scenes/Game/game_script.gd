@@ -19,7 +19,7 @@ var count = 0
 
 func _ready() -> void:
 	print("Game -> game_script.gd ->  _ready()")
-	#Globals.start_autosave()
+	Globals.start_autosave()
 	
 	# Connect the image_ready signal to the _on_image_ready function
 	Pixabay.image_ready.connect(_on_image_ready)
@@ -65,10 +65,10 @@ func _slice_image(tex : Texture2D) -> void:
 	
 	print("Game -> _game_script.gd ->  _slice_image(tex: Texture2D)")
 	pieces_data.clear()
-	var img = tex.get_image()
-	#var img = tex
+	var img = tex.get_image()    # convert testure to image
+	img.resize(1152,648)          # Resizing to puzzle size
+	
 	@warning_ignore("narrowing_conversion")
-	img.resize(grid_size.x, grid_size.y)
 	var pw = float(img.get_width())  / num_columns
 	var ph = float(img.get_height()) / num_rows
 
@@ -303,6 +303,8 @@ func load_puzzle() -> void:
 		var full_img := Image.new()
 		if full_img.load_png_from_buffer(img_bytes) == OK:
 			puzzle_image = full_img
+			# Need to resize here to puzzle size and save
+			full_img.resize(1152,648)
 			print(" Emitting change puzzle image ")
 			change_puzzle_image.emit(ImageTexture.create_from_image(full_img))
 		else:

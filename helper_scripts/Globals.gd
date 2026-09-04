@@ -112,7 +112,7 @@ func start_autosave() -> void:
 	print(" Globals _> Auto save timer started")
 	autosave_timer.start()
 
-func stop_autosave() -> void:
+func stop_autosave_timer() -> void:
 	print(" Globals -> Auto save timer stoped")
 	autosave_timer.stop()
 	

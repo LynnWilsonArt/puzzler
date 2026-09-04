@@ -75,8 +75,6 @@ func _on_change_puzzle_image_requested(img: Texture2D) -> void:
 
 func _on_show_original_image_pressed() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_show_original_image_pressed()")
-		
-	toggle_puzzle = true
 	print("Puzzle -> toggle_puzzle_display.gd -> Show original image for reference: ", toggle_puzzle)
 	$Puzzle.visible = toggle_puzzle
 
@@ -95,6 +93,7 @@ func save_puzzle() -> void:
 
 func load_puzzle() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> load_puzzle()")
+	toggle_puzzle = !toggle_puzzle # Comes in false - switches to true
 	var game_root = get_parent()
 	if game_root and game_root.has_method("load_puzzle"):
 		game_root.load_puzzle()
