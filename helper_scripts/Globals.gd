@@ -6,12 +6,13 @@ var columns = 4
 var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
-const PUZZLER_BASE_URL:= "https://loremflickr.com/1152/648/"
-var image_url: String = "https://loremflickr.com/1152/648/stilllife"
+#const PUZZLER_BASE_URL:= "https://pixabay.com/api/?key=25066829-e19f4bd20795e793e3349ffe7&q=yellow+flowers&image_type=photo&pretty=true"
+#var image_url: String = "https://pixabay.com/api/?key=25066829-e19f4bd20795e793e3349ffe7&q=yellow+flowers&image_type=photo&pretty=true"
+var category: String =""
 const SAVE_PATH := "user://puzzle_state.save"
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
 var web_home_page = "https://puzzler.lynnwilsonart.com"
-var lwa_url: String = "https://lynnwilsonart.com"
+var puzzler_website_url: String = "https://puzzler.lynnwilsonart.com"
 var lwa_contact_url: String = "https://lynnwilsonart.com/contact/"
 var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 # Scene manager
@@ -21,12 +22,6 @@ var music_player: AudioStreamPlayer
 var quit_wait_time: float= 1.0
 
 
-
-# Automatically monitors changes to sound_mode
-var sound_mode: bool = false:
-	set(value):
-		sound_mode = value 
-		_update_music_status()
 
 func _ready() -> void:
 	
@@ -66,7 +61,11 @@ func _ready() -> void:
 
 	_update_music_status()
 
-	
+# Automatically monitors changes to sound_mode
+var sound_mode: bool = false:
+	set(value):
+		sound_mode = value 
+		_update_music_status()
 
 func _update_music_status() -> void:
 	print("Globals -> Globals.gd -> _update_music_status()")
@@ -123,7 +122,9 @@ func stop_autosave() -> void:
 # (game_script.gd), since $Puzzle is a child of that node.
 # --------------------------------------------------------------------
 func g_save_puzzle() -> void:
+	
 	var game_root = get_tree().current_scene
+
 	print(" game_root: ", game_root)
 	if game_root and game_root.has_method("save_puzzle"):
 		game_root.save_puzzle()
@@ -148,7 +149,7 @@ func _on_autosave_timeout() -> void:
 
 
 
-# Method to delete the puzzle file
+
 # Method to delete the puzzle file
 func g_delete_puzzle() -> void:
 	var error: Error = OK

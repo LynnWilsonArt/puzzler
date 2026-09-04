@@ -73,27 +73,22 @@ func _on_id_pressed(id: int) -> void:
 				
 		6:
 			if OS.has_feature("web"):  
-				print("Puzzle -> handle_popup_menu_selections.gd -> Quit -> game saving puzzle from Puzzle -> PopupMenu for web!")
-				Globals.g_save_puzzle()				
-				# Log to webserver end session
-				ApiData._send_api_data(false)		
-				await get_tree().create_timer(Globals.quit_wait_time).timeout
+				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - web!")
+				Globals.stop_autosave()
+				Globals.g_save_puzzle()
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
 					win.location.href = Globals.web_home_page
 			else:  
-				print("Puzzle -> handle_popup_menu_selections.gd -> Quit- saving puzzle from Puzzle -> PopupMenu for android!")
-				Globals.g_save_puzzle()
-				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle saved! -> from Puzzle -> PopupMenu")
-				# Pause for exactly x seconds
-				await get_tree().create_timer(Globals.quit_wait_time).timeout
+				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - android!")
 				if OS.has_feature("android"):
 					Globals.stop_autosave()
+					Globals.g_save_puzzle()					
 					BackButtonHandler._move_app_to_background()
 				else:
 					# Standard behavior for Android, Windows, macOS, etc.
-					# Pause for exactly 3 seconds for data to be sent
-					ApiData._send_api_data(false)
-					await get_tree().create_timer(Globals.quit_wait_time).timeout
+					print("Puzzle -> handle_popup_menu_selections.gd -> Quit - Desktop")
+					Globals.stop_autosave()
+					Globals.g_save_puzzle()
 					get_tree().quit()
 			

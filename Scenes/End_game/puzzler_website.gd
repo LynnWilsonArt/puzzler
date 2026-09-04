@@ -3,19 +3,16 @@ extends Button
 
 func _on_pressed()-> void:
 	if OS.has_feature("web"): 
-		print("End_game -> Lynn_Wilson_Art_Link.gd -> _on_pressed() -> Web -> https://lynnwilsonart.com")
+		print("End_game -> puzzler_website.gd -> _on_pressed() -> Web -> https://puzzler.lynnwilsonart.com")
 		# Delete the saved game 
 		Globals.g_delete_puzzle()
-		# Log to webserver end session
-		ApiData._send_api_data(false)
-		await get_tree().create_timer(Globals.quit_wait_time).timeout
 		# Attempt to close the browser window/tab  
 		var win = JavaScriptBridge.get_interface("window")
-		win.location.href =  Globals.lwa_url
+		win.location.href =  Globals.puzzler_website_url
 	else:
-		print("End_game -> Lynn_Wilson_Art_Link.gd -> _on_pressed() -> Web -> https://lynnwilsonart.com")
+		print("End_game -> puzzler_website.gd -> _on_pressed() -> Web -> https://puzzler.lynnwilsonart.com")
 		# 1. Open the website in the default browser
-	OS.shell_open(Globals.lwa_url)
+	OS.shell_open(Globals.puzzler_website_url)
 	# Handle Android OS
 	print("End_game -> quit_button.gd -> _on_pressed() -> Android -> Delete saved Game")
 	# Delete the saved game 
@@ -24,9 +21,6 @@ func _on_pressed()-> void:
 		BackButtonHandler._move_app_to_background()
 	else:
 		# Standard behavior for Android, Windows, macOS, etc.
-		# Pause for exactly 3 seconds for data to be sent
-		ApiData._send_api_data(false)
-		await get_tree().create_timer(Globals.quit_wait_time).timeout
 		get_tree().quit()
 		
 	

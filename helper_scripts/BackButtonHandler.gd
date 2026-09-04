@@ -46,10 +46,9 @@ func _on_app_backgrounded() -> void:
 	# Called when app goes to background (Home, back-to-background, task switch, etc.)
 	# e.g. pause game, save state, mute audio, pause timers
 	print("BackButtonHandler -> Sent to background!")
-	ApiData._send_api_data(false) # send app closed
-
+	
 func _on_app_returned_from_background() -> void:
 	# Called when app comes back to foreground
 	# e.g. resume game, refresh data, unmute audio, resync timers
 	print("BackButtonHandler -> Returned to foreground!")
-	ApiData._send_api_data(true) # send app open
+	

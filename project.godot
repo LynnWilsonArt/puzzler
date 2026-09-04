@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Puzzler"
+config/name="PuzzlerPlayStore"
 run/main_scene="uid://cc88466fw4qg8"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.20664564, 0.096994065, 0.17802015, 1)
@@ -22,11 +22,8 @@ boot_splash/minimum_display_time=2000
 [autoload]
 
 Globals="*uid://bg53ye4aj2s38"
-ApiData="*uid://do80ij2j83t6d"
-AppId="*uid://bvcjgbnv1ajk5"
 BackButtonHandler="*uid://bxh2i3xkndpy"
-Updater="*uid://rp3irrsglhmx"
-UpdateCheckerScene="*uid://pl38lp1mn5l6"
+Pixabay="*uid://dkwdxenlbqope"
 
 [display]
 

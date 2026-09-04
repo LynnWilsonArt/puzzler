@@ -1,15 +1,16 @@
 [gd_scene format=3 uid="uid://py648hbne1on"]
 
-[ext_resource type="Script" uid="uid://4li1ltcu5ncv" path="res://Scenes/Game/game_script.gd" id="1_veq38"]
+[ext_resource type="Script" uid="uid://4li1ltcu5ncv" path="res://Scenes/Game/game_script.gd" id="1_qikps"]
 [ext_resource type="PackedScene" uid="uid://d3rfjsjw07yeq" path="res://Scenes/Puzzle/Puzzle.tscn" id="2_ahsyf"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="3_qikps"]
 
 [node name="game_scene" type="Node2D" unique_id=1452070747]
-script = ExtResource("1_veq38")
+script = ExtResource("1_qikps")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1024495291]
 
 [node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("2_ahsyf")]
+metadata/_edit_use_anchors_ = true
 
 [node name="Alert_Completed" type="AcceptDialog" parent="." unique_id=1092249957]
 oversampling_override = 1.0

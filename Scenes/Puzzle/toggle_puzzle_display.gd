@@ -8,9 +8,9 @@ extends Node
 # metadata, and the click/swap logic. The two methods below just
 # forward to it so existing menu wiring (which calls save_puzzle() /
 # load_puzzle() on this node) keeps working unchanged.
-# --------------------------------------------------------------------
 
 @onready var puzzle_image : TextureRect  = $Puzzle/puzzle_image
+
 
 var toggle_puzzle : bool = false
 var timer_token  : int   = 0
@@ -18,7 +18,7 @@ var count = 0
 
 func _ready() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> _ready()")
-	
+	# Used in logging
 	count = 0
 	
 func _on_right_click_triggered() -> void:
@@ -76,7 +76,7 @@ func _on_change_puzzle_image_requested(img: Texture2D) -> void:
 func _on_show_original_image_pressed() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> _on_show_original_image_pressed()")
 		
-	toggle_puzzle = !toggle_puzzle
+	toggle_puzzle = true
 	print("Puzzle -> toggle_puzzle_display.gd -> Show original image for reference: ", toggle_puzzle)
 	$Puzzle.visible = toggle_puzzle
 
@@ -98,5 +98,7 @@ func load_puzzle() -> void:
 	var game_root = get_parent()
 	if game_root and game_root.has_method("load_puzzle"):
 		game_root.load_puzzle()
+		_start_puzzle_timer()
+		_on_show_original_image_pressed()
 	else:
 		push_error("Puzzle -> toggle_puzzle_display.gd -> Could not find game_script.gd on parent node to load the puzzle.")

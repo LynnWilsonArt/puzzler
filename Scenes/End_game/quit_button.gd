@@ -8,9 +8,7 @@ func _on_pressed()-> void:
 		print("End_game -> quit_button.gd -> _on_pressed() -> Web ->Delete saved Game")
 		# Delete the saved game 
 		Globals.g_delete_puzzle()
-		# Log to webserver end session
-		ApiData._send_api_data(false)		
-		await get_tree().create_timer(Globals.quit_wait_time).timeout
+		
 		# Attempt to close the browser window/tab  
 		var win = JavaScriptBridge.get_interface("window")
 		win.location.href =  Globals.web_home_page
@@ -24,8 +22,6 @@ func _on_pressed()-> void:
 			BackButtonHandler._move_app_to_background()
 		else:
 			# Standard behavior for Android, Windows, macOS, etc.
-			# Pause for exactly 3 seconds for data to be sent
-			ApiData._send_api_data(false)
-			await get_tree().create_timer(Globals.quit_wait_time).timeout
+			Globals.g_delete_puzzle()
 			get_tree().quit()
 		
