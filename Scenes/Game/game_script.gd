@@ -3,6 +3,7 @@ extends Node2D
 
 signal puzzle_toggle_requested(is_visible: bool)
 signal change_puzzle_image(image: Texture2D)
+signal photographer_updated(name: String)
 @export var num_columns : int = Globals.columns
 @export var num_rows    : int = Globals.rows
 @export var grid_size   : Vector2 = Vector2(1152, 648)
@@ -12,8 +13,8 @@ const SAVE_PATH := "user://puzzle_state.save"
 
 # ----------  BACKUP IMAGE SOURCE (used when Pixabay is rate-limited / fails)  ----------
 @export var backup_image_base_url : String = "https://images.lynnwilsonart.com/images/"
-@export var backup_image_min_index : int = 0
-@export var backup_image_max_index : int = 321   # adjust to match how many images actually exist on the server
+@export var backup_image_min_index : int = 1
+@export var backup_image_max_index : int = 50   # adjust to match how many images actually exist on the server
 @export var pixabay_timeout_seconds : float = 6.0
 @export var backup_max_attempts : int = 5        # how many random indexes to try before giving up
 
@@ -31,11 +32,17 @@ var backup_request_in_flight : bool = false
 var used_backup_indexes : Array[int] = []
 var puzzle_resolved : bool = false   # true once EITHER Pixabay or the backup has delivered an image
 
+# Photographer credit for the currently loaded puzzle image.
+# Only populated when the image came from Pixabay — the lynnwilsonart
+# backup source has no photographer metadata, so this is cleared/empty then.
+var puzzle_photographer : String = ""
+
 func _ready() -> void:
 	print("Game -> game_script.gd ->  _ready()")
 	Globals.start_autosave()
 
 	# Connect the image_ready signal to the _on_image_ready function
+	# (Pixabay now also passes along the photographer's username)
 	Pixabay.image_ready.connect(_on_image_ready)
 
 	# OPTIONAL: hook into an explicit failure / rate-limit signal on the Pixabay
@@ -81,7 +88,7 @@ func _on_get_puzzle()-> void:
 	puzzle_resolved = false
 	backup_attempts_made = 0
 	used_backup_indexes.clear()
-	# if pixabay fails it reverts to my image server https://images.lynnwilsonart.com
+
 	Pixabay.fetch_puzzle_image(Globals.category)
 
 	# Start (or restart) the timeout watchdog for this request.
@@ -90,8 +97,8 @@ func _on_get_puzzle()-> void:
 
 
 # Process the image from pixabay.com
-func _on_image_ready(pixabay_imageTexture: ImageTexture) -> void:
-	print("Game -> _game_script.gd -> _on_image_ready()")
+func _on_image_ready(pixabay_imageTexture: ImageTexture, photographer: String = "") -> void:
+	print("Game -> _game_script.gd -> _on_image_ready() -> Photographer: ", photographer)
 
 	if puzzle_resolved:
 		# A backup image already won the race (e.g. Pixabay answered late,
@@ -101,6 +108,8 @@ func _on_image_ready(pixabay_imageTexture: ImageTexture) -> void:
 
 	puzzle_resolved = true
 	pixabay_timeout_timer.stop()
+	puzzle_photographer = photographer
+	photographer_updated.emit(puzzle_photographer)
 
 	_start_puzzle_from_texture(pixabay_imageTexture)
 
@@ -189,6 +198,8 @@ func _on_backup_image_downloaded(result: int, response_code: int, _headers: Pack
 
 	print("Game -> game_script.gd -> Backup image downloaded and decoded successfully.")
 	puzzle_resolved = true
+	puzzle_photographer = ""   # backup source has no photographer credit available
+	photographer_updated.emit(puzzle_photographer)
 
 	var tex = ImageTexture.create_from_image(img)
 	_start_puzzle_from_texture(tex)
@@ -415,6 +426,7 @@ func save_puzzle() -> void:
 		"num_columns": num_columns,
 		"num_rows"   : num_rows,
 		"grid"       : grid_state,
+		"photographer": puzzle_photographer,
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -441,6 +453,8 @@ func load_puzzle() -> void:
 
 	num_columns = state.get("num_columns", num_columns)
 	num_rows = state.get("num_rows", num_rows)
+	puzzle_photographer = state.get("photographer", "")
+	photographer_updated.emit(puzzle_photographer)
 
 	# Restore the full reference image (used by the preview popup).
 	var img_bytes : PackedByteArray = state["image_bytes"]
