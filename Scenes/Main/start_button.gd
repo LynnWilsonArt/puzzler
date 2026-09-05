@@ -4,7 +4,8 @@ extends Button
 # Play_Button Script
 # We use a simple text string for the file path to completely avoid loading loops
 
-@export_file("*.tscn") var game_scene_path: String = "res://Scenes/Game/game.tscn"
+@export_file("*.tscn") 
+var game_scene_path: String = "res://Scenes/Game/game.tscn"
 
 func _on_pressed() -> void:
 	print("Main -> start_button.gd -> _on_pressed()")
