@@ -21,7 +21,7 @@ func fetch_puzzle_image(search_query: String) -> void:
 	print("Pixabay -> fetch_puzzle_image()")
 	# Encodes spaces (like converting "yellow flowers" into "yellow+flowers") safely for the web
 	var cleaned_query = search_query.strip_edges().uri_encode()
-	var url = "https://pixabay.com/api/?key=" + API_KEY + "&q=" + cleaned_query + "&image_type=photo&safesearch=true&per_page=10"
+	var url = "https://pixabay.com/api/?key=" + API_KEY + "&q=" + cleaned_query + "&image_type=photo&safesearch=true&per_page=200"
 	print("Pixabay -> Sending Request: ", url)
 	var error = pixabay_request.request(url)
 	if error != OK:

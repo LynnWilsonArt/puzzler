@@ -24,6 +24,7 @@ boot_splash/minimum_display_time=2000
 Globals="*uid://bg53ye4aj2s38"
 BackButtonHandler="*uid://bxh2i3xkndpy"
 Pixabay="*uid://dkwdxenlbqope"
+Upload="*uid://yp6spt646fmk"
 
 [display]
 

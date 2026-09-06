@@ -41,7 +41,7 @@ func _on_photographer_updated(pname: String) -> void:
 		return
 
 	if pname != "":
-		credits_label.text = "Photo by: " + pname +" Find them at pixabay.com"
+		credits_label.text = "Photo by: " + pname +" - Find them at pixabay.com"
 	else:
 		credits_label.text = ""
 

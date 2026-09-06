@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://blah1dx52kgho" path="res://Scenes/End_game/quit_button.gd" id="8_tfboq"]
 [ext_resource type="Script" uid="uid://p6aufe0i8aqb" path="res://Scenes/End_game/puzzler_website.gd" id="9_mue7e"]
 [ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form.gd" id="10_7g37k"]
+[ext_resource type="PackedScene" uid="uid://yp6spt646fmk" path="res://Scenes/Upload/upload.tscn" id="11_u8ry4"]
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
 script = ExtResource("1_7g37k")
@@ -82,6 +83,8 @@ theme_override_styles/normal = ExtResource("6_tsnm7")
 theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "Contact Us"
 script = ExtResource("10_7g37k")
+
+[node name="Upload" parent="." unique_id=506625309 instance=ExtResource("11_u8ry4")]
 
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" to="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
 [connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Quit_Button" to="Puzzle/TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]

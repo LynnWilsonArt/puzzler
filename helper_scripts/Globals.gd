@@ -6,8 +6,6 @@ var columns = 4
 var rows = 4
 var timer_token  : int   = 0
 var autosave_timer: Timer
-#const PUZZLER_BASE_URL:= "https://pixabay.com/api/?key=25066829-e19f4bd20795e793e3349ffe7&q=yellow+flowers&image_type=photo&pretty=true"
-#var image_url: String = "https://pixabay.com/api/?key=25066829-e19f4bd20795e793e3349ffe7&q=yellow+flowers&image_type=photo&pretty=true"
 var category: String =""
 const SAVE_PATH := "user://puzzle_state.save"
 var game_url = "https://puzzler.lynnwilsonart.com/play_puzzler/Puzzler.html"
@@ -20,6 +18,7 @@ var current_scene = null
 # This node handles background music globally across all scenes
 var music_player: AudioStreamPlayer
 var quit_wait_time: float= 1.0
+var upload_password: String = "Topp3r@19511969!"
 
 
 
