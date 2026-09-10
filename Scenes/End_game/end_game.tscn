@@ -2,91 +2,78 @@
 
 [ext_resource type="Script" uid="uid://djxiih1i4w043" path="res://Scenes/End_game/end_game.gd" id="1_7g37k"]
 [ext_resource type="PackedScene" uid="uid://d3rfjsjw07yeq" path="res://Scenes/Puzzle/Puzzle.tscn" id="2_guqs7"]
-[ext_resource type="Texture2D" uid="uid://dxj3lumqyl3l4" path="res://assets/images/end_game2.jpg" id="3_v7bga"]
-[ext_resource type="Texture2D" uid="uid://7u6on6qpyp2s" path="res://assets/images/menu_image_blank.png" id="4_aldbl"]
+[ext_resource type="Texture2D" uid="uid://cntixowkd4x1v" path="res://assets/images/end_screen.jpg" id="4_mue7e"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="5_agdlo"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="6_tsnm7"]
 [ext_resource type="Script" uid="uid://drkttt5dhqqjn" path="res://Scenes/End_game/new_puzzle_button.gd" id="7_wbltp"]
 [ext_resource type="Script" uid="uid://blah1dx52kgho" path="res://Scenes/End_game/quit_button.gd" id="8_tfboq"]
 [ext_resource type="Script" uid="uid://p6aufe0i8aqb" path="res://Scenes/End_game/puzzler_website.gd" id="9_mue7e"]
 [ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form.gd" id="10_7g37k"]
-[ext_resource type="PackedScene" uid="uid://yp6spt646fmk" path="res://Scenes/Upload/upload.tscn" id="11_u8ry4"]
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
 script = ExtResource("1_7g37k")
+metadata/_edit_vertical_guides_ = [577.0]
 
 [node name="Puzzle" parent="." unique_id=1708948339 instance=ExtResource("2_guqs7")]
 
 [node name="TextureRect" type="TextureRect" parent="Puzzle" unique_id=251827440]
 layout_mode = 0
-offset_left = 1.0
-offset_top = -3.0
-offset_right = 1153.0
-offset_bottom = 645.0
+offset_right = 1152.0
+offset_bottom = 648.0
 size_flags_horizontal = 4
 theme = ExtResource("5_agdlo")
-texture = ExtResource("3_v7bga")
+texture = ExtResource("4_mue7e")
 metadata/_edit_use_anchors_ = true
 
-[node name="Sprite2D" type="Sprite2D" parent="Puzzle/TextureRect" unique_id=521220793]
-position = Vector2(560, 435)
-texture = ExtResource("4_aldbl")
-
-[node name="New_Puzzle_Button" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=1002687122]
-anchors_preset = -1
-anchor_left = 0.48697916
-anchor_top = 0.40432099
-anchor_right = 0.48697916
-anchor_bottom = 0.40432099
-offset_left = -342.55728
-offset_top = -233.15123
-offset_right = -67.55728
-offset_bottom = -183.15121
-grow_horizontal = 2
-grow_vertical = 2
+[node name="New_Puzzle_Button" type="Button" parent="Puzzle/TextureRect" unique_id=1002687122]
+layout_mode = 1
+offset_left = 483.0
+offset_top = 375.0
+offset_right = 670.0
+offset_bottom = 413.0
 theme = ExtResource("5_agdlo")
 theme_override_styles/normal = ExtResource("6_tsnm7")
 theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "New Puzzle"
 script = ExtResource("7_wbltp")
-metadata/_edit_use_anchors_ = true
 
-[node name="Quit_Button" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=221247992]
-offset_left = -136.0
-offset_top = 80.0
-offset_right = 139.0
-offset_bottom = 130.0
-theme = ExtResource("5_agdlo")
-theme_override_styles/normal = ExtResource("6_tsnm7")
-theme_override_styles/hover = ExtResource("6_tsnm7")
-text = "Quit Game"
-script = ExtResource("8_tfboq")
-
-[node name="PuzzlerWebsite" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=371814713]
-offset_left = -110.0
-offset_top = -30.0
-offset_right = 99.0
-offset_bottom = 8.0
+[node name="PuzzlerWebsite" type="Button" parent="Puzzle/TextureRect" unique_id=371814713]
+layout_mode = 0
+offset_left = 483.0
+offset_top = 421.0
+offset_right = 671.0
+offset_bottom = 459.0
 theme = ExtResource("5_agdlo")
 theme_override_styles/normal = ExtResource("6_tsnm7")
 theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "Puzzler Website"
 script = ExtResource("9_mue7e")
 
-[node name="ContactForm" type="Button" parent="Puzzle/TextureRect/Sprite2D" unique_id=464553988]
-offset_left = -116.0
-offset_top = 25.0
-offset_right = 108.0
-offset_bottom = 63.0
+[node name="ContactForm" type="Button" parent="Puzzle/TextureRect" unique_id=464553988]
+layout_mode = 0
+offset_left = 481.0
+offset_top = 470.0
+offset_right = 672.0
+offset_bottom = 508.0
 theme = ExtResource("5_agdlo")
 theme_override_styles/normal = ExtResource("6_tsnm7")
 theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "Contact Us"
 script = ExtResource("10_7g37k")
 
-[node name="Upload" parent="." unique_id=506625309 instance=ExtResource("11_u8ry4")]
+[node name="Quit_Button" type="Button" parent="Puzzle/TextureRect" unique_id=221247992]
+layout_mode = 0
+offset_left = 486.0
+offset_top = 515.0
+offset_right = 668.0
+offset_bottom = 565.0
+theme = ExtResource("5_agdlo")
+theme_override_styles/normal = ExtResource("6_tsnm7")
+theme_override_styles/hover = ExtResource("6_tsnm7")
+text = "Quit Game"
+script = ExtResource("8_tfboq")
 
-[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" to="Puzzle/TextureRect/Sprite2D/New_Puzzle_Button" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/Quit_Button" to="Puzzle/TextureRect/Sprite2D/Quit_Button" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/PuzzlerWebsite" to="Puzzle/TextureRect/Sprite2D/PuzzlerWebsite" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/Sprite2D/ContactForm" to="Puzzle/TextureRect/Sprite2D/ContactForm" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/New_Puzzle_Button" to="Puzzle/TextureRect/New_Puzzle_Button" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/PuzzlerWebsite" to="Puzzle/TextureRect/PuzzlerWebsite" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/ContactForm" to="Puzzle/TextureRect/ContactForm" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/Quit_Button" to="Puzzle/TextureRect/Quit_Button" method="_on_pressed"]

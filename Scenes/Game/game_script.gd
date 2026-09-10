@@ -4,254 +4,242 @@ extends Node2D
 signal puzzle_toggle_requested(is_visible: bool)
 signal change_puzzle_image(image: Texture2D)
 signal photographer_updated(name: String)
+
 @export var num_columns : int = Globals.columns
 @export var num_rows    : int = Globals.rows
 @export var grid_size   : Vector2 = Vector2(1152, 648)
 @export var game_scene_path : String = "res://Scenes/End_game/end_game.tscn"
 @export var puzzle_image = Image.new()
+
 const SAVE_PATH := "user://puzzle_state.save"
 
-# ----------  BACKUP IMAGE SOURCE (used when Pixabay is rate-limited / fails)  ----------
-@export var backup_image_base_url : String = "https://images.lynnwilsonart.com/images/"
-@export var backup_image_min_index : int = 1
-@export var backup_image_max_index : int = 50   # adjust to match how many images actually exist on the server
-@export var pixabay_timeout_seconds : float = 6.0
-@export var backup_max_attempts : int = 5        # how many random indexes to try before giving up
+# Fallback Configuration
+@export var fetch_timeout_seconds : float = 15.0
+@export var backup_max_attempts : int = 3
 
-# FIXED: Change to an array of Dictionaries to hold textures alongside their correct indexes
 var pieces_data : Array[Dictionary] = []
 var first_selected_piece : TextureRect = null
 var swapping : bool = false
-var http_request : HTTPRequest
-var count = 0
 
-# Backup-fetch state
-var pixabay_timeout_timer : Timer = null
+var timeout_timer : Timer = null
 var backup_attempts_made : int = 0
-var backup_request_in_flight : bool = false
-var used_backup_indexes : Array[int] = []
-var puzzle_resolved : bool = false   # true once EITHER Pixabay or the backup has delivered an image
-
-# Photographer credit for the currently loaded puzzle image.
-# Only populated when the image came from Pixabay — the lynnwilsonart
-# backup source has no photographer metadata, so this is cleared/empty then.
+var puzzle_resolved : bool = false
 var puzzle_photographer : String = ""
 
+# Progress UI
+var progress_layer : CanvasLayer
+var progress_bar : ProgressBar
+var progress_status_label : Label
+
 func _ready() -> void:
-	print("Game -> game_script.gd ->  _ready()")
+	print("Game -> game_script.gd -> _ready()")
 	Globals.start_autosave()
+	
+	_create_progress_popup_ui()
 
-	# Connect the image_ready signal to the _on_image_ready function
-	# (Pixabay now also passes along the photographer's username)
-	Pixabay.image_ready.connect(_on_image_ready)
+	Api.request_started.connect(_on_api_request_started)
+	Api.progress_updated.connect(_on_api_progress_updated)
+	Api.image_ready.connect(_on_image_ready)
+	Api.request_failed.connect(_on_api_request_failed)
 
-	# OPTIONAL: hook into an explicit failure / rate-limit signal on the Pixabay
-	# singleton if one exists. This is defensive — if Pixabay doesn't expose
-	# one, we still catch failures via the timeout timer below.
-	if Pixabay.has_signal("request_failed"):
-		Pixabay.request_failed.connect(_on_pixabay_request_failed)
-	if Pixabay.has_signal("rate_limited"):
-		Pixabay.rate_limited.connect(_on_pixabay_request_failed)
-
-	# HTTPRequest node used for pulling backup images directly.
-	http_request = HTTPRequest.new()
-	add_child(http_request)
-	http_request.request_completed.connect(_on_backup_image_downloaded)
-
-	# Timer used to detect a Pixabay request that never responds
-	# (e.g. silently rate-limited with no explicit error signal).
-	pixabay_timeout_timer = Timer.new()
-	pixabay_timeout_timer.one_shot = true
-	pixabay_timeout_timer.wait_time = pixabay_timeout_seconds
-	add_child(pixabay_timeout_timer)
-	pixabay_timeout_timer.timeout.connect(_on_pixabay_timeout)
+	timeout_timer = Timer.new()
+	timeout_timer.one_shot = true
+	timeout_timer.wait_time = fetch_timeout_seconds
+	add_child(timeout_timer)
+	timeout_timer.timeout.connect(_on_fetch_timeout)
 
 	if $Puzzle:
 		puzzle_toggle_requested.connect($Puzzle._on_puzzle_toggle_requested)
 		change_puzzle_image.connect($Puzzle._on_change_puzzle_image_requested)
-		print("Game -> game_script ->  ✅ Connection Successful: game_scene linked to Puzzle script!")
-	else:
-		print("Game -> game_script -> ❌  Connection Failed: Could not find Puzzle node at path '$Puzzle'")
 
-	# Resume a saved puzzle if one exists, otherwise fetch a fresh one.
 	if FileAccess.file_exists(SAVE_PATH):
-		print("Game -> game_script -> Found saved puzzle — loading instead of fetching a new one.")
 		load_puzzle()
 	else:
 		_on_get_puzzle()
 
+# ---------- PROGRESS UI ----------
 
-# Request a new image from pixabay.com
-func _on_get_puzzle()-> void:
-	print("Game -> _game_script.gd -> _on_get_puzzle()")
+func _create_progress_popup_ui() -> void:
+	progress_layer = CanvasLayer.new()
+	progress_layer.layer = 100
+	progress_layer.visible = false
+	add_child(progress_layer)
 
+	var overlay = ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.6)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	progress_layer.add_child(overlay)
+
+	var center_container = CenterContainer.new()
+	center_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	progress_layer.add_child(center_container)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(420, 160)
+	center_container.add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	panel.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 15)
+	margin.add_child(vbox)
+
+	var title_label = Label.new()
+	title_label.text = "Loading Image..."
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_label)
+
+	progress_status_label = Label.new()
+	progress_status_label.text = "Connecting to server..."
+	progress_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(progress_status_label)
+
+	progress_bar = ProgressBar.new()
+	progress_bar.custom_minimum_size = Vector2(380, 24)
+	progress_bar.min_value = 0
+	progress_bar.max_value = 100
+	progress_bar.value = 0
+	vbox.add_child(progress_bar)
+
+func _show_progress_popup(message: String) -> void:
+	if progress_layer:
+		progress_status_label.text = message
+		progress_bar.value = 0
+		progress_layer.visible = true
+
+func _hide_progress_popup() -> void:
+	if progress_layer:
+		progress_layer.visible = false
+
+func _on_api_request_started() -> void:
+	_show_progress_popup("Fetching image from server...")
+
+func _on_api_progress_updated(percent: float) -> void:
+	if progress_bar:
+		progress_bar.value = percent
+		if percent < 30.0:
+			progress_status_label.text = "Searching image category..."
+		elif percent < 100.0:
+			progress_status_label.text = "Downloading image payload (" + str(int(percent)) + "%)..."
+		else:
+			progress_status_label.text = "Processing image..."
+
+# ---------- PUZZLE FETCH & SETUP ----------
+
+func _on_get_puzzle() -> void:
 	puzzle_resolved = false
 	backup_attempts_made = 0
-	used_backup_indexes.clear()
+	Api.fetch_puzzle_image(Globals.category)
+	timeout_timer.stop()
+	timeout_timer.start()
 
-	Pixabay.fetch_puzzle_image(Globals.category)
-
-	# Start (or restart) the timeout watchdog for this request.
-	pixabay_timeout_timer.stop()
-	pixabay_timeout_timer.start()
-
-
-# Process the image from pixabay.com
-func _on_image_ready(pixabay_imageTexture: ImageTexture, photographer: String = "") -> void:
-	print("Game -> _game_script.gd -> _on_image_ready() -> Photographer: ", photographer)
-
+func _on_image_ready(server_imageTexture: ImageTexture, photographer: String = "") -> void:
 	if puzzle_resolved:
-		# A backup image already won the race (e.g. Pixabay answered late,
-		# after the timeout already kicked in the backup path). Ignore it.
-		print("Game -> game_script.gd -> Ignoring late Pixabay response — puzzle already resolved by backup source.")
 		return
 
 	puzzle_resolved = true
-	pixabay_timeout_timer.stop()
+	timeout_timer.stop()
+	_hide_progress_popup()
+
 	puzzle_photographer = photographer
 	photographer_updated.emit(puzzle_photographer)
+	_start_puzzle_from_texture(server_imageTexture)
 
-	_start_puzzle_from_texture(pixabay_imageTexture)
-
-
-# ----------  FALLBACK TRIGGERS  ----------
-
-# Called if the Pixabay singleton exposes an explicit failure / rate-limit signal.
-func _on_pixabay_request_failed(_err = null) -> void:
-	print("Game -> game_script.gd -> _on_pixabay_request_failed() -> Pixabay reported a failure/rate-limit.")
-	if puzzle_resolved:
-		return
-	pixabay_timeout_timer.stop()
-	_fetch_backup_puzzle_image()
-
-
-# Called if Pixabay never responds within pixabay_timeout_seconds.
-func _on_pixabay_timeout() -> void:
-	print("Game -> game_script.gd -> _on_pixabay_timeout() -> No response from Pixabay in time (likely rate-limited). Falling back.")
+func _on_api_request_failed(_err_msg = "") -> void:
 	if puzzle_resolved:
 		return
 	_fetch_backup_puzzle_image()
 
-
-# ----------  BACKUP IMAGE FETCH (images.lynnwilsonart.com)  ----------
+func _on_fetch_timeout() -> void:
+	if puzzle_resolved:
+		return
+	_fetch_backup_puzzle_image()
 
 func _fetch_backup_puzzle_image() -> void:
-	print("Game -> game_script.gd -> _fetch_backup_puzzle_image()")
-
 	if puzzle_resolved:
-		return
-
-	if backup_request_in_flight:
-		print("Game -> game_script.gd -> Backup request already in flight, skipping duplicate call.")
 		return
 
 	if backup_attempts_made >= backup_max_attempts:
-		push_error("Game -> game_script.gd -> Exhausted backup attempts (" + str(backup_max_attempts) + "). Could not load any puzzle image.")
+		_hide_progress_popup()
+		push_error("Game -> game_script.gd -> Exhausted backup attempts.")
+		$NoInternetPopup.show()
 		return
 
 	backup_attempts_made += 1
+	_show_progress_popup("Fetching fallback image from 'default' category (" + str(backup_attempts_made) + "/" + str(backup_max_attempts) + ")...")
 
-	# Pick a random index we haven't already tried this session.
-	var index := -1
-	var range_size = backup_image_max_index - backup_image_min_index + 1
-	if used_backup_indexes.size() >= range_size:
-		# We've tried every index in the range at least once — just retry a random one.
-		index = randi_range(backup_image_min_index, backup_image_max_index)
-	else:
-		while true:
-			var candidate = randi_range(backup_image_min_index, backup_image_max_index)
-			if not used_backup_indexes.has(candidate):
-				index = candidate
-				break
-	used_backup_indexes.append(index)
+	timeout_timer.stop()
+	timeout_timer.start()
+	Api.fetch_puzzle_image("default")
 
-	var url = backup_image_base_url + str(index) + ".jpg"
-	print("Game -> game_script.gd -> Requesting backup image: " + url)
-
-	backup_request_in_flight = true
-	var error_code = http_request.request(url)
-	if error_code != OK:
-		push_error("Game -> game_script.gd -> Failed to start HTTPRequest for backup image. Error code: " + str(error_code))
-		backup_request_in_flight = false
-		# Try another index instead of stalling forever.
-		call_deferred("_fetch_backup_puzzle_image")
-
-
-func _on_backup_image_downloaded(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	backup_request_in_flight = false
-
-	if puzzle_resolved:
-		# Race condition guard: Pixabay might have resolved things already.
-		return
-
-	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200 or body.size() == 0:
-		print("Game -> game_script.gd -> Backup image request failed (result=" + str(result) + ", code=" + str(response_code) + "). Trying another index.")
-		_fetch_backup_puzzle_image()
-		return
-
-	var img := Image.new()
-	var load_error = img.load_jpg_from_buffer(body)
-	if load_error != OK:
-		push_error("Game -> game_script.gd -> Failed to decode backup image (error " + str(load_error) + "). Trying another index.")
-		_fetch_backup_puzzle_image()
-		return
-
-	print("Game -> game_script.gd -> Backup image downloaded and decoded successfully.")
-	puzzle_resolved = true
-	puzzle_photographer = ""   # backup source has no photographer credit available
-	photographer_updated.emit(puzzle_photographer)
-
-	var tex = ImageTexture.create_from_image(img)
-	_start_puzzle_from_texture(tex)
-
-
-# Shared entry point once we have a valid Texture2D, whether it came from
-# Pixabay or the lynnwilsonart backup source.
 func _start_puzzle_from_texture(tex: Texture2D) -> void:
-	puzzle_image = tex.get_image()
+	if tex == null:
+		push_error("Game -> game_script.gd -> Received null texture!")
+		return
 
-	# Saves the original image for popup
-	change_puzzle_image.emit(tex) # makes orig image visible
-	_slice_image(tex)
+	puzzle_image = tex.get_image()
+	puzzle_image.resize(int(grid_size.x), int(grid_size.y))
+
+	var resized_tex = ImageTexture.create_from_image(puzzle_image)
+	change_puzzle_image.emit(resized_tex)
+
+	_slice_image(resized_tex)
 	_randomize_pieces()
 	_place_pieces_on_grid()
-
+	save_puzzle()
 
 func _slice_image(tex : Texture2D) -> void:
-
-	print("Game -> _game_script.gd ->  _slice_image(tex: Texture2D)")
 	pieces_data.clear()
-	var img = tex.get_image()    # convert testure to image
-	img.resize(1152,648)          # Resizing to puzzle size
+	var img = tex.get_image()
+	img.resize(int(grid_size.x), int(grid_size.y))
 
 	@warning_ignore("narrowing_conversion")
-	var pw = float(img.get_width())  / num_columns
+	var pw = float(img.get_width()) / num_columns
 	var ph = float(img.get_height()) / num_rows
 
 	var index := 0
 	for r in range(num_rows):
 		for c in range(num_columns):
-			var rect = Rect2i(int(c*pw), int(r*ph), int(pw), int(ph))
+			var rect = Rect2i(int(c * pw), int(r * ph), int(pw), int(ph))
 			var piece_img = img.get_region(rect)
 			var piece_tex = ImageTexture.create_from_image(piece_img)
 
-			# STORE: Save both the texture and its correct position ID together
 			pieces_data.append({
 				"texture": piece_tex,
 				"id": index
 			})
 			index += 1
 
-func _randomize_pieces() -> void:
-	print("Game -> _game_script.gd -> _randomize_pieces()")
+func _slice_image_to_map(tex: Texture2D) -> Dictionary:
+	var map := {}
+	var img = tex.get_image()
+	img.resize(int(grid_size.x), int(grid_size.y))
 
+	@warning_ignore("narrowing_conversion")
+	var pw = float(img.get_width()) / num_columns
+	var ph = float(img.get_height()) / num_rows
+
+	var index := 0
+	for r in range(num_rows):
+		for c in range(num_columns):
+			var rect = Rect2i(int(c * pw), int(r * ph), int(pw), int(ph))
+			var piece_img = img.get_region(rect)
+			map[index] = ImageTexture.create_from_image(piece_img)
+			index += 1
+
+	return map
+
+func _randomize_pieces() -> void:
 	pieces_data.shuffle()
 
 func _place_pieces_on_grid() -> void:
-	print("Game -> _game_script.gd ->  _place_pieces_on_grid()")
-
-	first_selected_piece = null   # clear stale selection from previous puzzle
-	swapping = false              # Add this: just in case a swap was mid-flight when Skip was pressed
+	first_selected_piece = null
+	swapping = false
 
 	var grid : GridContainer = $Puzzle/GridContainer
 	grid.columns = num_columns
@@ -266,27 +254,17 @@ func _place_pieces_on_grid() -> void:
 	var piece_height = grid_size.y / num_rows
 	var piece_script = load("res://Scenes/Game/puzzle_piece_swap.gd")
 
-	# FIXED: Track slot positions explicitly from 0 to total pieces
 	for slot_idx in range(pieces_data.size()):
 		var data = pieces_data[slot_idx]
 		_build_piece(grid, slot_idx, data["texture"], data["id"], piece_width, piece_height, piece_script)
 
-# ----------  SHARED PIECE-BUILDING HELPER  ----------
-# Used by both _place_pieces_on_grid() (fresh puzzle) and load_puzzle()
-# (restored puzzle) so every piece is wired up identically.
 func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id: int, piece_width: float, piece_height: float, piece_script: GDScript) -> TextureRect:
-	count += 1
-	if count == 1:
-		print("Game -> game_script.gd -> _build_piece()")
-
 	var rect = TextureRect.new()
 	rect.texture = tex
 	rect.mouse_filter = Control.MOUSE_FILTER_STOP
-
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	rect.stretch_mode = TextureRect.STRETCH_SCALE
 	rect.custom_minimum_size = Vector2(piece_width, piece_height)
-
 	rect.set_script(piece_script)
 
 	if rect.has_method("initialize_piece_meta"):
@@ -299,10 +277,7 @@ func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id
 	grid.add_child(rect)
 	return rect
 
-# ----------  SWAP LOGIC  ----------
 func _on_piece_clicked(piece : TextureRect) -> void:
-	print("Game -> _game_script.gd -> _on_piece_clicked()")
-
 	if swapping:
 		return
 
@@ -322,107 +297,64 @@ func _on_piece_clicked(piece : TextureRect) -> void:
 	first_selected_piece = null
 
 	p1.modulate = Color.WHITE
-
 	var state = {"finished": 0}
 
 	var finish_callback = func():
-		print("Game -> game_script.gd -> finish_callback()")
 		state["finished"] += 1
 		if state["finished"] == 2:
-			# Swap textures
 			var tmp_tex = p1.texture
 			p1.texture = p2.texture
 			p2.texture = tmp_tex
 
-			# FIXED: Swap the metadata tracking tracking variables
 			var id1 = p1.get_meta("current_texture_id")
 			var id2 = p2.get_meta("current_texture_id")
 			p1.set_meta("current_texture_id", id2)
 			p2.set_meta("current_texture_id", id1)
 
 			swapping = false
-
-			# CHECK FOR WIN STATE
 			_check_win_condition()
 
 	p1.animate_swap(p2, finish_callback)
 	p2.animate_swap(p1, finish_callback)
 
-# ----------  ENDGAME CHECK  ----------
 func _check_win_condition() -> void:
-	print("Game -> _game_script.gd -> _check_win_condition()")
-
 	var grid : GridContainer = $Puzzle/GridContainer
-
 	for rect in grid.get_children():
 		if rect is TextureRect:
 			var slot_id = rect.get_meta("correct_slot_id")
 			var current_tex_id = rect.get_meta("current_texture_id")
-
-			# If any single piece does not line up with its slot, stop checking
 			if slot_id != current_tex_id:
 				return
-
 	_trigger_victory()
-# Alert popup
-func _alert_top_left_dialog() ->void:
-	print("Game -> game_script.gd -> _alert_top_left_dialog()")
-	$Alert_Completed.popup()
-	$Alert_Completed.popup()
-
 
 func _trigger_victory() -> void:
-	print("Game -> _game_script.gd -> _trigger_victory()")
-	print("Pause game until ok clicked")
-	_alert_top_left_dialog()
+	$Alert_Completed.popup()
 	await $Alert_Completed.confirmed
 
-
-	print("Game -> game_script.gd -> Puzzle Complete! All pieces are in the correct place!")
-	# Disable interaction entirely
 	swapping = true
-	print("Game -> game_script.gd -> puzzle_toggle_rquested -> emitted signal")
 	puzzle_toggle_requested.emit(true)
 
 	if game_scene_path != "":
-		# Switch directly via the file string path
-		var error_code = get_tree().change_scene_to_file(game_scene_path)
+		get_tree().change_scene_to_file(game_scene_path)
 
-		# Check if Godot ran into an error while transitioning
-		if error_code != OK:
-			push_error("Game -> game_script.gd -> Failed to switch scenes! Error code: ", error_code)
-
-
-# ======================================================================
-# SAVE / LOAD — persists the CURRENT grid arrangement (not the original
-# shuffle), so resuming puts every piece back exactly where you left it,
-# fully clickable and swappable.
-# ======================================================================
+# ---------- SAVE & LOAD ----------
 
 func save_puzzle() -> void:
-	print("Game -> game_script -> save_puzzle()")
-
 	var grid : GridContainer = $Puzzle/GridContainer
-	if grid.get_child_count() == 0:
-		push_error("Game -> game_script.gd -> Nothing to save — grid is empty.")
+	if grid.get_child_count() == 0 or puzzle_image == null:
 		return
 
 	var grid_state : Array = []
 	for rect in grid.get_children():
 		if not (rect is TextureRect):
 			continue
-		var img : Image = null
-		if rect.texture:
-			img = rect.texture.get_image()
 		grid_state.append({
-			"tex_bytes"      : img.save_png_to_buffer() if img else PackedByteArray(),
 			"correct_slot_id"   : rect.get_meta("correct_slot_id"),
 			"current_texture_id": rect.get_meta("current_texture_id"),
 		})
 
 	var state := {
-
-		"image_bytes": puzzle_image.save_png_to_buffer() if puzzle_image else PackedByteArray(),
+		"image_bytes": puzzle_image.save_png_to_buffer(),
 		"num_columns": num_columns,
 		"num_rows"   : num_rows,
 		"grid"       : grid_state,
@@ -433,22 +365,32 @@ func save_puzzle() -> void:
 	if file:
 		file.store_var(state)
 		file.close()
-		print("Puzzle saved to ", SAVE_PATH)
-	else:
-		push_error("Game -> game_script.gd -> Could not open file for writing: " + SAVE_PATH)
 
 func load_puzzle() -> void:
-	print("Game -> game_script.gd -> load_puzzle()")
 	if not FileAccess.file_exists(SAVE_PATH):
-		push_error("Game -> game_script.gd -> No saved puzzle found at " + SAVE_PATH)
+		_on_get_puzzle()
 		return
-	print(" Loading save image")
+
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		_on_get_puzzle()
+		return
+
 	var state = file.get_var()
 	file.close()
 
-	if state == null or not state.has("grid") or not state.has("image_bytes"):
-		push_error("Game -> game_script.gd -> Save file is corrupt or in an unexpected format.")
+	# Reset save file if corrupted or from old incompatible version
+	if state == null or not (state is Dictionary) or not state.has("grid"):
+		push_warning("Game -> Corrupted save file detected. Deleting user://puzzle_state.save and fetching fresh puzzle...")
+		DirAccess.remove_absolute(SAVE_PATH)
+		_on_get_puzzle()
+		return
+
+	var img_bytes : PackedByteArray = state.get("image_bytes", PackedByteArray())
+	if img_bytes.size() == 0:
+		push_warning("Game -> Save file has empty image data. Deleting user://puzzle_state.save and fetching fresh puzzle...")
+		DirAccess.remove_absolute(SAVE_PATH)
+		_on_get_puzzle()
 		return
 
 	num_columns = state.get("num_columns", num_columns)
@@ -456,18 +398,21 @@ func load_puzzle() -> void:
 	puzzle_photographer = state.get("photographer", "")
 	photographer_updated.emit(puzzle_photographer)
 
-	# Restore the full reference image (used by the preview popup).
-	var img_bytes : PackedByteArray = state["image_bytes"]
-	if img_bytes.size() > 0:
-		var full_img := Image.new()
-		if full_img.load_png_from_buffer(img_bytes) == OK:
-			puzzle_image = full_img
-			# Need to resize here to puzzle size and save
-			full_img.resize(1152,648)
-			print(" Emitting change puzzle image ")
-			change_puzzle_image.emit(ImageTexture.create_from_image(full_img))
-		else:
-			push_error("Game -> game_script.gd -> Could not decode saved reference image.")
+	var full_img := Image.new()
+	var err = full_img.load_from_buffer(img_bytes) if full_img.has_method("load_from_buffer") else full_img.load_png_from_buffer(img_bytes)
+	if err != OK:
+		push_warning("Game -> Could not decode image bytes from save file. Deleting user://puzzle_state.save and fetching fresh puzzle...")
+		DirAccess.remove_absolute(SAVE_PATH)
+		_on_get_puzzle()
+		return
+
+	puzzle_image = full_img
+	puzzle_image.resize(int(grid_size.x), int(grid_size.y))
+
+	var restored_tex = ImageTexture.create_from_image(puzzle_image)
+	change_puzzle_image.emit(restored_tex)
+
+	var texture_map := _slice_image_to_map(restored_tex)
 
 	var grid : GridContainer = $Puzzle/GridContainer
 	grid.columns = num_columns
@@ -488,17 +433,7 @@ func load_puzzle() -> void:
 	var grid_state : Array = state["grid"]
 	for slot_idx in range(grid_state.size()):
 		var piece_data : Dictionary = grid_state[slot_idx]
-		var tex_bytes : PackedByteArray = piece_data.get("tex_bytes", PackedByteArray())
-
-		var piece_tex : Texture2D = null
-		if tex_bytes.size() > 0:
-			var piece_img := Image.new()
-			if piece_img.load_png_from_buffer(tex_bytes) == OK:
-				piece_tex = ImageTexture.create_from_image(piece_img)
-			else:
-				push_error("Game -> game_script.gd -> Could not decode saved piece texture at slot " + str(slot_idx))
-
 		var texture_id : int = piece_data.get("current_texture_id", slot_idx)
-		_build_piece(grid, slot_idx, piece_tex, texture_id, piece_width, piece_height, piece_script)
 
-	print("Game -> game_script.gd -> Puzzle loaded from ", SAVE_PATH)
+		var piece_tex : Texture2D = texture_map.get(texture_id, null)
+		_build_piece(grid, slot_idx, piece_tex, texture_id, piece_width, piece_height, piece_script)

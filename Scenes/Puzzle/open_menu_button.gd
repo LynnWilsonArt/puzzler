@@ -6,7 +6,6 @@ extends Button
 
 func _ready() -> void:
 	print("Puzzle -> open_menu_button.gd -> _ready()")
-		
 	# Hide on startup
 	popup_menu.hide()
 

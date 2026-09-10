@@ -19,3 +19,10 @@ position = Vector2i(25, 50)
 size = Vector2i(200, 100)
 theme = ExtResource("3_qikps")
 dialog_text = "        Great Job!"
+
+[node name="NoInternetPopup" type="AcceptDialog" parent="." unique_id=809572421]
+oversampling_override = 1.0
+initial_position = 1
+size = Vector2i(344, 100)
+theme = ExtResource("3_qikps")
+dialog_text = "ERROR! No internet access."

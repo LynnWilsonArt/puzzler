@@ -21,10 +21,9 @@ boot_splash/minimum_display_time=2000
 
 [autoload]
 
-Globals="*uid://bg53ye4aj2s38"
 BackButtonHandler="*uid://bxh2i3xkndpy"
-Pixabay="*uid://dkwdxenlbqope"
-Upload="*uid://yp6spt646fmk"
+Api="*uid://vcl72bkf6uk4"
+Globals="*uid://bctar4inn8iw0"
 
 [display]
 

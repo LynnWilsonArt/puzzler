@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://yp6spt646fmk"]
-
-[ext_resource type="Script" uid="uid://iqpspscgqhqr" path="res://Scenes/Upload/upload.gd" id="1_42mmr"]
-
-[node name="Upload" type="Node" unique_id=506625309]
-script = ExtResource("1_42mmr")
-
-[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=269937816]

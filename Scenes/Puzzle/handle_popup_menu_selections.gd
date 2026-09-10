@@ -4,16 +4,17 @@ extends PopupMenu
 @onready var puzzle_node: Node = get_node_or_null("../..")
 @onready var game_scene: Node = get_node_or_null("../../..")
 @onready var main_node: Node = get_node_or_null("/root/Main") 
-
-
+var music_player = AudioStreamPlayer.new()
 
 func _ready() -> void:
 	print("Puzzle -> handle_popup_menu_selections.gd -> ready()")
+	_create_audio_streamer()
+	
 
 
 func _on_id_pressed(id: int) -> void:
 	print("Puzzle -> handle_popup_menu_selections.gd -> _on_id_pressed()")
-
+	
 	match id:
 		0:
 			print("Puzzle -> handle_popup_menu_selections.gd -> Toggle Original Selected: ", id)
@@ -40,7 +41,8 @@ func _on_id_pressed(id: int) -> void:
 				
 		2:
 			print("Puzzle -> handle_popup_menu_selections.gd -> Toggle Sound from Puzzle -> PupupMenu")
-			Globals.sound_mode = !Globals.sound_mode # Cleaned up toggle logic
+			_toggle_sound()
+			
 
 		3:
 			print("Puzzle -> handle_popup_menu_selections.gd -> Load Puzzle Selected: ", id)
@@ -92,3 +94,22 @@ func _on_id_pressed(id: int) -> void:
 					Globals.g_save_puzzle()
 					get_tree().quit()
 			
+
+
+# Called when the node enters the scene tree for the first time.
+func _create_audio_streamer() -> void:
+	var track_path = load('res://assets/sound/alex-morgan-piano.mp3')
+	music_player.stream = track_path
+	add_child(music_player)
+	print("Puzzle - PopupMenu - Created music_player: ")
+
+
+func _toggle_sound() -> void:
+	if music_player.playing:
+		
+		music_player.stop()
+		print("Music_player Stop:")
+		
+	else:
+		music_player.play()
+		print("Music_player Play:")

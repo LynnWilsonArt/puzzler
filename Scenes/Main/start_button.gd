@@ -10,15 +10,6 @@ var game_scene_path: String = "res://Scenes/Game/game.tscn"
 func _on_pressed() -> void:
 	print("Main -> start_button.gd -> _on_pressed()")
 		
-	# Web start music if Globals.sound_mode = true
-	if OS.has_feature("web"):  
-		if Globals.sound_mode:
-			if !Globals.music_player.playing:
-				print("Main -> start_button.gd -> Music is not playing ")
-				return
-			else:
-				Globals.music_player.play()
-	
 	# Add a print statement to verify the button physically registers your click
 	print("Main -> start_button.gd -> Play button was pressed! Attempting to load: ", game_scene_path)
 	

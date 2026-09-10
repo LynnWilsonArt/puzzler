@@ -1,15 +1,14 @@
 [gd_scene format=3 uid="uid://dkwdxenlbqope"]
 
-[ext_resource type="Script" uid="uid://c2yyhxi08qjnb" path="res://helper_scripts/pixabay.gd" id="1_jw4od"]
-[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_siflf"]
+[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_hvnac"]
 
 [node name="Pixabay" type="Node" unique_id=914452919]
-script = ExtResource("1_jw4od")
 
 [node name="NoInternetPopup" type="AcceptDialog" parent="." unique_id=1596037711]
+oversampling_override = 1.0
 initial_position = 1
 size = Vector2i(344, 100)
-theme = ExtResource("2_siflf")
+theme = ExtResource("1_hvnac")
 dialog_text = "ERROR! No internet access."
 
 [node name="PixabayRequest" type="HTTPRequest" parent="." unique_id=648037168]

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://vcl72bkf6uk4"]
+
+[ext_resource type="Script" uid="uid://8tkxwhm4gy0g" path="res://Scenes/Api/Api.gd" id="1_la7cr"]
+
+[node name="APi" type="Node2D" unique_id=437047356]
+script = ExtResource("1_la7cr")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1708325876]
