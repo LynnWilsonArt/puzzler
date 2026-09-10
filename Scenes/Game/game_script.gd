@@ -34,8 +34,9 @@ var progress_status_label : Label
 func _ready() -> void:
 	print("Game -> game_script.gd -> _ready()")
 	Globals.start_autosave()
-	
 	_create_progress_popup_ui()
+	#print("Game Script-> Settings Music Mode: ", Settings.bg_audio_mode)
+	#Settings._set_bg_music_mode()
 
 	Api.request_started.connect(_on_api_request_started)
 	Api.progress_updated.connect(_on_api_progress_updated)

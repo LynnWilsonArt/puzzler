@@ -6,19 +6,17 @@ signal piece_clicked(clicked_node: TextureRect)
 
 # Keep the original texture around – we'll swap it in/out after the animation
 var original_texture: Texture2D
-
 # Keep track of active tweens safely in Godot 4
 var active_tween: Tween = null
-
 # Transition time
 var trans_time: float = 0.4
+var swoosh = AudioStreamPlayer.new()
 
-
-
-
-
+	
 func _ready() -> void:
-
+	add_child(swoosh)
+	var soundEffect = load("res://assets/sound/swoosh.mp3")
+	swoosh.stream = soundEffect
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	original_texture = texture
 
@@ -38,13 +36,18 @@ func _gui_input(event: InputEvent) -> void:
 func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	print("Game -> puzzle_piece_swap.gd -> animate_swap()")
 		
-	# FIXED: Check if the current tween is running using Godot 4 syntax
+	# Check if the current tween is running using Godot 4 syntax
 	if active_tween and active_tween.is_running():
 		return
-	
-	# FIXED: Godot 4 uses create_tween() instead of Tween.new()
+	# Godot 4 uses create_tween() instead of Tween.new()
 	active_tween = create_tween()
 	
+	# Play transisition sound
+	print("Playing swoosh sound:")
+	if Globals.sound_effects:   # if true
+		swoosh.play()
+	
+		
 	# Choose an animation style at random
 	var style: int = randi() % 4  # 0-3
 	match style:

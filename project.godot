@@ -24,6 +24,7 @@ boot_splash/minimum_display_time=2000
 BackButtonHandler="*uid://bxh2i3xkndpy"
 Api="*uid://vcl72bkf6uk4"
 Globals="*uid://bctar4inn8iw0"
+Settings="*uid://bjmvfw13nl5tu"
 
 [display]
 
