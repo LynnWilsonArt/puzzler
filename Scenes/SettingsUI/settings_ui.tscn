@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://jldohm2eyt10" path="res://Scenes/SettingsUI/settings_ui.gd" id="1_dm7qj"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_iey1w"]
 
+[sub_resource type="Theme" id="Theme_gdx28"]
+
 [node name="SettingsUI" type="Control" unique_id=518924563]
 layout_mode = 3
 anchors_preset = 0
@@ -25,7 +27,7 @@ offset_right = 806.0
 offset_bottom = 296.0
 theme_override_constants/separation = 10
 
-[node name="SoundMode" type="CheckBox" parent="SettingsPanel" unique_id=1361066450]
+[node name="MusicSoundMode" type="CheckBox" parent="SettingsPanel" unique_id=1361066450]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -34,31 +36,15 @@ theme = ExtResource("2_iey1w")
 button_pressed = true
 text = "  Background Sound On:"
 
-[node name="AudioVolume" type="Label" parent="SettingsPanel" unique_id=997895129]
-layout_mode = 2
+[node name="AudioVolume" type="Label" parent="SettingsPanel/MusicSoundMode" unique_id=997895129]
+layout_mode = 0
+offset_top = 120.0
+offset_right = 506.0
+offset_bottom = 150.0
 theme = ExtResource("2_iey1w")
 text = "Sound Volume"
 
-[node name="CloseButton" type="Button" parent="SettingsPanel/AudioVolume" unique_id=1964400075]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -39.0
-offset_top = 110.0
-offset_right = 39.0
-offset_bottom = 148.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme = ExtResource("2_iey1w")
-text = "Close"
-
-[node name="VolumeSlider" type="HSlider" parent="SettingsPanel/AudioVolume" unique_id=1630362551]
+[node name="VolumeSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/AudioVolume" unique_id=1630362551]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 187.0
@@ -68,4 +54,26 @@ offset_bottom = 21.0
 size_flags_horizontal = 3
 theme = ExtResource("2_iey1w")
 
-[connection signal="toggled" from="SettingsPanel/SoundMode" to="." method="_on_sound_mode_toggled"]
+[node name="CloseButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 218.0
+offset_top = 203.0
+offset_right = 296.0
+offset_bottom = 241.0
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme = ExtResource("2_iey1w")
+text = "Close"
+
+[node name="PuzzleSounds" type="CheckBox" parent="SettingsPanel/MusicSoundMode" unique_id=875415238]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 55.0
+offset_right = 243.0
+offset_bottom = 93.0
+theme = SubResource("Theme_gdx28")
+text = "Sound Effects On"
+
+[connection signal="toggled" from="SettingsPanel/MusicSoundMode" to="." method="_on_music_mode_toggled"]
+[connection signal="toggled" from="SettingsPanel/MusicSoundMode/PuzzleSounds" to="." method="_on_puzzle_sounds_toggled"]

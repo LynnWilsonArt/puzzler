@@ -3,7 +3,8 @@ extends Control
 
 @onready var volume_slider: HSlider = %VolumeSlider
 @onready var close_button: Button = %CloseButton
-@onready var sound_checkBox: CheckBox = %SoundMode
+@onready var sound_checkBox: CheckBox = %MusicSoundMode
+@onready var puzzle_sounds_checkBox: CheckBox = %PuzzleSounds
 
 
 
@@ -35,11 +36,18 @@ func _update_ui_state() -> void:
 	volume_slider.value = Settings.audio_volume * 100.0
 	volume_slider.set_block_signals(false)
 	
-	# Fix: Use button_pressed instead of pressed, and block signals
+	# Use button_pressed , and block signals
 	sound_checkBox.set_block_signals(true)
 	sound_checkBox.button_pressed = Settings.bg_audio_mode
 	sound_checkBox.set_block_signals(false)
+	# Use button_pressed , and block signals
+	puzzle_sounds_checkBox.set_block_signals(true)
+	puzzle_sounds_checkBox.button_pressed = Settings.sound_effects_mode
+	puzzle_sounds_checkBox.set_block_signals(false)
 	
-func _on_sound_mode_toggled(toggled_on: bool) -> void:
-	Settings.bg_audio_mode = toggled_on
-	Settings._set_bg_music_mode()
+func _on_music_mode_toggled(toggled_on: bool) -> void:
+	Settings._set_bg_music_mode(toggled_on)
+
+
+func _on_puzzle_sounds_toggled(toggled_on: bool) -> void:
+	Settings._set_effects_audio_mode(toggled_on)

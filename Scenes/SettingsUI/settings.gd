@@ -6,8 +6,10 @@ signal settings_changed
 # --- Public properties ----------------------------------------------
 var audio_volume: float = 1.0               # 0.0 – 1.0
 var music_player = AudioStreamPlayer.new()
+var effects_player = AudioStreamPlayer.new()
 var bg_audio_mode: bool = true
-@onready var sound_mode_box: CheckBox = $SettingsPanel/SoundMode
+var sound_effects_mode: bool = true
+#@onready var sound_mode_box: CheckBox = $SettingsPanel/SoundMode
 
 
 # --- Constants ------------------------------------------------------
@@ -18,6 +20,7 @@ func _ready() -> void:
 	print("Settings-> ready()")
 	_load_settings()
 	_create_audio_streamer()
+	_create_audio_effects_player()
 	_apply_settings()
 		
 
@@ -43,8 +46,8 @@ func _apply_settings() -> void:
 	AudioServer.set_bus_volume_db(0, linear_to_db(clampf(audio_volume, 0.0, 1.0)))
 	# Set sound mode
 	print("Apply Settings-> BG music mode: ",bg_audio_mode)
-	_set_bg_music_mode()
-
+	_set_bg_music_mode(bg_audio_mode)
+	_set_effects_audio_mode(sound_effects_mode)
 	settings_changed.emit()
 
 # -------------------------------------------------------------------
@@ -65,6 +68,7 @@ func _load_settings() -> void:
 		var data: Dictionary = json_data
 		audio_volume = float(data.get("audio_volume", audio_volume))
 		bg_audio_mode = bool(data.get("bg_audio_mode",bg_audio_mode))
+		sound_effects_mode = bool(data.get("sound_effects_mode",sound_effects_mode))
 		
 		
 # ------------------------------------------------------------------
@@ -80,25 +84,49 @@ func _create_audio_streamer() -> void:
 		music_player.stop()
 	print("Settings-> Created music_player: ")
 	
+####################################################
+# EfEfects Audio Player
+func _create_audio_effects_player() -> void:
+	print("Settings-> Create Audio Effects  Player")
+	var track_path = load('res://assets/sound/swoosh.mp3')
+	effects_player.stream = track_path
+	add_child(effects_player)
+	if effects_player.playing:
+		effects_player.stop()
+	print("Settings-> Created efects_player: ")
+	
 # -------------------------------------------------------------------
 func _save_settings() -> void:
 	print("Settings-> Save settings")
 	var data: Dictionary[String, Variant] = {
 		"audio_volume": audio_volume,
 		"bg_audio_mode": bg_audio_mode,
+		"sound_effects_mode": sound_effects_mode,
 		
 	}
 	var file := FileAccess.open(CONFIG_FILE, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(data, "\t"))
 		
-func _set_bg_music_mode() -> void:
-	if !music_player.playing:
-		if bg_audio_mode:
-			print("Set Mode-> BG Music Play")
-			music_player.play()
+
+# Set music mode
+func _set_bg_music_mode(mode) -> void:
+	bg_audio_mode = mode
+	if mode:
+		print("Set Mode-> BG Music Play")
+		music_player.play()
 	else:
-		if music_player.playing:
-			print("Set Mode-> BG Music Stop")
-			music_player.stop()
+		print("Set Mode-> BG Music Stop")
+		music_player.stop()
+			
+# Set sound effects mode
+func _set_effects_audio_mode(mode) -> void:
+	sound_effects_mode = mode
+	print(" Effects Mode: ",mode)
+	if mode:
+		print("Set Mode-> Effects  Play")
+		effects_player.play()
+	else:
+		print("Set Mode-> Effects Stop")
+		effects_player.stop()
 			

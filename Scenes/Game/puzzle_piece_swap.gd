@@ -10,13 +10,8 @@ var original_texture: Texture2D
 var active_tween: Tween = null
 # Transition time
 var trans_time: float = 0.4
-var swoosh = AudioStreamPlayer.new()
-
 	
 func _ready() -> void:
-	add_child(swoosh)
-	var soundEffect = load("res://assets/sound/swoosh.mp3")
-	swoosh.stream = soundEffect
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	original_texture = texture
 
@@ -44,8 +39,8 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	
 	# Play transisition sound
 	print("Playing swoosh sound:")
-	if Globals.sound_effects:   # if true
-		swoosh.play()
+	if Settings.sound_effects_mode:
+		Settings.effects_player.play()
 	
 		
 	# Choose an animation style at random

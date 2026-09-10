@@ -17,9 +17,6 @@ var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 var current_scene = null
 var quit_wait_time: float= 1.0
 var upload_password: String = "Topp3r@19511969!"
-var sound_effects: bool = true
-
-
 
 
 func _ready() -> void:
