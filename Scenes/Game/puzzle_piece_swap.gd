@@ -39,7 +39,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	
 	# Play transisition sound
 	print("Playing swoosh sound:")
-	Settings.play_effect(preload("res://assets/sound/swoosh.mp3"))
+	Settings._play_effect(preload("res://assets/sound/swoosh.mp3"))
 	
 		
 	# Choose an animation style at random
@@ -118,7 +118,7 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	tween.finished.connect(callback)
 	
 	# Add this inside res://Scenes/Game/puzzle_piece_swap.gd
-func initialize_piece_meta(slot_id: int, original_texture_id: int) -> void:
+func _initialize_piece_meta(slot_id: int, original_texture_id: int) -> void:
 	
 	set_meta("correct_slot_id", slot_id)
 	set_meta("current_texture_id", original_texture_id)

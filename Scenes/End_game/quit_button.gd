@@ -1,5 +1,4 @@
 # res://Scenes/End_game/quit_button.gd
-# Puzzle/TextureRect/Sprite2D/Quit_Button
 extends Button
 
 func _on_pressed()-> void:
@@ -7,7 +6,7 @@ func _on_pressed()-> void:
 	if OS.has_feature("web"): 
 		print("End_game -> quit_button.gd -> _on_pressed() -> Web ->Delete saved Game")
 		# Delete the saved game 
-		Globals.g_delete_puzzle()
+		Globals._g_delete_puzzle()
 		
 		# Attempt to close the browser window/tab  
 		var win = JavaScriptBridge.get_interface("window")
@@ -17,11 +16,11 @@ func _on_pressed()-> void:
 		# Handle Android OS
 		print("End_game -> quit_button.gd -> _on_pressed() -> Android -> Delete saved Game")
 		# Delete the saved game 
-		Globals.g_delete_puzzle() 		
+		Globals._g_delete_puzzle() 		
 		if OS.has_feature("android"):
 			BackButtonHandler._move_app_to_background()
 		else:
 			# Standard behavior for Android, Windows, macOS, etc.
-			Globals.g_delete_puzzle()
+			Globals._g_delete_puzzle()
 			get_tree().quit()
 		

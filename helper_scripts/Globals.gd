@@ -1,7 +1,8 @@
-# "res://Globals.gd"
+# res://helper_scripts/Globals.gd
 extends Node
-
+#----------------------------------------------------------------------
 # Global variables accessible from any script
+#----------------------------------------------------------------------
 var columns = 4
 var rows = 4
 var timer_token  : int   = 0
@@ -18,7 +19,9 @@ var current_scene = null
 var quit_wait_time: float= 1.0
 var upload_password: String = "Topp3r@19511969!"
 
-
+#---------------------------------------------------------------------
+# Ready
+#---------------------------------------------------------------------
 func _ready() -> void:
 
 	# Autosave every 2 minutes
@@ -31,9 +34,9 @@ func _ready() -> void:
 
 
 
-####################################################
+#----------------------------------------------------------------------
 # Global Timmer
-
+#----------------------------------------------------------------------
 func _timer(method: int,seconds: int) -> void:
 	print("Globals -> Globals.gd -> _timer()")
 	timer_token += 1
@@ -52,57 +55,55 @@ func _on_timer_timeout(method: int) -> void:
 	match method:
 		1:
 			print("Globals -> Globals.gd ->_timer() -> method 1")
-			g_save_puzzle( )
-				
-			
-		
+			_g_save_puzzle()
 
-		
-# in Globals.gd
-func start_autosave() -> void:
-	print(" Globals _> Auto save timer started")
+#----------------------------------------------------------------------
+# Autosave timer
+#----------------------------------------------------------------------
+func _start_autosave_timer() -> void:
+	print(" Globals _> Auto save timer started -> _start_autosave_timer()")
 	autosave_timer.start()
 
-func stop_autosave_timer() -> void:
+func _stop_autosave_timer() -> void:
 	print(" Globals -> Auto save timer stoped")
 	autosave_timer.stop()
 	
-##################################################
 # --------------------------------------------------------------------
 # Forwarders — the real save/load logic lives on the game root
 # (game_script.gd), since $Puzzle is a child of that node.
 # --------------------------------------------------------------------
-func g_save_puzzle() -> void:
+func _g_save_puzzle() -> void:
+	print("Globals ->  _g_save_puzzle")
 	
 	var game_root = get_tree().current_scene
 
 	print(" game_root: ", game_root)
-	if game_root and game_root.has_method("save_puzzle"):
-		game_root.save_puzzle()
+	if game_root and game_root.has_method("_save_puzzle"):
+		game_root._save_puzzle()
 		print("Globals -> Globals.gd ->Saved puzzle from Globals")
 	else:
 		push_error("Globals -> Could not find game_script.gd on current scene to save the puzzle.")
 
-
-func g_load_puzzle() -> void:
+#-----------------------------------------------------------------
+# NOT USED - Butt keeping it.
+#------------------------------------------------------------------
+func _g_load_puzzle() -> void:
 	var game_root = get_parent().current_scene
-	if game_root and game_root.has_method("load_puzzle"):
+	if game_root and game_root.has_method("_load_puzzle"):
 		print("Globals -> Globals.gd -> Loaded puzzle from Globals")
-		game_root.load_puzzle()
+		game_root._load_puzzle()
 	else:
 		push_error("Globals -> Globals.gd -> Could not find game_script.gd on parent node to load the puzzle.")
 		
 		
 func _on_autosave_timeout() -> void:
 	print("Globals -> Globals.gd -> autosave puzzle -> saving puzzle")
-	g_save_puzzle()
+	_g_save_puzzle()
 
-
-
-
-
+#--------------------------------------------------------------------------
 # Method to delete the puzzle file
-func g_delete_puzzle() -> void:
+#--------------------------------------------------------------------------
+func _g_delete_puzzle() -> void:
 	var error: Error = OK
 	
 	# FIX: Use FileAccess.file_exists (static) instead of DirAccess.file_exists
@@ -118,13 +119,14 @@ func g_delete_puzzle() -> void:
 
 
 	
-##################################################
+#----------------------------------------------------------------------------
 # Scene switcher
-
-func switch_scene(game_scene_path):
-# Switch directly via the file string path
-		var error_code = get_tree().change_scene_to_file(game_scene_path)
+#----------------------------------------------------------------------------
+func _switch_scene(game_scene_path):
+	print("Globals -> _switch_scene(scene_path)")
+	# Switch directly via the file string path
+	var error_code = get_tree().change_scene_to_file(game_scene_path)
 		
-		# Check if Godot ran into an error while transitioning
-		if error_code != OK:
-			push_error("Globals -> Globals.gd -> Failed to switch scenes! Error code: ", error_code)
+	# Check if Godot ran into an error while transitioning
+	if error_code != OK:
+		push_error("Globals -> Globals.gd -> Failed to switch scenes! Error code: ", error_code)

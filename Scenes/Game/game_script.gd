@@ -33,7 +33,7 @@ var progress_status_label : Label
 
 func _ready() -> void:
 	print("Game -> game_script.gd -> _ready()")
-	Globals.start_autosave()
+	Globals._start_autosave_timer()
 	_create_progress_popup_ui()
 
 	Api.request_started.connect(_on_api_request_started)
@@ -52,7 +52,7 @@ func _ready() -> void:
 		change_puzzle_image.connect($Puzzle._on_change_puzzle_image_requested)
 
 	if FileAccess.file_exists(SAVE_PATH):
-		load_puzzle()
+		_load_puzzle()
 	else:
 		_on_get_puzzle()
 
@@ -190,7 +190,7 @@ func _start_puzzle_from_texture(tex: Texture2D) -> void:
 	_slice_image(resized_tex)
 	_randomize_pieces()
 	_place_pieces_on_grid()
-	save_puzzle()
+	_save_puzzle()
 
 func _slice_image(tex : Texture2D) -> void:
 	pieces_data.clear()
@@ -266,8 +266,8 @@ func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id
 	rect.custom_minimum_size = Vector2(piece_width, piece_height)
 	rect.set_script(piece_script)
 
-	if rect.has_method("initialize_piece_meta"):
-		rect.initialize_piece_meta(slot_idx, texture_id)
+	if rect.has_method("_initialize_piece_meta"):
+		rect._initialize_piece_meta(slot_idx, texture_id)
 	else:
 		rect.set_meta("correct_slot_id", slot_idx)
 		rect.set_meta("current_texture_id", texture_id)
@@ -338,7 +338,7 @@ func _trigger_victory() -> void:
 
 # ---------- SAVE & LOAD ----------
 
-func save_puzzle() -> void:
+func _save_puzzle() -> void:
 	var grid : GridContainer = $Puzzle/GridContainer
 	if grid.get_child_count() == 0 or puzzle_image == null:
 		return
@@ -365,7 +365,7 @@ func save_puzzle() -> void:
 		file.store_var(state)
 		file.close()
 
-func load_puzzle() -> void:
+func _load_puzzle() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		_on_get_puzzle()
 		return

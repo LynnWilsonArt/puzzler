@@ -1,4 +1,4 @@
-# res://scene/Puzzle/toggle_puzzle_display.gd
+# res://Scenes/Puzzle/toggle_puzzle_display.gd
 extends Control
 
 var puzzle_image : TextureRect = null
@@ -81,15 +81,15 @@ func _on_change_puzzle_image_requested(img: Texture2D) -> void:
 func _on_show_original_image_pressed() -> void:
 	_set_preview_visible(toggle_puzzle)
 
-func save_puzzle() -> void:
+func _save_puzzle() -> void:
 	var game_root = get_parent()
 	if game_root and game_root.has_method("save_puzzle"):
 		game_root.save_puzzle()
 
-func load_puzzle() -> void:
+func _load_puzzle() -> void:
 	toggle_puzzle = true
 	var game_root = get_parent()
-	if game_root and game_root.has_method("load_puzzle"):
-		game_root.load_puzzle()
+	if game_root and game_root.has_method("_load_puzzle"):
+		game_root._load_puzzle()
 		_start_puzzle_timer()
 		_on_show_original_image_pressed()

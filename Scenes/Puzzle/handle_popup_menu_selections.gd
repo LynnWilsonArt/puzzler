@@ -39,55 +39,57 @@ func _on_id_pressed(id: int) -> void:
 		
 		2: # Load puzzle
 			print("Puzzle -> handle_popup_menu_selections.gd -> Load Puzzle Selected: ", id)
-			if puzzle_node and puzzle_node.has_method("load_puzzle"):
-				puzzle_node.load_puzzle()
+			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
+				puzzle_node._load_puzzle()
 			else:
 				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		3: # Save puzzle
 			print("Puzzle -> handle_popup_menu_selections.gd ->  -> Saving puzzle from Puzzle -> PopupMenu -> Save button")
-			Globals.g_save_puzzle()
+			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
+				puzzle_node._save_puzzle()
+			else:
+				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		4: # Goto Main scene
 			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> New Game -> game deleting puzzle from Puzzle -> PopupMenu for web!")
-				Globals.g_delete_puzzle()
+				Globals._g_delete_puzzle()
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
 				# need to swithch scenes not restart app
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
-					Globals.stop_autosave_timer()
-					get_tree().change_scene_to_file("res://Scenes/Main/main.tscn")
+					Globals._stop_autosave_timer()
+					get_tree()._change_scene_to_file("res://Scenes/Main/main.tscn")
 			else:  
-				Globals.stop_autosave_timer()
+				Globals._stop_autosave_timer()
 				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
-				Globals.g_delete_puzzle()
+				Globals._g_delete_puzzle()
 				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
-				Globals.switch_scene("res://Scenes/Main/main.tscn")
+				Globals._switch_scene("res://Scenes/Main/main.tscn")
 				
 		5: # Show settings panel
 			settings_ui.show()
 			 
-				
 		6: # Quit Game
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - web!")
-				Globals.stop_autosave_timer()
-				Globals.g_save_puzzle()
+				Globals._stop_autosave_timer()
+				Globals._g_save_puzzle()
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
 					win.location.href = Globals.web_home_page
 			else:  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - android!")
 				if OS.has_feature("android"):
-					Globals.stop_autosave_timer()
-					Globals.g_save_puzzle()					
+					Globals._stop_autosave_timer()
+					Globals._g_save_puzzle()					
 					BackButtonHandler._move_app_to_background()
 				else:
 					# Standard behavior for Android, Windows, macOS, etc.
 					print("Puzzle -> handle_popup_menu_selections.gd -> Quit - Desktop")
-					Globals.stop_autosave_timer()
-					Globals.g_save_puzzle()
+					Globals._stop_autosave_timer()
+					Globals._g_save_puzzle()
 					get_tree().quit()
 			
