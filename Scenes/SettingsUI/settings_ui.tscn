@@ -34,7 +34,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 theme = ExtResource("2_iey1w")
 button_pressed = true
-text = "  Background Sound On:"
+text = "  Background Music On"
 
 [node name="CloseButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
 unique_name_in_owner = true

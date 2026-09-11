@@ -53,22 +53,10 @@ func _on_id_pressed(id: int) -> void:
 				
 		4: # Goto Main scene
 			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
-			if OS.has_feature("web"):  
-				print("Puzzle -> handle_popup_menu_selections.gd -> New Game -> game deleting puzzle from Puzzle -> PopupMenu for web!")
-				Globals._g_delete_puzzle()
-				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
-				# need to swithch scenes not restart app
-				var win = JavaScriptBridge.get_interface("window")
-				if win:
-					Globals._stop_autosave_timer()
-					get_tree()._change_scene_to_file("res://Scenes/Main/main.tscn")
-			else:  
-				Globals._stop_autosave_timer()
-				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! - could not delete puzzle file -> PopupMenu for android!")
-				Globals._g_delete_puzzle()
-				print("Puzzle -> handle_popup_menu_selections.gd -> Puzzle deleted! -> from Puzzle -> PopupMenu")
-				Globals._switch_scene("res://Scenes/Main/main.tscn")
-				
+			Globals._stop_autosave_timer()
+			Globals._g_delete_puzzle()
+			Globals._switch_scene("res://Scenes/Main/main.tscn")			
+			
 		5: # Show settings panel
 			settings_ui.show()
 			 

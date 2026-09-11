@@ -1,4 +1,7 @@
 <?php
+
+//Versioon 1.0
+
 // CORS Headers (Allows web browsers and Godot HTML5 exports to read the JSON)
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -20,7 +23,8 @@ set_time_limit(300);
 $pixabay_api_key = "25066829-e19f4bd20795e793e3349ffe7";
 $passcode = "Topp3r@19511969!";
 $base_dir = __DIR__ . "/category/"; // <--- Fixed local filesystem path
-$max_images_per_category = 500; // <--- Hard limit: Stops fetching new ones once this cap is reached
+$max_images_per_category = 200; // <--- Hard limit: Stops fetching new ones once this cap is reached
+$page_number=1;
 
 // Read input safely whether sent via POST, GET, or JSON body from Godot Web
 $input_data = [];
@@ -137,9 +141,11 @@ if (!$should_fetch_pixabay && $local_count > 0) {
     $random_filename = basename($random_image_path);
     $photographer = $metadata[$random_filename] ?? "Lynn Wilson Art";
 } else {
+	 $page_number = intdiv($local_count,20);// number pages thay have been downloaded so far
+	 $page_number += 1; // Increment to next page
     // API PATH: Query Pixabay for a fresh batch
     $search_query = urlencode($category);
-    $pixabay_url = "https://pixabay.com/api/?key={$pixabay_api_key}&q={$search_query}&image_type=photo&safesearch=true&per_page=20";
+    $pixabay_url = "https://pixabay.com/api/?key={$pixabay_api_key}&q={$search_query}&image_type=photo&safesearch=true&page={$page_number}&per_page=20";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $pixabay_url);

@@ -28,9 +28,7 @@ func _ready() -> void:
 func fetch_puzzle_image(category_name: String) -> void:
 	request_started.emit()
 	progress_updated.emit(10.0)
-
 	print("Api -> Requesting image metadata for category: ", category_name)
-
 	http_meta_request.cancel_request()
 
 	# 1. Pack sensitive data into the POST body securely using proper String.join() syntax

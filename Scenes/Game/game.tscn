@@ -16,13 +16,15 @@ metadata/_edit_use_anchors_ = true
 oversampling_override = 1.0
 title = ""
 position = Vector2i(25, 50)
-size = Vector2i(200, 100)
+size = Vector2i(233, 127)
 theme = ExtResource("3_qikps")
-dialog_text = "        Great Job!"
+dialog_text = "Puzzle Completed
+Great Job"
 
 [node name="NoInternetPopup" type="AcceptDialog" parent="." unique_id=809572421]
 oversampling_override = 1.0
+title = "Alert"
 initial_position = 1
-size = Vector2i(344, 100)
+size = Vector2i(393, 131)
 theme = ExtResource("3_qikps")
-dialog_text = "ERROR! No internet access."
+dialog_text = " ERROR     No internet access"
