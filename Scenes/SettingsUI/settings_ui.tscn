@@ -36,24 +36,6 @@ theme = ExtResource("2_iey1w")
 button_pressed = true
 text = "  Background Sound On:"
 
-[node name="AudioVolume" type="Label" parent="SettingsPanel/MusicSoundMode" unique_id=997895129]
-layout_mode = 0
-offset_top = 120.0
-offset_right = 506.0
-offset_bottom = 150.0
-theme = ExtResource("2_iey1w")
-text = "Sound Volume"
-
-[node name="VolumeSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/AudioVolume" unique_id=1630362551]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 187.0
-offset_top = 5.0
-offset_right = 487.0
-offset_bottom = 21.0
-size_flags_horizontal = 3
-theme = ExtResource("2_iey1w")
-
 [node name="CloseButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
 unique_name_in_owner = true
 layout_mode = 0
@@ -66,14 +48,50 @@ size_flags_vertical = 8
 theme = ExtResource("2_iey1w")
 text = "Close"
 
-[node name="PuzzleSounds" type="CheckBox" parent="SettingsPanel/MusicSoundMode" unique_id=875415238]
+[node name="EffectsSoundMode" type="CheckBox" parent="SettingsPanel/MusicSoundMode" unique_id=875415238]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 55.0
+offset_top = 110.0
 offset_right = 243.0
-offset_bottom = 93.0
+offset_bottom = 148.0
 theme = SubResource("Theme_gdx28")
 text = "Sound Effects On"
 
+[node name="EffectsVolume" type="Label" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=494234078]
+layout_mode = 0
+offset_top = 50.0
+offset_right = 243.0
+offset_bottom = 88.0
+theme = ExtResource("2_iey1w")
+text = "Effects Volume"
+vertical_alignment = 1
+
+[node name="MusicVolume" type="Label" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=997895129]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = -55.0
+offset_right = 506.0
+offset_bottom = -25.0
+theme = ExtResource("2_iey1w")
+text = "Music Volume"
+
+[node name="MusicSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode/MusicVolume" unique_id=1630362551]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 187.0
+offset_top = 5.0
+offset_right = 487.0
+offset_bottom = 21.0
+size_flags_horizontal = 3
+theme = ExtResource("2_iey1w")
+
+[node name="EffectsSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=1627527299]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 190.0
+offset_top = 63.0
+offset_right = 490.0
+offset_bottom = 79.0
+
 [connection signal="toggled" from="SettingsPanel/MusicSoundMode" to="." method="_on_music_mode_toggled"]
-[connection signal="toggled" from="SettingsPanel/MusicSoundMode/PuzzleSounds" to="." method="_on_puzzle_sounds_toggled"]
+[connection signal="toggled" from="SettingsPanel/MusicSoundMode/EffectsSoundMode" to="." method="_on_effects_sound_mode_toggled"]

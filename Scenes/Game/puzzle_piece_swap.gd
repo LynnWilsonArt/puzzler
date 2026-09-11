@@ -39,8 +39,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	
 	# Play transisition sound
 	print("Playing swoosh sound:")
-	if Settings.sound_effects_mode:
-		Settings.effects_player.play()
+	Settings.play_effect(preload("res://assets/sound/swoosh.mp3"))
 	
 		
 	# Choose an animation style at random
@@ -61,7 +60,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 func _fade_animation(tween: Tween,callback: Callable) -> void:
 	print("Game -> puzzle_piece_swap.gd -> _fade_animation()")
 		
-	# FIXED: Make both tweens run at the same time using parallel loops
+	# Make both tweens run at the same time using parallel loops
 	tween.set_parallel(true)
 	tween.tween_property(self, "modulate:a", 0.0, trans_time)
 	
