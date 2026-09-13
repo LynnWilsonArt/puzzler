@@ -3,9 +3,11 @@
 [ext_resource type="Script" uid="uid://cfhuhnrns6v4c" path="res://Scenes/Puzzle/toggle_puzzle_display.gd" id="1_uyv4d"]
 [ext_resource type="Texture2D" uid="uid://dd4hsealiiskr" path="res://assets/images/game_background.jpg" id="2_36cdp"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
-[ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/open_menu_button.gd" id="3_in6qw"]
-[ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/handle_popup_menu_selections.gd" id="4_0i70x"]
+[ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/puzzle_open_menu_button.gd" id="3_in6qw"]
+[ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd" id="4_0i70x"]
+[ext_resource type="Script" uid="uid://nn61ntqcsn0h" path="res://assets/addons/icy-radio-streamer/stations_popup_menu.gd" id="6_bmt2w"]
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
+[ext_resource type="PackedScene" uid="uid://bpfj8dhfr3kjx" path="res://Scenes/CustomRadioUrl/custom_radio_url.tscn" id="8_bmt2w"]
 
 [node name="Puzzle" type="Control" unique_id=134473009 groups=["hud_display"]]
 layout_mode = 3
@@ -60,15 +62,21 @@ layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 125.0
-offset_bottom = 50.0
+offset_bottom = 51.0
 
-[node name="PopupMenu" type="PopupMenu" parent="PanelContainer" unique_id=1208084737]
-oversampling_override = 1.0
-size = Vector2i(327, 224)
-visible = true
+[node name="PuzzleOpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
+layout_mode = 2
 theme = ExtResource("2_in6qw")
 theme_override_font_sizes/font_size = 18
-item_count = 7
+text = "Open Menu"
+script = ExtResource("3_in6qw")
+
+[node name="PuzzlePopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1208084737]
+oversampling_override = 1.0
+size = Vector2i(327, 251)
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 18
+item_count = 9
 item_0/text = "Toggle Original Image"
 item_0/id = 0
 item_1/text = "Skip To Next Image"
@@ -81,16 +89,33 @@ item_4/text = "New Puzzle"
 item_4/id = 4
 item_5/text = "Settings"
 item_5/id = 5
-item_6/text = "Quit"
+item_6/text = "Select Radio Station"
 item_6/id = 6
+item_7/text = "Your Stream Url"
+item_7/id = 7
+item_8/text = "Quit"
+item_8/id = 8
 script = ExtResource("4_0i70x")
 
-[node name="OpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
-layout_mode = 2
+[node name="StationsPopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" unique_id=183858871]
+oversampling_override = 1.0
+title = "Select Radio Station"
+position = Vector2i(25, 85)
+size = Vector2i(800, 300)
 theme = ExtResource("2_in6qw")
-theme_override_font_sizes/font_size = 18
-text = "Open Menu"
-script = ExtResource("3_in6qw")
+item_count = 2
+item_0/text = "Radiocastfm.com"
+item_0/id = 0
+item_1/text = "Country 181.fm "
+item_1/id = 1
+script = ExtResource("6_bmt2w")
+
+[node name="SettingsUI" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=518924563 instance=ExtResource("6_c21s6")]
+layout_mode = 0
+
+[node name="CustomRadioUrl" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1397735380 instance=ExtResource("8_bmt2w")]
+visible = false
+layout_mode = 0
 
 [node name="Credits" type="Label" parent="." unique_id=693930970]
 layout_mode = 1
@@ -108,9 +133,6 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "Image provided by Pixabay.com"
 
-[node name="SettingsUI" parent="." unique_id=518924563 instance=ExtResource("6_c21s6")]
-visible = false
-layout_mode = 0
-
-[connection signal="id_pressed" from="PanelContainer/PopupMenu" to="PanelContainer/PopupMenu" method="_on_id_pressed"]
-[connection signal="pressed" from="PanelContainer/OpenMenuButton" to="PanelContainer/OpenMenuButton" method="_on_pressed"]
+[connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
+[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]
+[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" method="_on_id_pressed"]

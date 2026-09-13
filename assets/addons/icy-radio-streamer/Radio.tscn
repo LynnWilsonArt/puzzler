@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dh0oj81pufivs"]
+
+[ext_resource type="Script" uid="uid://bkwk40ybs8kgm" path="res://assets/addons/icy-radio-streamer/radio.gd" id="1_jdh55"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_2jas5"]
+buffer_length = 2.0
+
+[node name="RadioNode2D" type="Node2D" unique_id=1923037965 node_paths=PackedStringArray("radio_player")]
+script = ExtResource("1_jdh55")
+radio_player = NodePath("Radio")
+
+[node name="Radio" type="AudioStreamPlayer" parent="." unique_id=1429002208]
+stream = SubResource("AudioStreamGenerator_2jas5")
+bus = &"Music"
+playback_type = 1
+
+[node name="Timer" type="Timer" parent="." unique_id=1914064819]

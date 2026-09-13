@@ -5,4 +5,4 @@ extends Node2D
 func _ready() -> void:
 	# Stopping -> starts in game.gd
 	Globals.autosave_timer.stop()
-	pass
+# Load all settings and applu settings

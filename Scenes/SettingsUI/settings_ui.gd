@@ -9,42 +9,42 @@ extends Control
 
 
 func _ready() -> void:
-	print("SettingsUI ->  ready()")
+	print("SettingsUI.gd ->  ready()")
 	_update_ui_state()
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	effects_volume_slider.value_changed.connect(_on_effects_volume_changed)
 	close_button.pressed.connect(_on_close_pressed)
 	Settings.settings_changed.connect(_on_settings_changed)
-	music_sound_checkBox.button_pressed = Settings.bg_audio_mode # Sets the checkbox 
+	print("SettingsUI->ready()->radio_mode: ",Settings.radio_mode)
+	music_sound_checkBox.button_pressed = Settings.radio_mode # Sets the checkbox 
 		
 	
 func _on_music_volume_changed(music_val: float) -> void:
-	print("SettingsUI ->  _on_music_volume_changer()")
-	Settings.audio_volume = music_val / 100.0
+	print("SettingsUI.gd ->    _on_music_volume_changer()")
+	Settings.music_volume = music_val / 100.0
 	#Settings.effects_volume = effects_val /100.0
 	Settings._apply_settings()
 
 func _on_effects_volume_changed(effects_val: float) -> void:
-	print("SettingsUI ->  _on_effects_volume_changes()")
+	print("SettingsUI.gd ->  _on_effects_volume_changes()")
 	Settings.effects_volume = effects_val / 100.0
 	Settings._apply_settings()
 	
 	
 func _on_close_pressed() -> void:
-	print("SettingsUI ->  _on_close_presses()")
+	print("SettingsUI.gd ->  _on_close_presses()")
 	Settings._save_settings()
-	Settings._apply_settings()
 	hide()
 
 func _on_settings_changed() -> void:
-	print("SettingsUI ->  _on_settings_changed()")
+	print("SettingsUI.gd ->  _on_settings_changed()")
 	_update_ui_state()
 
 func _update_ui_state() -> void:
-	print("SettingsUI ->  _update_ui_state()")
+	print("SettingsUI.gd ->  _update_ui_state()")
 	# Update music volume slider smoothly without firing unwanted signals
 	music_volume_slider.set_block_signals(true)
-	music_volume_slider.value = Settings.audio_volume * 100.0
+	music_volume_slider.value = Settings.music_volume * 100.0
 	music_volume_slider.set_block_signals(false)
 	
 	# Update effects volume slider smoothly without firing unwanted signals
@@ -54,7 +54,7 @@ func _update_ui_state() -> void:
 	
 	# Use button_pressed , and block signals
 	music_sound_checkBox.set_block_signals(true)
-	music_sound_checkBox.button_pressed = Settings.bg_audio_mode
+	music_sound_checkBox.button_pressed =  Settings.radio_mode
 	music_sound_checkBox.set_block_signals(false)
 	
 	# Use button_pressed , and block signals
@@ -63,10 +63,13 @@ func _update_ui_state() -> void:
 	effects_sound_checkBox.set_block_signals(false)
 	
 func _on_music_mode_toggled(toggled_on: bool) -> void:
-	print("SettingsUI ->  _on_music_mode_toggled()")
+	print("SettingsUI.gd ->  _on_music_mode_toggled() Mode: ",toggled_on)
 	Settings._set_bg_music_mode(toggled_on)
 
+
 func _on_effects_sound_mode_toggled(toggled_on: bool) -> void:
-	print("SettingsUI ->  _on_effects_mode_toggled()")
+	print("SettingsUI.gd ->  _on_effects_mode_toggled()")
 	print("Setting effects mode: ",toggled_on)
 	Settings._set_effects_audio_mode(toggled_on)
+	
+	

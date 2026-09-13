@@ -1,4 +1,4 @@
-# res://Scenes/Select_level/level_popup_menu.gd
+# res://Scenes/Select_level/select_level_popup_menu.gd
 extends PopupMenu
 
 

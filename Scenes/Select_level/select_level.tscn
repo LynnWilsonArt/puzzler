@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://dhvlvj4dfjn5u"]
 
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_jmnsq"]
-[ext_resource type="Script" uid="uid://deh084x8taufe" path="res://Scenes/Select_level/level_popup_menu.gd" id="2_vxwsp"]
+[ext_resource type="Script" uid="uid://deh084x8taufe" path="res://Scenes/Select_level/select_level_popup_menu.gd" id="2_vxwsp"]
+[ext_resource type="Script" uid="uid://b6q7lpkvch4fk" path="res://Scenes/Select_level/select_level_menu_button.gd" id="3_osac7"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="3_u7ow7"]
-[ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/open_menu_button.gd" id="3_vxwsp"]
 
 [node name="SelectLevelMenu" type="CanvasLayer" unique_id=734487808]
 
@@ -14,7 +14,16 @@ offset_right = 125.0
 offset_bottom = 50.0
 theme_override_styles/panel = ExtResource("3_u7ow7")
 
-[node name="PopupMenu" type="PopupMenu" parent="PanelContainer" unique_id=747482595]
+[node name="SelectLevelOpenMenuButton" type="Button" parent="PanelContainer" unique_id=1776515590]
+layout_mode = 2
+theme = ExtResource("1_jmnsq")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = ExtResource("3_u7ow7")
+theme_override_styles/hover = ExtResource("3_u7ow7")
+text = "Select Level"
+script = ExtResource("3_osac7")
+
+[node name="SelectLevelPopupMenu" type="PopupMenu" parent="PanelContainer/SelectLevelOpenMenuButton" unique_id=747482595]
 oversampling_override = 1.0
 position = Vector2i(500, 460)
 size = Vector2i(288, 416)
@@ -46,14 +55,4 @@ item_11/text = "Level 12  Legendary"
 item_11/id = 11
 script = ExtResource("2_vxwsp")
 
-[node name="SelectLevelMenuButton" type="Button" parent="PanelContainer" unique_id=1776515590]
-layout_mode = 2
-theme = ExtResource("1_jmnsq")
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = ExtResource("3_u7ow7")
-theme_override_styles/hover = ExtResource("3_u7ow7")
-text = "Select Level"
-script = ExtResource("3_vxwsp")
-
-[connection signal="id_pressed" from="PanelContainer/PopupMenu" to="PanelContainer/PopupMenu" method="_on_id_pressed"]
-[connection signal="pressed" from="PanelContainer/SelectLevelMenuButton" to="PanelContainer/SelectLevelMenuButton" method="_on_pressed"]
+[connection signal="pressed" from="PanelContainer/SelectLevelOpenMenuButton" to="PanelContainer/SelectLevelOpenMenuButton" method="_on_pressed"]

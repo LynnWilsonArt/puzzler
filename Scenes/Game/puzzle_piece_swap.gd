@@ -12,6 +12,7 @@ var active_tween: Tween = null
 var trans_time: float = 0.4
 	
 func _ready() -> void:
+	
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	original_texture = texture
 
@@ -29,7 +30,7 @@ func _gui_input(event: InputEvent) -> void:
 #   • call `callback` when finished
 # -------------------------------------------------------
 func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
-	print("Game -> puzzle_piece_swap.gd -> animate_swap()")
+	print("puzzle_piece_swap.gd -> animate_swap()")
 		
 	# Check if the current tween is running using Godot 4 syntax
 	if active_tween and active_tween.is_running():
@@ -38,7 +39,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	active_tween = create_tween()
 	
 	# Play transisition sound
-	print("Playing swoosh sound:")
+	print("puzzle_piece_swap.gd -> Playing swoosh sound:")
 	Settings._play_effect(preload("res://assets/sound/swoosh.mp3"))
 	
 		
@@ -58,7 +59,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 # 1️⃣  Fade: old piece fades out, new piece fades in
 # ------------------------------------------------------------------
 func _fade_animation(tween: Tween,callback: Callable) -> void:
-	print("Game -> puzzle_piece_swap.gd -> _fade_animation()")
+	print("puzzle_piece_swap.gd -> _fade_animation()")
 		
 	# Make both tweens run at the same time using parallel loops
 	tween.set_parallel(true)
@@ -74,7 +75,7 @@ func _fade_animation(tween: Tween,callback: Callable) -> void:
 # 2️⃣  Scale: shrink to 0, then grow to normal size
 # ------------------------------------------------------------------
 func _scale_animation(tween: Tween, callback: Callable) -> void:
-	print("Game -> puzzle_piece_swap.gd -> _sacle_animation()")
+	print("puzzle_piece_swap.gd -> _sacle_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -82,14 +83,13 @@ func _scale_animation(tween: Tween, callback: Callable) -> void:
 	
 	tween.tween_property(self, "scale", Vector2.ZERO, trans_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_property(self, "scale", orig_scale, trans_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	print("Game -> puzzle_piece_swap.gd -> Scale transition")
 	tween.finished.connect(callback) 
 
 # ------------------------------------------------------------------
 # 3️⃣  Rotate: rotate 180° around the centre
 # ------------------------------------------------------------------
 func _rotate_animation(tween: Tween, callback: Callable) -> void:
-	print("Game -> puzzle_piece_swap.gd -> _rotate_animation()")
+	print("puzzle_piece_swap.gd -> _rotate_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -106,7 +106,7 @@ func _rotate_animation(tween: Tween, callback: Callable) -> void:
 # 4️⃣  Flip: a horizontal “mirror” flip (scale.x = -1)
 # ------------------------------------------------------------------
 func _flip_animation(tween: Tween, callback: Callable) -> void:
-	print("Game -> puzzle_piece_swap.gd -> _flip_animation()")
+	print("puzzle_piece_swap.gd -> _flip_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -114,7 +114,7 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	
 	tween.tween_property(self, "scale:x", -orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "scale:x", orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	print("Game -> puzzle_piece_swap.gd ->Flip transition")
+	print("puzzle_piece_swap.gd ->Flip transition")
 	tween.finished.connect(callback)
 	
 	# Add this inside res://Scenes/Game/puzzle_piece_swap.gd

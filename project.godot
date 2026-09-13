@@ -19,12 +19,17 @@ boot_splash/image="uid://chbbju2ttap7y"
 config/icon="uid://cewahu5j0d8d8"
 boot_splash/minimum_display_time=2000
 
+[audio]
+
+buses/default_bus_layout="uid://ot36b1a85fq6"
+
 [autoload]
 
 BackButtonHandler="*uid://bxh2i3xkndpy"
 Api="*uid://vcl72bkf6uk4"
 Globals="*uid://bctar4inn8iw0"
 Settings="*uid://bjmvfw13nl5tu"
+Radio="*uid://dh0oj81pufivs"
 
 [display]
 

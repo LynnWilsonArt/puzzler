@@ -6,6 +6,7 @@
 [sub_resource type="Theme" id="Theme_gdx28"]
 
 [node name="SettingsUI" type="Control" unique_id=518924563]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_dm7qj")
@@ -34,6 +35,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 theme = ExtResource("2_iey1w")
 button_pressed = true
+action_mode = 0
 text = "  Background Music On"
 
 [node name="CloseButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]

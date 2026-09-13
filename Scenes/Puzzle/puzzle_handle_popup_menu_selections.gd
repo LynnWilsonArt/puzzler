@@ -1,10 +1,13 @@
-# res://Scenes/Puzzle/handle_popup_menu_selections.gd
+# res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd
 extends PopupMenu
 
 @onready var puzzle_node: Node = get_node_or_null("../..")
 @onready var game_scene: Node = get_node_or_null("../../..")
 @onready var main_node: Node = get_node_or_null("/root/Main") 
-@onready var settings_ui: Control = $"../../SettingsUI"
+@onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
+@onready var custom_radio_url: Control = $"../CustomRadioUrl"
+@onready var settings_ui: Control = $"../SettingsUI"
+@onready var puzzle_popup_menu: PopupMenu = $"."
 
 
 func _ready() -> void:
@@ -55,12 +58,18 @@ func _on_id_pressed(id: int) -> void:
 			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
 			Globals._stop_autosave_timer()
 			Globals._g_delete_puzzle()
-			Globals._switch_scene("res://Scenes/Main/main.tscn")			
+			Globals._switch_scene("res://Scenes/Main/main.tscn")
 			
-		5: # Show settings panel
+		5: # Show settings panel screen
 			settings_ui.show()
-			 
-		6: # Quit Game
+			
+		6: #Show Station Selection ecreen
+			stations_popup_menu.show()
+			
+		7: # Show Input url screen
+			custom_radio_url.show()
+		 
+		8: # Quit Game
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - web!")
 				Globals._stop_autosave_timer()
