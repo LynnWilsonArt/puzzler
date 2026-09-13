@@ -5,7 +5,7 @@
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
 [ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/puzzle_open_menu_button.gd" id="3_in6qw"]
 [ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd" id="4_0i70x"]
-[ext_resource type="Script" uid="uid://nn61ntqcsn0h" path="res://assets/addons/icy-radio-streamer/stations_popup_menu.gd" id="6_bmt2w"]
+[ext_resource type="Script" uid="uid://bbelnsma2lmvy" path="res://Scenes/Puzzle/puzzle_stations_popup_menu.gd" id="6_bmt2w"]
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
 [ext_resource type="PackedScene" uid="uid://bpfj8dhfr3kjx" path="res://Scenes/CustomRadioUrl/custom_radio_url.tscn" id="8_bmt2w"]
 
@@ -103,14 +103,29 @@ title = "Select Radio Station"
 position = Vector2i(25, 85)
 size = Vector2i(800, 300)
 theme = ExtResource("2_in6qw")
-item_count = 2
-item_0/text = "Radiocastfm.com"
+item_count = 9
+item_0/text = "Awesom 80's "
 item_0/id = 0
-item_1/text = "Country 181.fm "
+item_1/text = "Country "
 item_1/id = 1
+item_2/text = "Rock "
+item_2/id = 2
+item_3/text = "Soul"
+item_3/id = 3
+item_4/text = "The Beat (HipHop & R&B)"
+item_4/id = 4
+item_5/text = "True Blues"
+item_5/id = 5
+item_6/text = "Classical "
+item_6/id = 6
+item_7/text = "Classical Guitar "
+item_7/id = 7
+item_8/text = "Classical Jazz"
+item_8/id = 8
 script = ExtResource("6_bmt2w")
 
 [node name="SettingsUI" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=518924563 instance=ExtResource("6_c21s6")]
+visible = false
 layout_mode = 0
 
 [node name="CustomRadioUrl" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1397735380 instance=ExtResource("8_bmt2w")]

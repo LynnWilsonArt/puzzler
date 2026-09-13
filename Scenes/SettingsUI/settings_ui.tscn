@@ -6,7 +6,6 @@
 [sub_resource type="Theme" id="Theme_gdx28"]
 
 [node name="SettingsUI" type="Control" unique_id=518924563]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_dm7qj")
@@ -38,7 +37,7 @@ button_pressed = true
 action_mode = 0
 text = "  Background Music On"
 
-[node name="CloseButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
+[node name="CancelButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 218.0
@@ -48,7 +47,7 @@ offset_bottom = 241.0
 size_flags_horizontal = 4
 size_flags_vertical = 8
 theme = ExtResource("2_iey1w")
-text = "Close"
+text = "Cancel"
 
 [node name="EffectsSoundMode" type="CheckBox" parent="SettingsPanel/MusicSoundMode" unique_id=875415238]
 unique_name_in_owner = true

@@ -2,7 +2,7 @@
 extends Control
 
 @onready var music_volume_slider: HSlider = %MusicSlider
-@onready var close_button: Button = %CloseButton
+@onready var close_button: Button = %CancelButton
 @onready var music_sound_checkBox: CheckBox = %MusicSoundMode
 @onready var effects_sound_checkBox: CheckBox = %EffectsSoundMode
 @onready var effects_volume_slider: HSlider = %EffectsSlider
