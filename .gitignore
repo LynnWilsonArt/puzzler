@@ -20,7 +20,6 @@ Thumbs.db
 *.log
 
 # addon
-/addons/icy-radio-streamer/bin/
 src/*.obj
 
 # Godot-cpp
