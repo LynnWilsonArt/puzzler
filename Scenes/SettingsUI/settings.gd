@@ -18,6 +18,7 @@ var radio_mode: bool = false # Playing / Not Playing
 var station_url: String = ""
 # Add near your other public properties
 var custom_stations: Array[String] = []
+var DEFAULT_RADIO_URL:  String = "https://listen.181fm.com/181-realcountry_128k.mp3"
 
 # ------------------------------------------------------------------
 # Constants
@@ -32,6 +33,7 @@ func _ready() -> void:
 	print("Settings.gd -> _ready()")
 	_set_bg_music_mode(true) # Set inital radio state to playing
 	_load_settings()
+	
 	_create_radio_palyer()
 	_create_audio_effects_player()
 	_apply_settings()
@@ -97,6 +99,8 @@ func _load_settings() -> void:
 		music_volume = float(data.get("music_volume", music_volume))
 		effects_volume = float(data.get("effects_volume", effects_volume))
 		Radio.station_url = String(data.get("station_url",station_url))
+		if !Radio.station_url:
+			Radio.station_url = DEFAULT_RADIO_URL
 		sound_effects_mode = bool(data.get("sound_effects_mode",sound_effects_mode))
 		radio_mode = bool(data.get("radio_mode",radio_mode)) # sets radio the playing or not playing
 
