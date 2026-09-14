@@ -27,38 +27,41 @@ offset_right = 806.0
 offset_bottom = 296.0
 theme_override_constants/separation = 10
 
-[node name="MusicSoundMode" type="CheckBox" parent="SettingsPanel" unique_id=1361066450]
-unique_name_in_owner = true
+[node name="RadioToggleLabel" type="Label" parent="SettingsPanel" unique_id=889305395]
 layout_mode = 2
 size_flags_horizontal = 0
-size_flags_vertical = 4
 theme = ExtResource("2_iey1w")
-button_pressed = true
-action_mode = 0
-text = "  Background Music On"
+text = "Radio:  "
 
-[node name="CancelButton" type="Button" parent="SettingsPanel/MusicSoundMode" unique_id=1964400075]
+[node name="RadioOnButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1600443783]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 218.0
-offset_top = 203.0
-offset_right = 296.0
-offset_bottom = 241.0
-size_flags_horizontal = 4
-size_flags_vertical = 8
+offset_left = 88.0
+offset_top = -3.0
+offset_right = 133.0
+offset_bottom = 35.0
 theme = ExtResource("2_iey1w")
-text = "Cancel"
+text = "On"
 
-[node name="EffectsSoundMode" type="CheckBox" parent="SettingsPanel/MusicSoundMode" unique_id=875415238]
+[node name="RadioOffButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1960727817]
 unique_name_in_owner = true
+layout_mode = 0
+offset_left = 154.0
+offset_top = -3.0
+offset_right = 207.0
+offset_bottom = 35.0
+theme = ExtResource("2_iey1w")
+text = "Off"
+
+[node name="EffectsToggleLabel" type="Label" parent="SettingsPanel/RadioToggleLabel" unique_id=1805493989]
 layout_mode = 0
 offset_top = 110.0
-offset_right = 243.0
-offset_bottom = 148.0
+offset_right = 184.0
+offset_bottom = 144.0
 theme = SubResource("Theme_gdx28")
-text = "Sound Effects On"
+text = "Sound Effects:  "
 
-[node name="EffectsVolume" type="Label" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=494234078]
+[node name="EffectsVolume" type="Label" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=494234078]
 layout_mode = 0
 offset_top = 50.0
 offset_right = 243.0
@@ -67,7 +70,7 @@ theme = ExtResource("2_iey1w")
 text = "Effects Volume"
 vertical_alignment = 1
 
-[node name="MusicVolume" type="Label" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=997895129]
+[node name="MusicVolume" type="Label" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=997895129]
 unique_name_in_owner = true
 layout_mode = 0
 offset_top = -55.0
@@ -76,7 +79,7 @@ offset_bottom = -25.0
 theme = ExtResource("2_iey1w")
 text = "Music Volume"
 
-[node name="MusicSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode/MusicVolume" unique_id=1630362551]
+[node name="MusicSlider" type="HSlider" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/MusicVolume" unique_id=1630362551]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 187.0
@@ -86,7 +89,7 @@ offset_bottom = 21.0
 size_flags_horizontal = 3
 theme = ExtResource("2_iey1w")
 
-[node name="EffectsSlider" type="HSlider" parent="SettingsPanel/MusicSoundMode/EffectsSoundMode" unique_id=1627527299]
+[node name="EffectsSlider" type="HSlider" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1627527299]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 190.0
@@ -94,5 +97,39 @@ offset_top = 63.0
 offset_right = 490.0
 offset_bottom = 79.0
 
-[connection signal="toggled" from="SettingsPanel/MusicSoundMode" to="." method="_on_music_mode_toggled"]
-[connection signal="toggled" from="SettingsPanel/MusicSoundMode/EffectsSoundMode" to="." method="_on_effects_sound_mode_toggled"]
+[node name="EffectsOnButton" type="Button" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1264946435]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 185.0
+offset_right = 230.0
+offset_bottom = 38.0
+theme = ExtResource("2_iey1w")
+text = "On"
+
+[node name="EffectsOffButton" type="Button" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=33033226]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 253.0
+offset_top = -2.0
+offset_right = 306.0
+offset_bottom = 36.0
+theme = ExtResource("2_iey1w")
+text = "Off"
+
+[node name="CloseButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1964400075]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 218.0
+offset_top = 203.0
+offset_right = 296.0
+offset_bottom = 241.0
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme = ExtResource("2_iey1w")
+text = "Close"
+
+[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/RadioOnButton" to="." method="_on_music_on_pressed"]
+[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/RadioOffButton" to="." method="_on_music_off_pressed"]
+[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOnButton" to="." method="_on_effects_on_button_pressed"]
+[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOffButton" to="." method="_on_effects_off_button_pressed"]
+[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/CloseButton" to="." method="_on_close_button_pressed"]

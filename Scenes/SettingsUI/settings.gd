@@ -16,9 +16,8 @@ var effects_player = AudioStreamPlayer.new()
 var sound_effects_mode: bool = true
 var radio_mode: bool = false # Playing / Not Playing
 var station_url: String = ""
-
-
-
+# Add near your other public properties
+var custom_stations: Array[String] = []
 
 # ------------------------------------------------------------------
 # Constants
@@ -35,7 +34,7 @@ func _ready() -> void:
 	_create_radio_palyer()
 	_create_audio_effects_player()
 	_apply_settings()
-	print("End of _ready()")
+	print("Settings.gd -> End of _ready()")
 	
 #--------------------------------------------------------------------
 # Detect notifications
@@ -58,7 +57,7 @@ func _notification(what: int) -> void:
 #--------------------------------------------------------------------
 func _apply_settings() -> void:
 	print("Settings.gd -> _apply_settings()")
-	print("_apply_settings() -> Push the stored settings into the engine.")
+	print("Settings.gd -> _apply_settings() -> Push the stored settings into the engine.")
 	
 	# Audio (bus 0 = Master)
 	#AudioServer.set_bus_volume_db(0, linear_to_db(clampf(music_volume, 0.0, 1.0)))
@@ -71,7 +70,7 @@ func _apply_settings() -> void:
 	_set_bg_music_mode(radio_mode)
 	_save_settings() # save the just applied settings.
 	settings_changed.emit()
-	print("_apply_settings() -> SUCCESS! Saved settings applied!")
+	print("Settings.gd -> _apply_settings() -> SUCCESS! Saved settings applied!")
 	
 
 # -------------------------------------------------------------------
@@ -80,13 +79,13 @@ func _apply_settings() -> void:
 func _load_settings() -> void:
 	print("Settings.gd -> _load_settings()")
 	if not FileAccess.file_exists(CONFIG_FILE):
-		print("Load_settings -> Config file does not exist - Creating one!")
+		print("Settings.gd -> Load_settings -> Config file does not exist - Creating one!")
 		_save_settings() # Create the file
 		return
 
 	var file := FileAccess.open(CONFIG_FILE, FileAccess.READ)
 	if not file:
-		push_error("Load_settings -> Config file does not exist!")
+		push_error("Settings.gd ->  Load_settings -> Config file does not exist!")
 		return
 
 	var json_data: Variant = JSON.parse_string(file.get_as_text())
@@ -99,9 +98,15 @@ func _load_settings() -> void:
 		Radio.station_url = String(data.get("station_url",station_url))
 		sound_effects_mode = bool(data.get("sound_effects_mode",sound_effects_mode))
 		radio_mode = bool(data.get("radio_mode",radio_mode)) # sets radio the playing or not playing
-		print("_load_settings() -> SUCCESS! Loaded saved settings.")
+
+		var raw_stations: Array = data.get("custom_stations", [])
+		custom_stations.clear()
+		for s in raw_stations:
+			custom_stations.append(String(s))
+
+		print("Settings.gd -> _load_settings() -> SUCCESS! Loaded saved settings.")
 	else:
-		push_error("ERROR! Unable to load settings")
+		push_error("Settings.gd -> ERROR! Unable to load settings")
 #------------------------------------------------------------------
 # Music Player
 #--------------------------------------------------------------------
@@ -109,7 +114,7 @@ func _create_radio_palyer() -> void:
 	print("Settings.gd -> _create_radio_player()")
 	music_player.bus = "Music"
 	add_child(music_player)
-	print("_create_radio_player() -> SUCCESS! Created radio_player! ")
+	print("Settings.gd -> _create_radio_player() -> SUCCESS! Created radio_player! ")
 	
 #----------------------------------------------------------------------
 # Effects Audio Player
@@ -117,14 +122,14 @@ func _create_radio_palyer() -> void:
 func _create_audio_effects_player() -> void:
 	print("Settings.gd -> _create_audio_effects_player()")
 	var track_path = load('res://assets/sound/swoosh.mp3')
-	print("_create_audio_effects_player() -> Loaded track swoosh.mp3")
+	print("Settings.gd -> _create_audio_effects_player() -> Loaded track swoosh.mp3")
 	effects_player.stream = track_path
-	print("_create_audio_effects_player() -> Assigned to Effects bus")
+	print("Settings.gd -> _create_audio_effects_player() -> Assigned to Effects bus")
 	effects_player.bus = "Effects"   # route to its own bus
 	add_child(effects_player)
 	if effects_player.playing:
 		effects_player.stop()
-	print("_create_audio_effects_player() -> SUCCESS! Created effects_player!")
+	print("Settings.gd -> _create_audio_effects_player() -> SUCCESS! Created effects_player!")
 	
 #---------------------------------------------------------------------	
 # Set Effects Volume
@@ -133,9 +138,9 @@ func _set_effects_volume(value: float) -> void:
 	print("Settings.gd -> _set_effects_volume(value)")
 	effects_volume = clampf(value, 0.0, 1.0)
 	var bus_idx = AudioServer.get_bus_index("Effects")
-	print("_set_effects_volume() -> Effects vars, vol, bus_idx",effects_volume, bus_idx)
+	print("Settings.gd -> _set_effects_volume() -> Effects vars, vol, bus_idx",effects_volume, bus_idx)
 	AudioServer.set_bus_volume_db(bus_idx, linear_to_db(effects_volume))
-	print("_set_effects_volume -> Done!")
+	print("Settings.gd -> _set_effects_volume -> Done!")
 	
 #------------------------------------------------------------------------
 # Set music volume
@@ -144,9 +149,9 @@ func _set_music_volume(value: float) -> void:
 	print("Settings.gd -> _set_music_volume(value)")
 	music_volume = clampf(value, 0.0, 1.0)
 	var bus_idx = AudioServer.get_bus_index("Music")
-	print("_set_music_volume() -> Music vars, vol, bus_idx",effects_volume, bus_idx)
+	print("Settings.gd -> _set_music_volume() -> Music vars, vol, bus_idx",effects_volume, bus_idx)
 	AudioServer.set_bus_volume_db(bus_idx, linear_to_db(music_volume))
-	print("_set_music_volume() -> Done!")
+	print("Settings.gd -> _set_music_volume() -> Done!")
 	
 # -------------------------------------------------------------------
 # Save settings
@@ -159,7 +164,7 @@ func _save_settings() -> void:
 		"station_url": Radio.station_url,
 		"sound_effects_mode": sound_effects_mode,
 		"radio_mode": radio_mode,
-		
+		"custom_stations": custom_stations
 	}
 	var file := FileAccess.open(CONFIG_FILE, FileAccess.WRITE)
 	if file:
@@ -172,41 +177,40 @@ func _set_bg_music_mode(mode) -> void:
 	print("Settings.gd -> _set_bg_music_mode(mode): ", mode)
 	# Sets music on or off
 	radio_mode = mode
-	
-	if mode:
-		# Wait on radio buffer to get full before starting play.
-		await get_tree().create_timer(1.0, false, false, true).timeout
-		Radio.radio_player.stream_paused = false
-		print("_set_bg_music_mode(mode) -> Success! Unpaused Radio stream pLaying.")
-	
-	if !mode:
-		print("_set_bg_music_mode(mode) -> Success! Paused Radio stream playing")
-		Radio.radio_player.stream_paused = true
-	
-	
+	Radio.radio_player.stream_paused = !mode
 #--------------------------------------------------------------------
 # Set sound effects mode (mute toggle only — does NOT trigger playback)
 #--------------------------------------------------------------------
 func _set_effects_audio_mode(mode) -> void:
 	print("Settings.gd -> _set_effects_audio_mode(mode): ", mode)
 	sound_effects_mode = mode
-	print("_set_effects_audio_mode(mode) -> Effects Mode set to: ", mode)
-	print("_set_effects_audio_mode(mode) -> Assigned to Effects bus.")
+	print("Settings.gd -> _set_effects_audio_mode(mode) -> Effects Mode set to: ", mode)
+	print("Settings.gd -> _set_effects_audio_mode(mode) -> Assigned to Effects bus.")
 	var bus_idx = AudioServer.get_bus_index("Effects")
 	if bus_idx != -1:
 		AudioServer.set_bus_mute(bus_idx, not mode)
 		
-	print("_set_effects_audio_mode(mode) -> SUCCESS! Set effects audio mode: ",mode)
+	print("Settings.gd -> _set_effects_audio_mode(mode) -> SUCCESS! Set effects audio mode: ",mode)
 		
 #-----------------------------------------------------------------------
 # Call this from wherever your game triggers an effect (button click, etc.)
 #------------------------------------------------------------------------
 func _play_effect(stream: AudioStream) -> void:
 	print("Settings.gd -> _play_effect(stream) ")
-	print("_play_effect() -> Playing sound effect!")
+	print("Settings.gd -> _play_effect() -> Playing sound effect!")
 	if not sound_effects_mode:
-		print("_play_effect() -> Could not play effect - sound_effects_mode = false")
+		print("Settings.gd -> _play_effect() -> Could not play effect - sound_effects_mode = false")
 		return
 	# Play the effect
 	effects_player.stream = stream
 	effects_player.play()
+	
+func _add_custom_station(url: String) -> void:
+	print("Settings.gd -> _add_custom_station(): ", url)
+	if url.is_empty():
+		return
+	if custom_stations.has(url):
+		print("Settings.gd -> _add_custom_station() -> URL already saved, skipping.")
+		return
+	custom_stations.append(url)
+	_save_settings()

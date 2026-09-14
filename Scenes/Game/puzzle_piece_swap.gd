@@ -1,4 +1,4 @@
-# res://Scenes/Game/puzzle_piece_swap.gd
+# res://Scenes/Game/Puzzle_piece_swap.gd
 extends TextureRect
 # puzzle_piece_swap script to swap the puzzle pieces
 # Signal that we use to tell the parent puzzle that this piece was clicked
@@ -30,7 +30,7 @@ func _gui_input(event: InputEvent) -> void:
 #   • call `callback` when finished
 # -------------------------------------------------------
 func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
-	print("puzzle_piece_swap.gd -> animate_swap()")
+	print("Puzzle_piece_swap.gd -> animate_swap()")
 		
 	# Check if the current tween is running using Godot 4 syntax
 	if active_tween and active_tween.is_running():
@@ -39,7 +39,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 	active_tween = create_tween()
 	
 	# Play transisition sound
-	print("puzzle_piece_swap.gd -> Playing swoosh sound:")
+	print("Puzzle_piece_swap.gd -> Playing swoosh sound:")
 	Settings._play_effect(preload("res://assets/sound/swoosh.mp3"))
 	
 		
@@ -59,7 +59,7 @@ func animate_swap(_target_piece: TextureRect, callback: Callable) -> void:
 # 1️⃣  Fade: old piece fades out, new piece fades in
 # ------------------------------------------------------------------
 func _fade_animation(tween: Tween,callback: Callable) -> void:
-	print("puzzle_piece_swap.gd -> _fade_animation()")
+	print("Puzzle_piece_swap.gd -> _fade_animation()")
 		
 	# Make both tweens run at the same time using parallel loops
 	tween.set_parallel(true)
@@ -68,14 +68,14 @@ func _fade_animation(tween: Tween,callback: Callable) -> void:
 	# Clean up opacity reset chained when the total sequence concludes
 	tween.chain().tween_property(self, "modulate:a", 1.0, 0.0)
 	
-	print("Game -> puzzle_piece_swap.gd -> Fade transition")
+	print(" Puzzle_piece_swap.gd -> Fade transition")
 	tween.finished.connect(callback)
 
 # ------------------------------------------------------------------
 # 2️⃣  Scale: shrink to 0, then grow to normal size
 # ------------------------------------------------------------------
 func _scale_animation(tween: Tween, callback: Callable) -> void:
-	print("puzzle_piece_swap.gd -> _sacle_animation()")
+	print("Puzzle_piece_swap.gd -> _sacle_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -89,7 +89,7 @@ func _scale_animation(tween: Tween, callback: Callable) -> void:
 # 3️⃣  Rotate: rotate 180° around the centre
 # ------------------------------------------------------------------
 func _rotate_animation(tween: Tween, callback: Callable) -> void:
-	print("puzzle_piece_swap.gd -> _rotate_animation()")
+	print("Puzzle_piece_swap.gd -> _rotate_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -99,14 +99,14 @@ func _rotate_animation(tween: Tween, callback: Callable) -> void:
 	
 	# Clean up rotation values back to default after layout swaps textures
 	tween.chain().tween_property(self, "rotation", orig_rotation, 0.0)
-	print("Game -> puzzle_piece_swap.gd -> Rotate transition")
+	print(" Puzzle_piece_swap.gd -> Rotate transition")
 	tween.finished.connect(callback)
 
 # ------------------------------------------------------------------
 # 4️⃣  Flip: a horizontal “mirror” flip (scale.x = -1)
 # ------------------------------------------------------------------
 func _flip_animation(tween: Tween, callback: Callable) -> void:
-	print("puzzle_piece_swap.gd -> _flip_animation()")
+	print("Puzzle_piece_swap.gd -> _flip_animation()")
 		
 	# FIXED: Animate 'self' to match main manager's dual-invocation loop
 	pivot_offset = size / 2
@@ -114,10 +114,10 @@ func _flip_animation(tween: Tween, callback: Callable) -> void:
 	
 	tween.tween_property(self, "scale:x", -orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "scale:x", orig_scale.x, trans_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	print("puzzle_piece_swap.gd ->Flip transition")
+	print("Puzzle_piece_swap.gd ->Flip transition")
 	tween.finished.connect(callback)
 	
-	# Add this inside res://Scenes/Game/puzzle_piece_swap.gd
+	# Add this inside res://Scenes/Game/Puzzle_piece_swap.gd
 func _initialize_piece_meta(slot_id: int, original_texture_id: int) -> void:
 	
 	set_meta("correct_slot_id", slot_id)

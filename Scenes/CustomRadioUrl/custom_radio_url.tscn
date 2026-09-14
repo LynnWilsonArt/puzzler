@@ -62,5 +62,15 @@ theme = ExtResource("2_ijej7")
 text = "Cancel"
 script = ExtResource("3_ijej7")
 
+[node name="ErrorLabel" type="Label" parent="CustomUrlPanel/ColorRect" unique_id=1397019719]
+layout_mode = 0
+offset_left = 86.0
+offset_top = 86.0
+offset_right = 708.0
+offset_bottom = 111.0
+theme = ExtResource("2_ijej7")
+theme_override_font_sizes/font_size = 17
+text = "This url overrides all others. It will be saved an d restored at app startup."
+
 [connection signal="pressed" from="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton" to="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton" method="_on_pressed"]
 [connection signal="pressed" from="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton/CustomRadioUrlCancelButton" to="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton/CustomRadioUrlCancelButton" method="_on_pressed"]

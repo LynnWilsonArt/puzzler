@@ -1,13 +1,15 @@
 # res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd
 extends PopupMenu
 
-@onready var puzzle_node: Node = get_node_or_null("../..")
-@onready var game_scene: Node = get_node_or_null("../../..")
-@onready var main_node: Node = get_node_or_null("/root/Main") 
+
+@onready var puzzle_node: Control = $"../../.."
+@onready var game_scene: Node2D = $"../../../.."
+
 @onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
 @onready var custom_radio_url: Control = $"../CustomRadioUrl"
 @onready var settings_ui: Control = $"../SettingsUI"
 @onready var puzzle_popup_menu: PopupMenu = $"."
+
 
 
 func _ready() -> void:

@@ -4,5 +4,5 @@ extends Button
 @onready var color_rect: ColorRect = $"../.."
 
 func _on_pressed() -> void:
-	print("custom_radio_url_cancel_button.gd -> Hide popup")
+	print("CustomRadioUrl -> custom_radio_url_cancel_button.gd -> Hide popup")
 	color_rect.hide()
