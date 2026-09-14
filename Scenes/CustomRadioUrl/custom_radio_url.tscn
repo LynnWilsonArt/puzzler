@@ -72,5 +72,25 @@ theme = ExtResource("2_ijej7")
 theme_override_font_sizes/font_size = 17
 text = "This url overrides all others. It will be saved an d restored at app startup."
 
+[node name="IcecastOnly" type="Label" parent="CustomUrlPanel/ColorRect" unique_id=1426513466]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 140.0
+offset_right = 226.0
+offset_bottom = 170.0
+theme = ExtResource("2_ijej7")
+theme_override_colors/font_color = Color(1, 0.56078434, 0.56078434, 1)
+text = "Icecast Urls Only"
+
+[node name="MP3FormatOnly" type="Label" parent="CustomUrlPanel/ColorRect" unique_id=537337480]
+layout_mode = 0
+offset_left = 658.0
+offset_top = 135.0
+offset_right = 768.0
+offset_bottom = 165.0
+theme = ExtResource("2_ijej7")
+theme_override_colors/font_color = Color(1, 0.56, 0.56, 1)
+text = "MP3 Only"
+
 [connection signal="pressed" from="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton" to="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton" method="_on_pressed"]
 [connection signal="pressed" from="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton/CustomRadioUrlCancelButton" to="CustomUrlPanel/ColorRect/CustomRadioUrlSubmitButton/CustomRadioUrlCancelButton" method="_on_pressed"]

@@ -23,7 +23,7 @@ set_time_limit(300);
 $pixabay_api_key = "25066829-e19f4bd20795e793e3349ffe7";
 $passcode = "Topp3r@19511969!";
 $base_dir = __DIR__ . "/category/"; // <--- Fixed local filesystem path
-$max_images_per_category = 40; // <--- Hard limit: Stops fetching new ones once this cap is reached
+$max_images_per_category = 200; // <--- Hard limit: Stops fetching new ones once this cap is reached
 $page_number=1;
 
 // Read input safely whether sent via POST, GET, or JSON body from Godot Web

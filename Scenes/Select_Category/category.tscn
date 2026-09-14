@@ -34,7 +34,7 @@ item_5/text = "Flowers"
 item_5/id = 5
 item_6/text = "Landscapes"
 item_6/id = 6
-item_7/text = "Nature"
+item_7/text = "Insects"
 item_7/id = 7
 script = ExtResource("3_they8")
 

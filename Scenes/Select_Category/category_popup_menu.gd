@@ -43,5 +43,5 @@ func _on_id_pressed(id: int) -> void:
 			
 		7:
 			print(" 6 Category Nature")
-			Globals.category ="nature"
+			Globals.category ="insects"
 			print("Globals.category = ",Globals.category)

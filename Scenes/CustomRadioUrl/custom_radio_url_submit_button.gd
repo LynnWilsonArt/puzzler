@@ -27,6 +27,7 @@ func _on_pressed() -> void:
 		disabled = false
 		_show_error("Could not reach that URL.")
 
+@warning_ignore("shadowed_variable_base_class")
 func _is_valid_url_format(text: String) -> bool:
 	if text.is_empty():
 		return false
@@ -34,6 +35,7 @@ func _is_valid_url_format(text: String) -> bool:
 	regex.compile("^https?://[\\w.-]+\\.[a-zA-Z]{2,}(:\\d+)?(/.*)?$")
 	return regex.search(text) != null
 
+@warning_ignore("unused_parameter")
 func _on_check_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	disabled = false
 	if result != HTTPRequest.RESULT_SUCCESS or response_code >= 400:

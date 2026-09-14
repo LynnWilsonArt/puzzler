@@ -30,6 +30,7 @@ const CONFIG_FILE := "user://settings.json"
 #--------------------------------------------------------------------
 func _ready() -> void:
 	print("Settings.gd -> _ready()")
+	_set_bg_music_mode(true) # Set inital radio state to playing
 	_load_settings()
 	_create_radio_palyer()
 	_create_audio_effects_player()
@@ -151,6 +152,8 @@ func _set_music_volume(value: float) -> void:
 	var bus_idx = AudioServer.get_bus_index("Music")
 	print("Settings.gd -> _set_music_volume() -> Music vars, vol, bus_idx",effects_volume, bus_idx)
 	AudioServer.set_bus_volume_db(bus_idx, linear_to_db(music_volume))
+	print("Settings.gd -> _set_music_volume() -> Music bus_idx: ", bus_idx)
+	
 	print("Settings.gd -> _set_music_volume() -> Done!")
 	
 # -------------------------------------------------------------------
