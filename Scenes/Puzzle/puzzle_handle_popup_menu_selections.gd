@@ -4,11 +4,10 @@ extends PopupMenu
 
 @onready var puzzle_node: Control = $"../../.."
 @onready var game_scene: Node2D = $"../../../.."
-
-@onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
-@onready var custom_radio_url: Control = $"../CustomRadioUrl"
 @onready var settings_ui: Control = $"../SettingsUI"
 @onready var puzzle_popup_menu: PopupMenu = $"."
+@onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
+@onready var station_update_panel: PanelContainer = $"../../../StationUpdatePanel"
 
 
 
@@ -62,14 +61,17 @@ func _on_id_pressed(id: int) -> void:
 			Globals._g_delete_puzzle()
 			Globals._switch_scene("res://Scenes/Main/main.tscn")
 			
-		5: # Show settings panel screen
+		5: # Show settings panel Panel
+			print("Puzzle -> puzzle_handle_popup_menu_selections.gd -> show settings panel: ", id)
 			settings_ui.show()
 			
-		6: #Show Station Selection ecreen
+		6: #Show Station Selection Panel
+			print("Puzzle -> puzzle_handle_popup_menu_selections.gd -> show stations popup menu: ", id)
 			stations_popup_menu.show()
 			
-		7: # Show Input url screen
-			custom_radio_url.show()
+		7: # Show Station Update Panel
+				print("Puzzle -> puzzle_handle_popup_menu_selections.gd -> station update panel: ", id)
+				station_update_panel.show()
 		 
 		8: # Quit Game
 			if OS.has_feature("web"):  

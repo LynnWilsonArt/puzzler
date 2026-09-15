@@ -5,9 +5,15 @@
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
 [ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/puzzle_open_menu_button.gd" id="3_in6qw"]
 [ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd" id="4_0i70x"]
-[ext_resource type="Script" uid="uid://bbelnsma2lmvy" path="res://Scenes/Puzzle/puzzle_stations_popup_menu.gd" id="6_bmt2w"]
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
-[ext_resource type="PackedScene" uid="uid://bpfj8dhfr3kjx" path="res://Scenes/CustomRadioUrl/custom_radio_url.tscn" id="8_bmt2w"]
+[ext_resource type="Script" uid="uid://dkrxvpj4fffgl" path="res://Scenes/Puzzle/update_stations.gd" id="7_0u3m2"]
+[ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="8_bmt2w"]
+[ext_resource type="Script" uid="uid://c542dthr4tg2y" path="res://Scenes/Puzzle/station_update_select_station_button.gd" id="9_k1ecr"]
+[ext_resource type="Script" uid="uid://c0d7blda5oc3v" path="res://Scenes/Puzzle/station_update_close_button.gd" id="10_k1ecr"]
+[ext_resource type="Script" uid="uid://cqu341ts6h5hy" path="res://Scenes/Puzzle/station_update_add_button.gd" id="10_wv2ay"]
+[ext_resource type="Script" uid="uid://deqgsfdlid2yl" path="res://Scenes/Puzzle/station_update_edit_button.gd" id="11_wv2ay"]
+[ext_resource type="Script" uid="uid://dwmi3qwmf2cxu" path="res://Scenes/Puzzle/station_update_delete_button.gd" id="12_k1ecr"]
+[ext_resource type="Script" uid="uid://dmrgcknsth4dq" path="res://Scenes/Puzzle/station_update_clear_button.gd" id="14_iuh05"]
 
 [node name="Puzzle" type="Control" unique_id=134473009 groups=["hud_display"]]
 layout_mode = 3
@@ -57,12 +63,13 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="." unique_id=17323899]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1080552055]
 layout_mode = 0
 offset_left = 20.0
-offset_top = 20.0
+offset_top = 25.0
 offset_right = 125.0
-offset_bottom = 51.0
+offset_bottom = 55.0
+theme = ExtResource("2_in6qw")
 
 [node name="PuzzleOpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
 layout_mode = 2
@@ -91,7 +98,7 @@ item_5/text = "Settings"
 item_5/id = 5
 item_6/text = "Select Radio Station"
 item_6/id = 6
-item_7/text = "Your Stream Url"
+item_7/text = "Update Stations"
 item_7/id = 7
 item_8/text = "Quit"
 item_8/id = 8
@@ -100,8 +107,8 @@ script = ExtResource("4_0i70x")
 [node name="StationsPopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" unique_id=183858871]
 oversampling_override = 1.0
 title = "Select Radio Station"
-position = Vector2i(25, 85)
-size = Vector2i(800, 322)
+position = Vector2i(25, 80)
+size = Vector2i(800, 377)
 theme = ExtResource("2_in6qw")
 item_count = 9
 item_0/text = "Awesom 80's "
@@ -122,13 +129,9 @@ item_7/text = "Classical Guitar "
 item_7/id = 7
 item_8/text = "Classical Jazz"
 item_8/id = 8
-script = ExtResource("6_bmt2w")
+script = ExtResource("7_0u3m2")
 
 [node name="SettingsUI" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=518924563 instance=ExtResource("6_c21s6")]
-visible = false
-layout_mode = 0
-
-[node name="CustomRadioUrl" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1397735380 instance=ExtResource("8_bmt2w")]
 visible = false
 layout_mode = 0
 
@@ -148,6 +151,167 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "Image provided by Pixabay.com"
 
+[node name="StationUpdatePanel" type="PanelContainer" parent="." unique_id=273877104]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 976.0
+offset_bottom = 503.0
+theme = ExtResource("2_in6qw")
+theme_override_styles/panel = ExtResource("8_bmt2w")
+
+[node name="StationsColorRect" type="ColorRect" parent="StationUpdatePanel" unique_id=359168743]
+layout_mode = 2
+theme = ExtResource("2_in6qw")
+color = Color(0.56078434, 0.34117648, 0.1882353, 1)
+
+[node name="StationNameLabel" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1535524092]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 113.0
+offset_right = 196.0
+offset_bottom = 147.0
+text = "Description:  "
+
+[node name="StationNameLineEdit" type="LineEdit" parent="StationUpdatePanel/StationsColorRect/StationNameLabel" unique_id=317565766]
+layout_mode = 0
+offset_left = 174.0
+offset_right = 855.0
+offset_bottom = 38.0
+
+[node name="StationUrlLabel" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=477090880]
+layout_mode = 0
+offset_left = 42.0
+offset_top = 154.0
+offset_right = 147.0
+offset_bottom = 188.0
+text = "Url:  "
+
+[node name="StationUrlLineEdit" type="LineEdit" parent="StationUpdatePanel/StationsColorRect/StationUrlLabel" unique_id=337445771]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 4.0
+offset_right = 855.0
+offset_bottom = 42.0
+
+[node name="StationsColorRectTitle" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=533276871]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -116.0
+offset_top = 20.0
+offset_right = 116.0
+offset_bottom = 50.0
+grow_horizontal = 2
+text = "Add Or Edit Station"
+horizontal_alignment = 1
+
+[node name="StationUpdateSelectStationButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=1473009740]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 425.0
+offset_right = 239.0
+offset_bottom = 463.0
+text = "Select Station"
+script = ExtResource("9_k1ecr")
+
+[node name="StationUpdateAddButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=778394301]
+layout_mode = 0
+offset_left = 268.0
+offset_top = 425.0
+offset_right = 331.0
+offset_bottom = 463.0
+text = "Add "
+script = ExtResource("10_wv2ay")
+
+[node name="StationUpdateEditButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=810754537]
+layout_mode = 0
+offset_left = 356.0
+offset_top = 425.0
+offset_right = 522.0
+offset_bottom = 463.0
+text = "Save Changes"
+script = ExtResource("11_wv2ay")
+
+[node name="StationUpdateDeleteButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=1094474409]
+layout_mode = 0
+offset_left = 548.0
+offset_top = 425.0
+offset_right = 636.0
+offset_bottom = 463.0
+text = "Delete"
+script = ExtResource("12_k1ecr")
+
+[node name="StationUpdateCloselButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=1775962305]
+layout_mode = 0
+offset_left = 814.0
+offset_top = 423.0
+offset_right = 909.0
+offset_bottom = 461.0
+text = "Close"
+script = ExtResource("10_k1ecr")
+
+[node name="IcecastOnly" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1652678563]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 367.0
+offset_right = 250.0
+offset_bottom = 397.0
+theme = ExtResource("2_in6qw")
+theme_override_colors/font_color = Color(1, 0.56078434, 0.56078434, 1)
+text = "Icecast Urls Only"
+
+[node name="ErrorLabel" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1104923876]
+layout_mode = 0
+offset_left = 218.0
+offset_top = 218.0
+offset_right = 893.0
+offset_bottom = 243.0
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 17
+
+[node name="MP3FormatOnly" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1370342813]
+layout_mode = 0
+offset_left = 801.0
+offset_top = 367.0
+offset_right = 911.0
+offset_bottom = 397.0
+theme = ExtResource("2_in6qw")
+theme_override_colors/font_color = Color(1, 0.56, 0.56, 1)
+text = "MP3 Only"
+
+[node name="StationUpdateStationIDText" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1756166081]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 62.0
+offset_right = 179.0
+offset_bottom = 96.0
+text = "Station ID:  "
+
+[node name="StationUpdateStationID" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=68021423]
+layout_mode = 0
+offset_left = 217.0
+offset_top = 69.0
+offset_right = 312.0
+offset_bottom = 99.0
+
+[node name="StationUpdateClearButton" type="Button" parent="StationUpdatePanel/StationsColorRect" unique_id=886220332]
+layout_mode = 0
+offset_left = 662.0
+offset_top = 425.0
+offset_right = 739.0
+offset_bottom = 463.0
+text = "Clear"
+script = ExtResource("14_iuh05")
+
 [connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" method="_on_id_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" to="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" method="_on_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" to="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" method="_on_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateEditButton" to="StationUpdatePanel/StationsColorRect/StationUpdateEditButton" method="_on_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateDeleteButton" to="StationUpdatePanel/StationsColorRect/StationUpdateDeleteButton" method="_on_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateCloselButton" to="StationUpdatePanel/StationsColorRect/StationUpdateCloselButton" method="_on_pressed"]
+[connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateClearButton" to="StationUpdatePanel/StationsColorRect/StationUpdateClearButton" method="_on_pressed"]
