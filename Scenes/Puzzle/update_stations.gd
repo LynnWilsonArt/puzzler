@@ -1,18 +1,18 @@
+# res://Scenes/Puzzle/update_stations.gd
 extends PopupMenu
 
 const SAVE_PATH: String = "user://stations.json"
 @onready var station_update_edit_button: Button = $"../../../../StationUpdatePanel/StationsColorRect/StationUpdateEditButton"
 @onready var station_update_station_id: Label = $"../../../../StationUpdatePanel/StationsColorRect/StationUpdateStationID"
-
 @onready var station_name_line_edit: LineEdit = $"../../../../StationUpdatePanel/StationsColorRect/StationNameLabel/StationNameLineEdit"
 @onready var station_url_line_edit: LineEdit = $"../../../../StationUpdatePanel/StationsColorRect/StationUrlLabel/StationUrlLineEdit"
 @onready var error_label: Label = $"../../../../StationUpdatePanel/StationsColorRect/ErrorLabel"
+@onready var settings_ui: Control = $"../../SettingsUI"
 
-
-
-
+signal turn_on_radio
 
 func _ready() -> void:
+	turn_on_radio.connect(settings_ui._on_music_on_pressed)
 	print("Puzzle -> stations_popup_menu.gd -> _ready()")
 	if not id_pressed.is_connected(_on_id_pressed):
 		id_pressed.connect(_on_id_pressed)
@@ -46,10 +46,6 @@ func add_station(url: String, description: String = "") -> bool:
 		error_label.text = "ERROR! Station URL already exists! "
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
-		
-		
-		
-		
 		return false
 
 	# Validate stream URL asynchronously using low-level HTTPClient
@@ -103,7 +99,7 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
 		return false
-		return false
+		
 
 	var current_station: Dictionary = Globals.stations_array[index]
 	var old_url: String = current_station.get("url", "")
@@ -364,12 +360,15 @@ func _on_id_pressed(id: int) -> void:
 		var selected_station: Dictionary = Globals.stations_array[id]
 		print("Puzzle -> stations_popup_menu.gd -> Selection: ", selected_station.get("station_name"))
 		Radio.change_station(selected_station.get("url"))
-		# update station edit button vars
-
+		
 		# Set StationUpdatePanel station vars
 		station_url_line_edit.text = selected_station.get("url")
 		station_name_line_edit.text = selected_station.get("station_name")
 		station_update_station_id.text = str(id)
+		# Station was selected. Turn radio on.
+		# Station was selected. Turn radio on.
+		turn_on_radio.emit()
+		
 		
 	
 	else:

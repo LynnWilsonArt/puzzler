@@ -9,9 +9,10 @@ extends Control
 @onready var effects_on_button: Button = %EffectsOnButton
 @onready var effects_off_button: Button = %EffectsOffButton
 
+
+
 func _ready() -> void:
 	print("SettingsUI.gd ->  ready()")
-	
 	_update_ui_state()
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	effects_volume_slider.value_changed.connect(_on_effects_volume_changed)

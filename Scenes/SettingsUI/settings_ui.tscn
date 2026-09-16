@@ -11,29 +11,28 @@ anchors_preset = 0
 script = ExtResource("1_dm7qj")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=2109718248]
-layout_mode = 0
-offset_left = 276.0
-offset_top = 40.0
-offset_right = 826.0
-offset_bottom = 306.0
+layout_mode = 1
+offset_right = 550.0
+offset_bottom = 266.0
 size_flags_vertical = 3
 color = Color(0.56028485, 0.3425537, 0.18703148, 1)
 
-[node name="SettingsPanel" type="VBoxContainer" parent="." unique_id=1503683650]
+[node name="SettingsPanel" type="VBoxContainer" parent="ColorRect" unique_id=1503683650]
 layout_mode = 1
-offset_left = 300.0
-offset_top = 50.0
-offset_right = 806.0
-offset_bottom = 296.0
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 530.0
+offset_bottom = 256.0
+theme = ExtResource("2_iey1w")
 theme_override_constants/separation = 10
 
-[node name="RadioToggleLabel" type="Label" parent="SettingsPanel" unique_id=889305395]
+[node name="RadioToggleLabel" type="Label" parent="ColorRect/SettingsPanel" unique_id=889305395]
 layout_mode = 2
 size_flags_horizontal = 0
 theme = ExtResource("2_iey1w")
 text = "Radio:  "
 
-[node name="RadioOnButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1600443783]
+[node name="RadioOnButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1600443783]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 88.0
@@ -43,7 +42,7 @@ offset_bottom = 35.0
 theme = ExtResource("2_iey1w")
 text = "On"
 
-[node name="RadioOffButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1960727817]
+[node name="RadioOffButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1960727817]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 154.0
@@ -53,7 +52,7 @@ offset_bottom = 35.0
 theme = ExtResource("2_iey1w")
 text = "Off"
 
-[node name="EffectsToggleLabel" type="Label" parent="SettingsPanel/RadioToggleLabel" unique_id=1805493989]
+[node name="EffectsToggleLabel" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1805493989]
 layout_mode = 0
 offset_top = 110.0
 offset_right = 184.0
@@ -61,7 +60,7 @@ offset_bottom = 144.0
 theme = SubResource("Theme_gdx28")
 text = "Sound Effects:  "
 
-[node name="EffectsVolume" type="Label" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=494234078]
+[node name="EffectsVolume" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=494234078]
 layout_mode = 0
 offset_top = 50.0
 offset_right = 243.0
@@ -70,7 +69,7 @@ theme = ExtResource("2_iey1w")
 text = "Effects Volume"
 vertical_alignment = 1
 
-[node name="MusicVolume" type="Label" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=997895129]
+[node name="MusicVolume" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=997895129]
 unique_name_in_owner = true
 layout_mode = 0
 offset_top = -55.0
@@ -79,7 +78,7 @@ offset_bottom = -25.0
 theme = ExtResource("2_iey1w")
 text = "Music Volume"
 
-[node name="MusicSlider" type="HSlider" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/MusicVolume" unique_id=1630362551]
+[node name="MusicSlider" type="HSlider" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel/MusicVolume" unique_id=1630362551]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 187.0
@@ -89,7 +88,7 @@ offset_bottom = 21.0
 size_flags_horizontal = 3
 theme = ExtResource("2_iey1w")
 
-[node name="EffectsSlider" type="HSlider" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1627527299]
+[node name="EffectsSlider" type="HSlider" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1627527299]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 190.0
@@ -97,7 +96,7 @@ offset_top = 63.0
 offset_right = 490.0
 offset_bottom = 79.0
 
-[node name="EffectsOnButton" type="Button" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1264946435]
+[node name="EffectsOnButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=1264946435]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 185.0
@@ -106,7 +105,7 @@ offset_bottom = 38.0
 theme = ExtResource("2_iey1w")
 text = "On"
 
-[node name="EffectsOffButton" type="Button" parent="SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=33033226]
+[node name="EffectsOffButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=33033226]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 253.0
@@ -116,7 +115,7 @@ offset_bottom = 36.0
 theme = ExtResource("2_iey1w")
 text = "Off"
 
-[node name="CloseButton" type="Button" parent="SettingsPanel/RadioToggleLabel" unique_id=1964400075]
+[node name="CloseButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1964400075]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 218.0
@@ -128,8 +127,8 @@ size_flags_vertical = 8
 theme = ExtResource("2_iey1w")
 text = "Close"
 
-[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/RadioOnButton" to="." method="_on_music_on_pressed"]
-[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/RadioOffButton" to="." method="_on_music_off_pressed"]
-[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOnButton" to="." method="_on_effects_on_button_pressed"]
-[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOffButton" to="." method="_on_effects_off_button_pressed"]
-[connection signal="pressed" from="SettingsPanel/RadioToggleLabel/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="ColorRect/SettingsPanel/RadioToggleLabel/RadioOnButton" to="." method="_on_music_on_pressed"]
+[connection signal="pressed" from="ColorRect/SettingsPanel/RadioToggleLabel/RadioOffButton" to="." method="_on_music_off_pressed"]
+[connection signal="pressed" from="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOnButton" to="." method="_on_effects_on_button_pressed"]
+[connection signal="pressed" from="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel/EffectsOffButton" to="." method="_on_effects_off_button_pressed"]
+[connection signal="pressed" from="ColorRect/SettingsPanel/RadioToggleLabel/CloseButton" to="." method="_on_close_button_pressed"]
