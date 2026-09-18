@@ -166,6 +166,7 @@ theme_override_font_sizes/font_size = 14
 text = "Image provided by Pixabay.com"
 
 [node name="StationUpdatePanel" type="PanelContainer" parent="." unique_id=273877104]
+visible = false
 layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
