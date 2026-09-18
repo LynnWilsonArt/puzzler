@@ -18,6 +18,8 @@ Thumbs.db
 
 # Crash dumps
 *.log
+.gitignore
+.gitignore~
 
 # addon
 src/*.obj
