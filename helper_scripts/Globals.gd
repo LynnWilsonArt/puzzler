@@ -22,10 +22,11 @@ var upload_password: String = "Topp3r@19511969!"
 # Storing Array of Dictionaries: [{"station_name": String, "url": String}]
 var stations_array: Array[Dictionary] = [
 	{"station_name": "Awesome 80s", "url": "https://listen.181fm.com/181-awesome80s_128k.mp3"},
-	{"station_name": "Real Country", "url": "https://listen.181fm.com/181-realcountry_128k.mp3"},
-	{"station_name": "Rock", "url": "https://listen.181fm.com/181-rock_128k.mp3"},
-	{"station_name": "Soul", "url": "https://listen.181fm.com/181-soul_128k.mp3"}, 
-	{"station_name": "The Beat", "url": "https://listen.181fm.com/181-beat_128k.mp3"},
+	{"station_name": "The Buzz", "url": "https://listen.181fm.com/181-buzz_128k.mp3"},
+	{"station_name": "Kickin' Country", "url": "https://listen.181fm.com/181-kickincountry_128k.mp3"},
+	{"station_name": "The Beat", "url": "https://listen.181fm.com/181-beat_128k.mp3"}, 
+	{"station_name": "Rock 181", "url": "https://listen.181fm.com/181-rock_128k.mp3"},
+	{"station_name": "Power 181 (Top 40)", "url": "https://listen.181fm.com/181-power_128k.mp3"},
 	{"station_name": "Blues", "url": "https://listen.181fm.com/181-blues_128k.mp3"},
 	{"station_name": "Classical", "url": "https://listen.181fm.com/181-classical_128k.mp3"},
 	{"station_name": "Classical Guitar", "url": "https://listen.181fm.com/181-classicalguitar_128k.mp3"},

@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://deqgsfdlid2yl" path="res://Scenes/Puzzle/station_update_edit_button.gd" id="11_wv2ay"]
 [ext_resource type="Script" uid="uid://dwmi3qwmf2cxu" path="res://Scenes/Puzzle/station_update_delete_button.gd" id="12_k1ecr"]
 [ext_resource type="Script" uid="uid://dmrgcknsth4dq" path="res://Scenes/Puzzle/station_update_clear_button.gd" id="14_iuh05"]
+[ext_resource type="Texture2D" uid="uid://dspppd5hukhf7" path="res://assets/images/181.fm.png" id="16_igoow"]
 
 [sub_resource type="Theme" id="Theme_iuh05"]
 resource_name = "PopupMenuTheme"
@@ -140,6 +141,10 @@ item_8/text = "Classical Jazz"
 item_8/id = 8
 script = ExtResource("7_0u3m2")
 
+[node name="181fm" type="Sprite2D" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=1355793613]
+position = Vector2(600, 50)
+texture = ExtResource("16_igoow")
+
 [node name="SettingsUI" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=518924563 instance=ExtResource("6_c21s6")]
 visible = false
 layout_mode = 0
@@ -161,7 +166,6 @@ theme_override_font_sizes/font_size = 14
 text = "Image provided by Pixabay.com"
 
 [node name="StationUpdatePanel" type="PanelContainer" parent="." unique_id=273877104]
-visible = false
 layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
@@ -314,6 +318,21 @@ offset_right = 739.0
 offset_bottom = 463.0
 text = "Clear"
 script = ExtResource("14_iuh05")
+
+[node name="181fm" type="Sprite2D" parent="StationUpdatePanel/StationsColorRect" unique_id=1139335420]
+position = Vector2(478, 307)
+texture = ExtResource("16_igoow")
+
+[node name="DefaultStations" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=292826765]
+layout_mode = 0
+offset_left = 284.0
+offset_top = 340.0
+offset_right = 672.0
+offset_bottom = 387.0
+theme_override_font_sizes/font_size = 15
+text = "*** Default stations cannot be edited or deleted ***
+Stations provided by 181.fm"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]

@@ -7,6 +7,7 @@
 <ul> Edit config.php, insert your passcode & pixabay api key.</ul>
 <ul>Upload the config.php to one level above the website root. This is a security measure. </ul>
 <ul>If not included here, You will need to download Icy-Radio-Streamer & move the addons folder to res// directory.</ul>
+<ul>Radio streams provided by 181.fm - <b>You will need to get permission from the station you use for your default urls.</b></ul>
 
 <h1>This Version Does Not Support The WebApp Export!</h1>
 <body>
