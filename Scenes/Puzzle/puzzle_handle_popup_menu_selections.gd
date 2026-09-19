@@ -26,8 +26,28 @@ func _on_id_pressed(id: int) -> void:
 				puzzle_node._on_show_original_image_pressed()
 			else:
 				print("Puzzle -> handle_popup_menu_selections.gd -> Warning: Puzzle node or _on_show_original_image_pressed function not found!")
-
-		1: # Skip to next image
+		
+		1: # Load puzzle
+			print("Puzzle -> handle_popup_menu_selections.gd -> Load Puzzle Selected: ", id)
+			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
+				puzzle_node._load_puzzle()
+			else:
+				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
+				
+		2: # Save puzzle
+			print("Puzzle -> handle_popup_menu_selections.gd ->  -> Saving puzzle from Puzzle -> PopupMenu -> Save button")
+			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
+				puzzle_node._save_puzzle()
+			else:
+				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
+				
+		3: # New Puzzle Goto Main scene
+			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
+			Globals._stop_autosave_timer()
+			Globals._g_delete_puzzle()
+			Globals._switch_scene("res://Scenes/Main/main.tscn")
+					
+		4: # Skip to next image
 			print("Puzzle -> handle_popup_menu_selections.gd -> Skip Selected: ", id)
 			if game_scene and game_scene.has_method("_on_get_puzzle"):
 				print("Puzzle -> handle_popup_menu_selections.gd -> Getting new image")
@@ -40,26 +60,7 @@ func _on_id_pressed(id: int) -> void:
 				print("Puzzle -> handle_popup_menu_selections.gd -> Finished skip")
 			else:
 				print("Puzzle -> handle_popup_menu_selections.gd -> Warning: game_scene node or _on_get_puzzle() function not found!")
-		
-		2: # Load puzzle
-			print("Puzzle -> handle_popup_menu_selections.gd -> Load Puzzle Selected: ", id)
-			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
-				puzzle_node._load_puzzle()
-			else:
-				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
-		3: # Save puzzle
-			print("Puzzle -> handle_popup_menu_selections.gd ->  -> Saving puzzle from Puzzle -> PopupMenu -> Save button")
-			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
-				puzzle_node._save_puzzle()
-			else:
-				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
-				
-		4: # Goto Main scene
-			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
-			Globals._stop_autosave_timer()
-			Globals._g_delete_puzzle()
-			Globals._switch_scene("res://Scenes/Main/main.tscn")
 			
 		5: # Show settings panel Panel
 			print("Puzzle -> puzzle_handle_popup_menu_selections.gd -> show settings panel: ", id)

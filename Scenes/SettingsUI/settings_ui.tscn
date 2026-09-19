@@ -30,7 +30,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 size_flags_horizontal = 0
 theme = ExtResource("2_iey1w")
-text = "Radio:  "
+text = "Radio    "
 
 [node name="RadioOnButton" type="Button" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1600443783]
 unique_name_in_owner = true
@@ -58,7 +58,7 @@ offset_top = 110.0
 offset_right = 184.0
 offset_bottom = 144.0
 theme = SubResource("Theme_gdx28")
-text = "Sound Effects:  "
+text = "Sound Effects    "
 
 [node name="EffectsVolume" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel/EffectsToggleLabel" unique_id=494234078]
 layout_mode = 0
