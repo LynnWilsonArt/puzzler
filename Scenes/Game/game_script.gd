@@ -7,7 +7,8 @@ signal photographer_updated(name: String)
 
 @export var num_columns : int = Globals.columns
 @export var num_rows    : int = Globals.rows
-@export var grid_size   : Vector2 = Vector2(1152, 648)
+# Puzzle image size
+@export var grid_size   : Vector2 = Vector2(Globals.puzzle_size_x, Globals.puzzle_size_y)
 @export var game_scene_path : String = "res://Scenes/End_game/end_game.tscn"
 @export var puzzle_image = Image.new()
 
@@ -348,6 +349,8 @@ func _trigger_victory() -> void:
 	print("Game_script.gd -> _trigger_victory()")
 	$Alert_Completed.popup()
 	await $Alert_Completed.confirmed
+	print("On victory drstroy banner ad")
+	AdMobBanner._destroy_banner_view()
 
 	swapping = true
 	puzzle_toggle_requested.emit(true)

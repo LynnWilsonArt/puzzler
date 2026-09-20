@@ -1,6 +1,6 @@
 extends Node2D
 
-var _ad_view : AdView
+var _ad_view0 : AdView
 var unit_id : String
 
 func _ready():
@@ -10,28 +10,30 @@ func _ready():
 
 func _create_ad_view() -> void:
 	#free memory
-	if _ad_view:
+	if _ad_view0:
+		print("Destroyed Banner ads!")
 		_destroy_banner_view()
 	
 	if OS.get_name() == "Android":
 		unit_id = "ca-app-pub-3940256099942544/6300978111"
 	elif OS.get_name() == "iOS":
 		unit_id = "ca-app-pub-3940256099942544/2934735716"
-
-	_ad_view = AdView.new(unit_id, AdSize.FULL_BANNER, AdPosition.BOTTOM)
-	# Create a banner at coordinate (x, y) on screen.
-	#var custom_position := AdPosition.custom(x, y)
-	#_ad_view = AdView.new(unit_id, size, custom_position)
+	
+		
+	_ad_view0 = AdView.new(unit_id, AdSize.BANNER,AdPosition.BOTTOM)
+	#_ad_view1 = AdView.new(unit_id, AdSize.BANNER, custom_position1)
+	
 #--------------------------------------------------------------
 func _on_show_banner():
-	if _ad_view == null:
+	if _ad_view0 == null:
 		_create_ad_view()
 		var ad_request := AdRequest.new()
-		_ad_view.load_ad(ad_request)
+		_ad_view0.load_ad(ad_request)
+		
 	
 #---------------------------------------------------------------
 func _register_ad_listener() -> void:
-	if _ad_view != null:
+	if _ad_view0 != null:
 		var ad_listener := AdListener.new()
 
 		ad_listener.on_ad_failed_to_load = func(load_ad_error : LoadAdError) -> void:
@@ -47,18 +49,18 @@ func _register_ad_listener() -> void:
 		ad_listener.on_ad_opened = func() -> void:
 			print("_on_ad_opened")
 
-		_ad_view.ad_listener = ad_listener
+		_ad_view0.ad_listener = ad_listener
 		
 #--------------------------------------------------------------------
 func _destroy_banner_view() -> void:
-	if _ad_view:
+	if _ad_view0:
 		#always call this method on all AdFormats to free memory on Android/iOS
-		_ad_view.destroy()
-		_ad_view = null
+		_ad_view0.destroy()
+		_ad_view0 = null
 		
 #-------------------------------------------------------------------------
 func _create_banner_at(size: AdSize, x, y) -> void:
 	# Create a banner at coordinate (x, y) on screen.
 	var custom_position := AdPosition.custom(x, y)
-	_ad_view = AdView.new(unit_id, size, custom_position)
+	_ad_view0 = AdView.new(unit_id, size, custom_position)
 	

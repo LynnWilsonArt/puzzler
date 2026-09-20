@@ -42,6 +42,8 @@ func _on_id_pressed(id: int) -> void:
 				print("Puzzle -> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		3: # New Puzzle Goto Main scene
+			print("New Puzzle -> Destroyed Banners!")
+			AdMobBanner._destroy_banner_view()
 			print("Puzzle -> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
 			Globals._stop_autosave_timer()
 			Globals._g_delete_puzzle()
@@ -75,6 +77,7 @@ func _on_id_pressed(id: int) -> void:
 				station_update_panel.show()
 		 
 		8: # Quit Game
+			print("Puzzle -> Quit -> Destroyed Banners!")
 			if OS.has_feature("web"):  
 				print("Puzzle -> handle_popup_menu_selections.gd -> Quit - web!")
 				Globals._stop_autosave_timer()

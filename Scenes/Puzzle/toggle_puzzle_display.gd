@@ -7,17 +7,14 @@ var timer_token   : int  = 0
 var bg_music_mode: bool = true
 
 
+
 func _ready() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> _ready()")
 	_find_puzzle_image_node()
 	var game_scene = get_parent()
 	if game_scene and game_scene.has_signal("photographer_updated"):
 		game_scene.photographer_updated.connect(_on_photographer_updated)
-		
-	# Destroy banner after wait
-	await get_tree().create_timer(Globals.banner_ad_time, true, true).timeout
-	AdMobBanner._destroy_banner_view()
-
+	
 func _find_puzzle_image_node() -> void:
 	print("Puzzle -> toggle_puzzle_display.gd -> _find_puzzle_image_node()")
 	if has_node("puzzle_image"):

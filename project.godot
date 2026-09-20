@@ -34,8 +34,8 @@ AdMobBanner="*uid://drj3mecv4wcui"
 
 [display]
 
-window/stretch/mode="canvas_items"
-window/stretch/aspect="keep_width"
+window/stretch/mode="viewport"
+window/stretch/aspect="ignore"
 window/handheld/orientation=4
 
 [editor_plugins]

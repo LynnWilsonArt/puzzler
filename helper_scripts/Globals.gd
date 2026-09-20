@@ -19,6 +19,9 @@ var current_scene = null
 var quit_wait_time: float= 1.0
 var upload_password: String = "Topp3r@19511969!"
 var banner_ad_time: int = 5 # seconds on screen
+# Sets puzzle size
+var puzzle_size_x: int = 1152
+var puzzle_size_y:int = 555
 
 # Storing Array of Dictionaries: [{"station_name": String, "url": String}]
 var stations_array: Array[Dictionary] = [
