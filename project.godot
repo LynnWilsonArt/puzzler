@@ -30,12 +30,17 @@ Api="*uid://vcl72bkf6uk4"
 Globals="*uid://bctar4inn8iw0"
 Settings="*uid://bjmvfw13nl5tu"
 Radio="*uid://dh0oj81pufivs"
+AdMobBanner="*uid://drj3mecv4wcui"
 
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_width"
 window/handheld/orientation=4
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
 
 [input]
 

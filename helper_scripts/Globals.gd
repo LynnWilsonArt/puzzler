@@ -18,6 +18,7 @@ var  auto_save_time: int = 30     # Autosave puzzle every x seconds
 var current_scene = null
 var quit_wait_time: float= 1.0
 var upload_password: String = "Topp3r@19511969!"
+var banner_ad_time: int = 5 # seconds on screen
 
 # Storing Array of Dictionaries: [{"station_name": String, "url": String}]
 var stations_array: Array[Dictionary] = [
