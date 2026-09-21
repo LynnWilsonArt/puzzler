@@ -3,10 +3,8 @@
 [ext_resource type="Script" uid="uid://cfhuhnrns6v4c" path="res://Scenes/Puzzle/toggle_puzzle_display.gd" id="1_uyv4d"]
 [ext_resource type="Texture2D" uid="uid://dd4hsealiiskr" path="res://assets/images/game_background.jpg" id="2_36cdp"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
-[ext_resource type="Theme" uid="uid://ot36b1a85fq6" path="res://default_bus_layout.tres" id="3_igoow"]
 [ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/puzzle_open_menu_button.gd" id="3_in6qw"]
 [ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd" id="4_0i70x"]
-[ext_resource type="FontFile" uid="uid://dwdgniiydfc1j" path="res://assets/fonts/ringbearer-font/RingbearerMedium-51mgZ.ttf" id="4_eqdau"]
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
 [ext_resource type="Script" uid="uid://dkrxvpj4fffgl" path="res://Scenes/Puzzle/update_stations.gd" id="7_0u3m2"]
 [ext_resource type="Script" uid="uid://c542dthr4tg2y" path="res://Scenes/Puzzle/station_update_select_station_button.gd" id="9_k1ecr"]
@@ -16,11 +14,7 @@
 [ext_resource type="Script" uid="uid://dwmi3qwmf2cxu" path="res://Scenes/Puzzle/station_update_delete_button.gd" id="12_k1ecr"]
 [ext_resource type="Script" uid="uid://dmrgcknsth4dq" path="res://Scenes/Puzzle/station_update_clear_button.gd" id="14_iuh05"]
 [ext_resource type="Texture2D" uid="uid://dspppd5hukhf7" path="res://assets/images/181.fm.png" id="16_igoow"]
-
-[sub_resource type="Theme" id="Theme_iuh05"]
-resource_name = "PopupMenuTheme"
-default_font = ExtResource("4_eqdau")
-default_font_size = 24
+[ext_resource type="Script" uid="uid://dmsfxkh4qv3ua" path="res://Scenes/Puzzle/Stations_menu_close_button.gd" id="16_k2apu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gnp4l"]
 
@@ -31,16 +25,17 @@ script = ExtResource("1_uyv4d")
 
 [node name="GridContainer" type="GridContainer" parent="." unique_id=520237538]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_top = 100.0
+offset_right = 1152.0
+offset_bottom = 648.0
 
 [node name="Puzzle" type="ColorRect" parent="." unique_id=1900942044]
-layout_mode = 0
-offset_transform_enabled = true
+layout_mode = 1
 offset_transform_position = Vector2(576, 324)
 
 [node name="Background" type="Sprite2D" parent="Puzzle" unique_id=284341722]
 texture = ExtResource("2_36cdp")
+centered = false
 
 [node name="LoadingTtext" type="RichTextLabel" parent="Puzzle/Background" unique_id=1684787084]
 anchors_preset = 8
@@ -48,109 +43,31 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -897.5
-offset_top = -455.5
-offset_right = -186.5
-offset_bottom = -192.5
+offset_left = -355.5
+offset_top = -131.5
+offset_right = 355.5
+offset_bottom = 131.5
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("3_igoow")
+theme = ExtResource("2_in6qw")
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 86
 text = "Loading Puzzle
 Please Wait"
 
 [node name="puzzle_image" type="TextureRect" parent="Puzzle" unique_id=420670231]
-layout_mode = 0
-offset_left = -576.0
-offset_top = -324.0
-offset_right = -576.0
-offset_bottom = -324.0
-
-[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1080552055]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 25.0
-offset_right = 125.0
-offset_bottom = 55.0
-
-[node name="PuzzleOpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
-layout_mode = 2
-theme = SubResource("Theme_iuh05")
-theme_override_font_sizes/font_size = 18
-text = "Open Menu"
-script = ExtResource("3_in6qw")
-
-[node name="PuzzlePopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1208084737]
-oversampling_override = 1.0
-size = Vector2i(327, 306)
-theme = ExtResource("3_igoow")
-theme_override_font_sizes/font_size = 24
-item_count = 9
-item_0/text = "Toggle Original Image"
-item_0/id = 0
-item_1/text = "Load Puzzle "
-item_1/id = 1
-item_2/text = "Save Puzzle"
-item_2/id = 2
-item_3/text = "New Puzzle"
-item_3/id = 3
-item_4/text = "Skip To Next Image"
-item_4/id = 4
-item_5/text = "Settings"
-item_5/id = 5
-item_6/text = "Select Radio Station"
-item_6/id = 6
-item_7/text = "Update Stations"
-item_7/id = 7
-item_8/text = "Quit"
-item_8/id = 8
-script = ExtResource("4_0i70x")
-
-[node name="StationsPopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" unique_id=183858871]
-oversampling_override = 1.0
-title = "Select Radio Station"
-position = Vector2i(20, 20)
-size = Vector2i(800, 377)
-theme = ExtResource("3_igoow")
-theme_override_styles/panel = SubResource("StyleBoxFlat_gnp4l")
-item_count = 9
-item_0/text = "Awesom 80's "
-item_0/id = 0
-item_1/text = "Country "
-item_1/id = 1
-item_2/text = "Rock "
-item_2/id = 2
-item_3/text = "Soul"
-item_3/id = 3
-item_4/text = "The Beat (HipHop & R&B)"
-item_4/id = 4
-item_5/text = "True Blues"
-item_5/id = 5
-item_6/text = "Classical "
-item_6/id = 6
-item_7/text = "Classical Guitar "
-item_7/id = 7
-item_8/text = "Classical Jazz"
-item_8/id = 8
-script = ExtResource("7_0u3m2")
-
-[node name="181fm" type="Sprite2D" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=1355793613]
-position = Vector2(600, 50)
-texture = ExtResource("16_igoow")
-
-[node name="SettingsUI" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=518924563 instance=ExtResource("6_c21s6")]
-visible = false
-layout_mode = 0
+layout_mode = 1
+offset_top = 100.0
+offset_bottom = 100.0
 
 [node name="Credits" type="Label" parent="." unique_id=693930970]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_top = 500.0
+offset_top = 600.0
 offset_right = 1152.0
-offset_bottom = 520.0
+offset_bottom = 620.0
 grow_horizontal = 2
 offset_transform_position = Vector2(576, 0)
 theme_override_font_sizes/font_size = 14
@@ -161,14 +78,13 @@ vertical_alignment = 1
 [node name="StationUpdatePanel" type="PanelContainer" parent="." unique_id=273877104]
 visible = false
 layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 976.0
-offset_bottom = 503.0
+offset_left = 50.0
+offset_top = 95.0
+offset_right = 1006.0
+offset_bottom = 578.0
 
 [node name="StationsColorRect" type="ColorRect" parent="StationUpdatePanel" unique_id=359168743]
 layout_mode = 2
-theme = ExtResource("3_igoow")
 color = Color(0.56078434, 0.34117648, 0.1882353, 1)
 
 [node name="StationNameLabel" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1535524092]
@@ -264,7 +180,6 @@ offset_left = 40.0
 offset_top = 367.0
 offset_right = 250.0
 offset_bottom = 397.0
-theme = ExtResource("3_igoow")
 theme_override_colors/font_color = Color(1, 0.56078434, 0.56078434, 1)
 text = "Icecast Urls Only"
 
@@ -274,7 +189,6 @@ offset_left = 218.0
 offset_top = 218.0
 offset_right = 893.0
 offset_bottom = 243.0
-theme = ExtResource("3_igoow")
 theme_override_font_sizes/font_size = 17
 
 [node name="MP3FormatOnly" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1370342813]
@@ -283,7 +197,6 @@ offset_left = 801.0
 offset_top = 367.0
 offset_right = 911.0
 offset_bottom = 397.0
-theme = ExtResource("3_igoow")
 theme_override_colors/font_color = Color(1, 0.56, 0.56, 1)
 text = "MP3 Only"
 
@@ -327,19 +240,116 @@ Stations provided by 181.fm"
 horizontal_alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1169083958]
-layout_mode = 0
-offset_top = 570.0
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
 offset_right = 1152.0
-offset_bottom = 648.0
+offset_bottom = 100.0
+grow_horizontal = 2
 theme = ExtResource("2_in6qw")
 color = Color(0.8490607, 0.532125, 0.30574226, 1)
 
-[connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
-[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]
-[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" method="_on_id_pressed"]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1080552055]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 25.0
+offset_right = 125.0
+offset_bottom = 55.0
+
+[node name="PuzzleOpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
+layout_mode = 2
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 24
+text = "Open Menu"
+script = ExtResource("3_in6qw")
+
+[node name="PuzzlePopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1208084737]
+oversampling_override = 1.0
+position = Vector2i(50, 95)
+size = Vector2i(327, 314)
+theme = ExtResource("2_in6qw")
+theme_override_font_sizes/font_size = 24
+item_count = 9
+item_0/text = "Toggle Original Image"
+item_0/id = 0
+item_1/text = "Load Puzzle "
+item_1/id = 1
+item_2/text = "Save Puzzle"
+item_2/id = 2
+item_3/text = "New Puzzle"
+item_3/id = 3
+item_4/text = "Skip To Next Image"
+item_4/id = 4
+item_5/text = "Settings"
+item_5/id = 5
+item_6/text = "Select Radio Station"
+item_6/id = 6
+item_7/text = "Update Stations"
+item_7/id = 7
+item_8/text = "Quit"
+item_8/id = 8
+script = ExtResource("4_0i70x")
+
+[node name="StationsPopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" unique_id=183858871]
+oversampling_override = 1.0
+title = "Select Radio Station"
+position = Vector2i(50, 95)
+size = Vector2i(800, 377)
+theme_override_styles/panel = SubResource("StyleBoxFlat_gnp4l")
+item_count = 9
+item_0/text = "Awesom 80's "
+item_0/id = 0
+item_1/text = "Country "
+item_1/id = 1
+item_2/text = "Rock "
+item_2/id = 2
+item_3/text = "Soul"
+item_3/id = 3
+item_4/text = "The Beat (HipHop & R&B)"
+item_4/id = 4
+item_5/text = "True Blues"
+item_5/id = 5
+item_6/text = "Classical "
+item_6/id = 6
+item_7/text = "Classical Guitar "
+item_7/id = 7
+item_8/text = "Classical Jazz"
+item_8/id = 8
+script = ExtResource("7_0u3m2")
+
+[node name="181fm" type="Sprite2D" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=1355793613]
+position = Vector2(600, 50)
+texture = ExtResource("16_igoow")
+
+[node name="CloseButton" type="Button" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=30974383]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -39.0
+offset_top = -38.0
+offset_right = 39.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Close"
+script = ExtResource("16_k2apu")
+
+[node name="SettingsUI" parent="." unique_id=518924563 instance=ExtResource("6_c21s6")]
+visible = false
+layout_mode = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 50.0
+offset_bottom = 100.0
+
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" to="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" to="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateEditButton" to="StationUpdatePanel/StationsColorRect/StationUpdateEditButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateDeleteButton" to="StationUpdatePanel/StationsColorRect/StationUpdateDeleteButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateCloselButton" to="StationUpdatePanel/StationsColorRect/StationUpdateCloselButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateClearButton" to="StationUpdatePanel/StationsColorRect/StationUpdateClearButton" method="_on_pressed"]
+[connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
+[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]
+[connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" method="_on_id_pressed"]
+[connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu/CloseButton" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu/CloseButton" method="_on_pressed"]

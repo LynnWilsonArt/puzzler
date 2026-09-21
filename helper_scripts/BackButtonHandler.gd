@@ -16,6 +16,7 @@ func _notification(what: int) -> void:
 
 func _on_back_pressed() -> void:
 	print("BackButtonHandler -> Back button pressed")
+
 	if is_on_main_menu():
 		_move_app_to_background()
 	else:
@@ -47,8 +48,16 @@ func _on_app_backgrounded() -> void:
 	# e.g. pause game, save state, mute audio, pause timers
 	print("BackButtonHandler -> Sent to background!")
 	
+	# Pause Banner While in background
+	print("BANNER -> Paused")
+	AdMobBanner._on_pause_banner()
+	
 func _on_app_returned_from_background() -> void:
 	# Called when app comes back to foreground
 	# e.g. resume game, refresh data, unmute audio, resync timers
 	print("BackButtonHandler -> Returned to foreground!")
+	
+	# Pause Banner While in background
+	print("BANNER -> Resumed")
+	AdMobBanner._on_resume_banner()
 	

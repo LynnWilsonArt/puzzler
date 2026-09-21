@@ -2,6 +2,10 @@
 extends Button
 
 @onready var puzzle_popup_menu: PopupMenu = $PuzzlePopupMenu
+@onready var stations_popup_menu: PopupMenu = $PuzzlePopupMenu/StationsPopupMenu
+@onready var settings_ui: Control = $"../../SettingsUI"
+@onready var station_update_panel: PanelContainer = $"../../StationUpdatePanel"
+
 
 
 func _ready() -> void:
@@ -14,3 +18,9 @@ func _on_pressed() -> void:
 	print("Puzzle -> open_menu_button.gd -> _on_pressed()")
 	puzzle_popup_menu.position = Vector2i(get_global_mouse_position())
 	puzzle_popup_menu.popup()
+	
+	# Hide any other menus that are open
+	settings_ui.hide()
+	stations_popup_menu.hide()
+	station_update_panel.hide()
+	

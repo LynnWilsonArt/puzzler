@@ -4,10 +4,10 @@ extends PopupMenu
 
 @onready var puzzle_node: Control = $"../../.."
 @onready var game_scene: Node2D = $"../../../.."
-@onready var settings_ui: Control = $"../SettingsUI"
 @onready var puzzle_popup_menu: PopupMenu = $"."
 @onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
 @onready var station_update_panel: PanelContainer = $"../../../StationUpdatePanel"
+@onready var settings_ui: Control = $"../../../SettingsUI"
 
 
 

@@ -7,7 +7,7 @@ const SAVE_PATH: String = "user://stations.json"
 @onready var station_name_line_edit: LineEdit = $"../../../../StationUpdatePanel/StationsColorRect/StationNameLabel/StationNameLineEdit"
 @onready var station_url_line_edit: LineEdit = $"../../../../StationUpdatePanel/StationsColorRect/StationUrlLabel/StationUrlLineEdit"
 @onready var error_label: Label = $"../../../../StationUpdatePanel/StationsColorRect/ErrorLabel"
-@onready var settings_ui: Control = $"../../SettingsUI"
+@onready var settings_ui: Control = $"../../../../SettingsUI"
 
 signal turn_on_radio
 

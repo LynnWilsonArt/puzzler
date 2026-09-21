@@ -4,7 +4,7 @@ extends Button
 @onready var stations_popup_menu: PopupMenu = $"../../../PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu"
 @onready var station_url_line_edit: LineEdit = $"../StationUrlLabel/StationUrlLineEdit"
 @onready var station_name_line_edit: LineEdit = $"../StationNameLabel/StationNameLineEdit"
-@onready var settings_ui: Control = $"../../../PanelContainer/PuzzleOpenMenuButton/SettingsUI"
+@onready var settings_ui: Control = $"../../../SettingsUI"
 
 
 signal radio_on

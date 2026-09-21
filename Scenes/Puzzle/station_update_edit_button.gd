@@ -4,7 +4,8 @@ extends Button
 @onready var station_url_line_edit: LineEdit = $"../StationUrlLabel/StationUrlLineEdit"
 @onready var stations_popup_menu: PopupMenu = $"../../../PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu"
 @onready var station_update_station_id: Label = $"../StationUpdateStationID"
-@onready var settings_ui: Control = $"../../../PanelContainer/PuzzleOpenMenuButton/SettingsUI"
+@onready var settings_ui: Control = $"../../../SettingsUI"
+
 signal radio_on
 
 func _ready() -> void:
