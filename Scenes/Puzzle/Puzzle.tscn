@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://cfhuhnrns6v4c" path="res://Scenes/Puzzle/toggle_puzzle_display.gd" id="1_uyv4d"]
 [ext_resource type="Texture2D" uid="uid://dd4hsealiiskr" path="res://assets/images/game_background.jpg" id="2_36cdp"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="2_in6qw"]
+[ext_resource type="Theme" uid="uid://ot36b1a85fq6" path="res://default_bus_layout.tres" id="3_igoow"]
 [ext_resource type="Script" uid="uid://ctflsd07oll21" path="res://Scenes/Puzzle/puzzle_open_menu_button.gd" id="3_in6qw"]
 [ext_resource type="Script" uid="uid://51ncovh453xm" path="res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd" id="4_0i70x"]
 [ext_resource type="FontFile" uid="uid://dwdgniiydfc1j" path="res://assets/fonts/ringbearer-font/RingbearerMedium-51mgZ.ttf" id="4_eqdau"]
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
 [ext_resource type="Script" uid="uid://dkrxvpj4fffgl" path="res://Scenes/Puzzle/update_stations.gd" id="7_0u3m2"]
-[ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="8_bmt2w"]
 [ext_resource type="Script" uid="uid://c542dthr4tg2y" path="res://Scenes/Puzzle/station_update_select_station_button.gd" id="9_k1ecr"]
 [ext_resource type="Script" uid="uid://c0d7blda5oc3v" path="res://Scenes/Puzzle/station_update_close_button.gd" id="10_k1ecr"]
 [ext_resource type="Script" uid="uid://cqu341ts6h5hy" path="res://Scenes/Puzzle/station_update_add_button.gd" id="10_wv2ay"]
@@ -54,7 +54,7 @@ offset_right = -186.5
 offset_bottom = -192.5
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 86
 text = "Loading Puzzle
@@ -73,7 +73,6 @@ offset_left = 20.0
 offset_top = 25.0
 offset_right = 125.0
 offset_bottom = 55.0
-theme = ExtResource("2_in6qw")
 
 [node name="PuzzleOpenMenuButton" type="Button" parent="PanelContainer" unique_id=531958640]
 layout_mode = 2
@@ -85,7 +84,7 @@ script = ExtResource("3_in6qw")
 [node name="PuzzlePopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton" unique_id=1208084737]
 oversampling_override = 1.0
 size = Vector2i(327, 306)
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_font_sizes/font_size = 24
 item_count = 9
 item_0/text = "Toggle Original Image"
@@ -113,7 +112,7 @@ oversampling_override = 1.0
 title = "Select Radio Station"
 position = Vector2i(20, 20)
 size = Vector2i(800, 377)
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_styles/panel = SubResource("StyleBoxFlat_gnp4l")
 item_count = 9
 item_0/text = "Awesom 80's "
@@ -166,12 +165,10 @@ offset_left = 20.0
 offset_top = 20.0
 offset_right = 976.0
 offset_bottom = 503.0
-theme = ExtResource("2_in6qw")
-theme_override_styles/panel = ExtResource("8_bmt2w")
 
 [node name="StationsColorRect" type="ColorRect" parent="StationUpdatePanel" unique_id=359168743]
 layout_mode = 2
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 color = Color(0.56078434, 0.34117648, 0.1882353, 1)
 
 [node name="StationNameLabel" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1535524092]
@@ -267,7 +264,7 @@ offset_left = 40.0
 offset_top = 367.0
 offset_right = 250.0
 offset_bottom = 397.0
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_colors/font_color = Color(1, 0.56078434, 0.56078434, 1)
 text = "Icecast Urls Only"
 
@@ -277,7 +274,7 @@ offset_left = 218.0
 offset_top = 218.0
 offset_right = 893.0
 offset_bottom = 243.0
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_font_sizes/font_size = 17
 
 [node name="MP3FormatOnly" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1370342813]
@@ -286,7 +283,7 @@ offset_left = 801.0
 offset_top = 367.0
 offset_right = 911.0
 offset_bottom = 397.0
-theme = ExtResource("2_in6qw")
+theme = ExtResource("3_igoow")
 theme_override_colors/font_color = Color(1, 0.56, 0.56, 1)
 text = "MP3 Only"
 
@@ -328,6 +325,14 @@ theme_override_font_sizes/font_size = 15
 text = "*** Default stations cannot be edited or deleted ***
 Stations provided by 181.fm"
 horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1169083958]
+layout_mode = 0
+offset_top = 570.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme = ExtResource("2_in6qw")
+color = Color(0.8490607, 0.532125, 0.30574226, 1)
 
 [connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]

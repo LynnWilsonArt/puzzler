@@ -11,7 +11,9 @@ func _on_pressed() -> void:
 	print("Main -> start_button.gd -> _on_pressed()")
 	# Add a print statement to verify the button physically registers your click
 	print("Main -> start_button.gd -> Play button was pressed! Attempting to load: ", game_scene_path)
+	# Show Ad banners
 	AdMobBanner._on_show_banner()
+	
 	if game_scene_path != "":
 
 		# Switch directly via the file string path

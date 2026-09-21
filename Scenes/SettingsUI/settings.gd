@@ -31,13 +31,14 @@ const CONFIG_FILE := "user://settings.json"
 #--------------------------------------------------------------------
 func _ready() -> void:
 	print("Settings.gd -> _ready()")
-	_set_bg_music_mode(true) # Set inital radio state to playing
+	#_set_bg_music_mode(true) # Set inital radio state to playing
 	_load_settings()
-	
 	_create_radio_palyer()
 	_create_audio_effects_player()
+	# Wait for the radio to initilize before setting saved settings.
+	await get_tree().create_timer(3.0, true, true).timeout
 	_apply_settings()
-	print("Settings.gd -> End of _ready()")
+	print("Settings.gd -> Applied Settings -> End of _ready()")
 	
 #--------------------------------------------------------------------
 # Detect notifications
@@ -61,15 +62,16 @@ func _notification(what: int) -> void:
 func _apply_settings() -> void:
 	print("Settings.gd -> _apply_settings()")
 	print("Settings.gd -> _apply_settings() -> Push the stored settings into the engine.")
+	print(" Settings to apply: Play Radio: ",radio_mode, "Effects Mode: ",sound_effects_mode)
 	
 	# Audio (bus 0 = Master)
-	#AudioServer.set_bus_volume_db(0, linear_to_db(clampf(music_volume, 0.0, 1.0)))
+	AudioServer.set_bus_volume_db(0, linear_to_db(clampf(music_volume, 0.0, 1.0)))
 	# Set bus volumes
 	_set_music_volume(music_volume)
 	_set_effects_volume(effects_volume)
 	_set_effects_audio_mode(sound_effects_mode)
 	# Wait for radio to initilize befor applying settings
-	await get_tree().create_timer(3.0, true, true).timeout
+	#await get_tree().create_timer(3.0, true, true).timeout
 	_set_bg_music_mode(radio_mode)
 	_save_settings() # save the just applied settings.
 	settings_changed.emit()
