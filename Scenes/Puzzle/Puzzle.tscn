@@ -8,13 +8,22 @@
 [ext_resource type="PackedScene" uid="uid://c2csud0mi4rcv" path="res://Scenes/SettingsUI/settings_ui.tscn" id="6_c21s6"]
 [ext_resource type="Script" uid="uid://dkrxvpj4fffgl" path="res://Scenes/Puzzle/update_stations.gd" id="7_0u3m2"]
 [ext_resource type="Script" uid="uid://c542dthr4tg2y" path="res://Scenes/Puzzle/station_update_select_station_button.gd" id="9_k1ecr"]
-[ext_resource type="Script" uid="uid://c0d7blda5oc3v" path="res://Scenes/Puzzle/station_update_close_button.gd" id="10_k1ecr"]
 [ext_resource type="Script" uid="uid://cqu341ts6h5hy" path="res://Scenes/Puzzle/station_update_add_button.gd" id="10_wv2ay"]
 [ext_resource type="Script" uid="uid://deqgsfdlid2yl" path="res://Scenes/Puzzle/station_update_edit_button.gd" id="11_wv2ay"]
 [ext_resource type="Script" uid="uid://dwmi3qwmf2cxu" path="res://Scenes/Puzzle/station_update_delete_button.gd" id="12_k1ecr"]
 [ext_resource type="Script" uid="uid://dmrgcknsth4dq" path="res://Scenes/Puzzle/station_update_clear_button.gd" id="14_iuh05"]
 [ext_resource type="Texture2D" uid="uid://dspppd5hukhf7" path="res://assets/images/181.fm.png" id="16_igoow"]
-[ext_resource type="Script" uid="uid://dmsfxkh4qv3ua" path="res://Scenes/Puzzle/Stations_menu_close_button.gd" id="16_k2apu"]
+
+[sub_resource type="GDScript" id="GDScript_wv2ay"]
+script/source = "# res://Scenes/Puzzle/station_update_cancel_button.gd
+extends Button
+
+@onready var station_update_panel: PanelContainer = $\"../..\"
+
+func _on_pressed() -> void:
+	print(\"[Puzzle] -> Station Update Panel -> station_update_cancel_button.gd -> Hide popup\")
+	station_update_panel.hide()
+"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gnp4l"]
 
@@ -172,7 +181,7 @@ offset_top = 423.0
 offset_right = 909.0
 offset_bottom = 461.0
 text = "Close"
-script = ExtResource("10_k1ecr")
+script = SubResource("GDScript_wv2ay")
 
 [node name="IcecastOnly" type="Label" parent="StationUpdatePanel/StationsColorRect" unique_id=1652678563]
 layout_mode = 0
@@ -321,7 +330,7 @@ script = ExtResource("7_0u3m2")
 position = Vector2(600, 50)
 texture = ExtResource("16_igoow")
 
-[node name="CloseButton" type="Button" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=30974383]
+[node name="CloseButton-(Just for looks)" type="Button" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" unique_id=30974383]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -333,7 +342,6 @@ offset_right = 39.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "Close"
-script = ExtResource("16_k2apu")
 
 [node name="SettingsUI" parent="." unique_id=518924563 instance=ExtResource("6_c21s6")]
 visible = false
@@ -352,4 +360,3 @@ offset_bottom = 100.0
 [connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton" to="PanelContainer/PuzzleOpenMenuButton" method="_on_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" method="_on_id_pressed"]
 [connection signal="id_pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu" method="_on_id_pressed"]
-[connection signal="pressed" from="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu/CloseButton" to="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu/StationsPopupMenu/CloseButton" method="_on_pressed"]

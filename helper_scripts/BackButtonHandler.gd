@@ -15,7 +15,7 @@ func _notification(what: int) -> void:
 			_on_app_returned_from_background()
 
 func _on_back_pressed() -> void:
-	print("BackButtonHandler -> Back button pressed")
+	print("[BackButtonHandler.gd] -> Back button pressed")
 
 	if is_on_main_menu():
 		_move_app_to_background()
@@ -23,41 +23,35 @@ func _on_back_pressed() -> void:
 		_go_back_one_screen()
 
 func _move_app_to_background() -> void:
-	print("BackButtonHandler -> Move App to background")
+	print("[BackButtonHandler.gd] -> Move App to background")
 	if OS.get_name() != "Android":
 		return # no-op on desktop/editor
 	var android_runtime = Engine.get_singleton("AndroidRuntime")
 	if android_runtime == null:
-		push_warning("BackButtonHandler -> AndroidRuntime singleton not available")
+		push_warning("[BackButtonHandler.gd] -> AndroidRuntime singleton not available")
 		return
 	var activity = android_runtime.getActivity()
 	activity.moveTaskToBack(true)
 
 func _go_back_one_screen() -> void:
 	# your existing menu/scene navigation logic
-	print("BackButtonHandler -> Back up one scene")
+	print("[BackButtonHandler.gd] -> Back up one scene")
 	pass
 
 func is_on_main_menu() -> bool:
 	# your existing check, e.g. get_tree().current_scene.name == "MainMenu"
-	print("BackButtonHandler -> Is on Main scene")
+	print("[BackButtonHandler.gd] -> Is on Main scene")
 	return true
 
 func _on_app_backgrounded() -> void:
 	# Called when app goes to background (Home, back-to-background, task switch, etc.)
 	# e.g. pause game, save state, mute audio, pause timers
-	print("BackButtonHandler -> Sent to background!")
+	print("[BackButtonHandler.gd] -> Sent to background!")
 	
-	# Pause Banner While in background
-	print("BANNER -> Paused")
-	AdMobBanner._on_pause_banner()
 	
 func _on_app_returned_from_background() -> void:
 	# Called when app comes back to foreground
 	# e.g. resume game, refresh data, unmute audio, resync timers
-	print("BackButtonHandler -> Returned to foreground!")
-	
-	# Pause Banner While in background
-	print("BANNER -> Resumed")
-	AdMobBanner._on_resume_banner()
+	print("[BackButtonHandler.gd] -> Returned to foreground!")
+
 	

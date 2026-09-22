@@ -13,7 +13,7 @@ signal turn_on_radio
 
 func _ready() -> void:
 	turn_on_radio.connect(settings_ui._on_music_on_pressed)
-	print("Puzzle -> stations_popup_menu.gd -> _ready()")
+	print("[Puzzle] -> stations_popup_menu.gd -> _ready()")
 	if not id_pressed.is_connected(_on_id_pressed):
 		id_pressed.connect(_on_id_pressed)
 	
@@ -42,14 +42,14 @@ func add_station(url: String, description: String = "") -> bool:
 		return false
 		
 	if has_station_url(trimmed_url):
-		print("Puzzle -> stations_popup_menu.gd -> Station URL already exists: ", trimmed_url)
+		print("[Puzzle] -> stations_popup_menu.gd -> Station URL already exists: ", trimmed_url)
 		error_label.text = "ERROR! Station URL already exists! "
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
 		return false
 
 	# Validate stream URL asynchronously using low-level HTTPClient
-	print("Puzzle -> stations_popup_menu.gd -> Validating Icecast stream: ", trimmed_url)
+	print("[Puzzle] -> stations_popup_menu.gd -> Validating Icecast stream: ", trimmed_url)
 	error_label.text = " Validating Icecast stream."
 	await get_tree().create_timer(2.0, true, true).timeout
 	error_label.text = ""
@@ -72,7 +72,7 @@ func add_station(url: String, description: String = "") -> bool:
 	
 	_rebuild_popup_menu()
 	_save_stations_to_json()
-	print("Puzzle -> stations_popup_menu.gd -> Successfully validated and added station: ", display_title)
+	print("[Puzzle] -> stations_popup_menu.gd -> Successfully validated and added station: ", display_title)
 	error_label.text = "SUCCESS! Successfully validated and added station."
 	await get_tree().create_timer(4.0, true, true).timeout
 	error_label.text = ""
@@ -118,7 +118,7 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 
 		# Validate stream only when the URL changes
 		if validate_new_url:
-			print("Puzzle -> stations_popup_menu.gd -> Validating updated stream: ", trimmed_url)
+			print("[Puzzle] -> stations_popup_menu.gd -> Validating updated stream: ", trimmed_url)
 			error_label.text = "Validating updated stream."
 			await get_tree().create_timer(4.0, true, true).timeout
 			error_label.text = ""
@@ -139,7 +139,7 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 
 	_rebuild_popup_menu()
 	_save_stations_to_json()
-	print("Puzzle -> stations_popup_menu.gd -> Successfully edited station at index %d: %s" % [index, display_title])
+	print("[Puzzle] -> stations_popup_menu.gd -> Successfully edited station at index %d: %s" % [index, display_title])
 	error_label.text = "SUCCESS!   Edit saved.."
 	await get_tree().create_timer(4.0, true, true).timeout
 	error_label.text = ""
@@ -288,7 +288,7 @@ func delete_station_at(index: int) -> void:
 	if index >= 0 and index < Globals.stations_array.size():
 		var removed: Dictionary = Globals.stations_array[index]
 		Globals.stations_array.remove_at(index)
-		print("Puzzle -> stations_popup_menu.gd -> Deleted: ", removed.get("station_name"))
+		print("[Puzzle] -> stations_popup_menu.gd -> Deleted: ", removed.get("station_name"))
 		error_label.text = " SUCCESS! Deleted: " + removed.get("station_name")
 		await get_tree().create_timer(2.0, true, true).timeout
 		error_label.text = ""
@@ -301,7 +301,7 @@ func delete_station_by_url(url: String) -> void:
 	for i in range(Globals.stations_array.size() - 1, -1, -1):
 		if Globals.stations_array[i].get("url") == url:
 			Globals.stations_array.remove_at(i)
-			print("Puzzle -> stations_popup_menu.gd -> Deleted URL: ", url)
+			print("[Puzzle] -> stations_popup_menu.gd -> Deleted URL: ", url)
 			error_label.text = " SUCCESS! Deleted URL: " + url
 			await get_tree().create_timer(2.0, true, true).timeout
 			error_label.text = ""
@@ -353,12 +353,12 @@ func _load_stations_from_json() -> void:
 				Globals.stations_array.append({"station_name": station_name, "url": url})
 
 func _on_id_pressed(id: int) -> void:
-	print("Puzzle -> stations_popup_menu.gd -> _on_id_pressed()")
+	print("[Puzzle] -> stations_popup_menu.gd -> _on_id_pressed()")
 	
 	
 	if id >= 0 and id < Globals.stations_array.size():
 		var selected_station: Dictionary = Globals.stations_array[id]
-		print("Puzzle -> stations_popup_menu.gd -> Selection: ", selected_station.get("station_name"))
+		print("[Puzzle] -> stations_popup_menu.gd -> Selection: ", selected_station.get("station_name"))
 		Radio.change_station(selected_station.get("url"))
 		
 		# Set StationUpdatePanel station vars

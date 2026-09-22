@@ -28,7 +28,7 @@ func _ready() -> void:
 func fetch_puzzle_image(category_name: String) -> void:
 	request_started.emit()
 	progress_updated.emit(10.0)
-	print("Api -> fetch_puzzle_image() -> Requesting image metadata for category: ", category_name)
+	print("[Api.gd] -> fetch_puzzle_image() -> Requesting image metadata for category: ", category_name)
 	http_meta_request.cancel_request()
 
 	# 1. Pack sensitive data into the POST body securely using proper String.join() syntax
@@ -47,22 +47,22 @@ func fetch_puzzle_image(category_name: String) -> void:
 	# 3. Send using METHOD_POST
 	var err = http_meta_request.request(BASE_URL, headers, HTTPClient.METHOD_POST, body)
 	if err != OK:
-		push_error("Api -> Failed to send HTTP request: " + str(err))
+		push_error("[Api.gd] -> Failed to send HTTP request: " + str(err))
 		call_deferred("_emit_failed", "HTTP Request initialization failed (Code: " + str(err) + ")")
 
 func _emit_failed(msg: String) -> void:
 	request_failed.emit(msg)
 
 func _on_meta_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	print("Api -> _on_meta_request_completed() -> Meta Request Completed. Result: ", result, " | HTTP Status: ", response_code)
+	print("[Api.gd] -> _on_meta_request_completed() -> Meta Request Completed. Result: ", result, " | HTTP Status: ", response_code)
 
 	if result != HTTPRequest.RESULT_SUCCESS:
-		push_error("Api -> Meta Request network error result code: " + str(result))
+		push_error("[Api.gd] -> Meta Request network error result code: " + str(result))
 		request_failed.emit("Network error occurred (Result: " + str(result) + ").")
 		return
 
 	if response_code != 200 or body.size() == 0:
-		push_error("Api -> _on_meta_request_completed() -> Meta request failed with response code: " + str(response_code))
+		push_error("[Api.gd] -> _on_meta_request_completed() -> Meta request failed with response code: " + str(response_code))
 		request_failed.emit("Server returned response code " + str(response_code))
 		return
 
@@ -70,14 +70,14 @@ func _on_meta_request_completed(result: int, response_code: int, _headers: Packe
 	var json_str = body.get_string_from_utf8()
 	var json = JSON.new()
 	if json.parse(json_str) != OK:
-		push_error("Api -> _on_meta_request_completed() -> Failed to parse JSON response: " + json_str)
-		request_failed.emit("Api -> _on_meta_request_completed() -> Invalid server response.")
+		push_error("[Api.gd] -> _on_meta_request_completed() -> Failed to parse JSON response: " + json_str)
+		request_failed.emit("[Api.gd] -> _on_meta_request_completed() -> Invalid server response.")
 		return
 
 	var data = json.get_data()
 	if data.get("status", "") != "success":
 		var msg = data.get("message", "Unknown error from server.")
-		push_error("Api -> _on_meta_request_completed() -> Server returned error: " + msg)
+		push_error("[Api.gd] -> _on_meta_request_completed() -> Server returned error: " + msg)
 		request_failed.emit(msg)
 		return
 
@@ -88,7 +88,7 @@ func _on_meta_request_completed(result: int, response_code: int, _headers: Packe
 		request_failed.emit("No image URL provided by server.")
 		return
 
-	print("Api -> _on_meta_request_completed() -> Metadata received. Fetching raw image from: ", image_url)
+	print("[Api.gd] -> _on_meta_request_completed() -> Metadata received. Fetching raw image from: ", image_url)
 	progress_updated.emit(50.0)
 
 	http_image_request.cancel_request()
@@ -97,19 +97,19 @@ func _on_meta_request_completed(result: int, response_code: int, _headers: Packe
 	])
 	var err = http_image_request.request(image_url, img_headers)
 	if err != OK:
-		push_error("Api -> _on_meta_request_completed() -> Failed to send HTTP image request. Godot Error Code: " + str(err))
+		push_error("[Api.gd] -> _on_meta_request_completed() -> Failed to send HTTP image request. Godot Error Code: " + str(err))
 		call_deferred("_emit_failed", "Failed to start image download (Code: " + str(err) + ")")
 
 func _on_image_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	print("Api -> _on_image_request_completed() -> Image Download Completed. Result: ", result, " | HTTP Status: ", response_code, " | Payload Bytes: ", body.size())
+	print("[Api.gd] -> _on_image_request_completed() -> Image Download Completed. Result: ", result, " | HTTP Status: ", response_code, " | Payload Bytes: ", body.size())
 
 	if result != HTTPRequest.RESULT_SUCCESS:
-		push_error("Api -> _on_image_request_completed() -> Image request network error result: " + str(result))
+		push_error("[Api.gd] -> _on_image_request_completed() -> Image request network error result: " + str(result))
 		request_failed.emit("Failed to download image payload.")
 		return
 
 	if response_code != 200 or body.size() == 0:
-		push_error("Api -> _on_image_request_completed() -> Image payload request failed with HTTP status: " + str(response_code))
+		push_error("[Api.gd] -> _on_image_request_completed() -> Image payload request failed with HTTP status: " + str(response_code))
 		request_failed.emit("_on_image_request_completed() -> Failed to download image payload (HTTP " + str(response_code) + ").")
 		return
 
@@ -127,7 +127,7 @@ func _on_image_request_completed(result: int, response_code: int, _headers: Pack
 			err = img.load_webp_from_buffer(body)
 
 	if err != OK:
-		push_error("Api -> _on_image_request_completed() -> Failed to decode image buffer. Error code: " + str(err))
+		push_error("[Api.gd] -> _on_image_request_completed() -> Failed to decode image buffer. Error code: " + str(err))
 		request_failed.emit("_on_image_request_completed() -> Corrupted image format received.")
 		return
 

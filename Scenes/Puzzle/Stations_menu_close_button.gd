@@ -1,3 +1,4 @@
+# res://Scenes/Puzzle/Stations_menu_close_button.gd
 extends Button
 
 
@@ -5,4 +6,5 @@ extends Button
 
 
 func _on_pressed() -> void:
-	stations_popup_menu.hide()
+	print("[Puzzle] -> stations_menu_close_button")
+	#stations_popup_menu.hide()

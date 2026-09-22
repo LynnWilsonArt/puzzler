@@ -14,14 +14,16 @@ var station_description: String = ""
 
 
 func _ready() -> void:
+	
 	_http_request = HTTPRequest.new()
 	add_child(_http_request)
 	_http_request.request_completed.connect(_on_check_completed)
 
 func _on_pressed() -> void:
+	print("[Puzzle] -> station_update_submit_button.gd -> _on_pressed()")
 	station_url = url.text.strip_edges()
 	station_description = station_description_line_edit.text.strip_edges()
-	print("Puzzle -> StationUpdatePanel -> Station url: ", station_url)
+	print("[Puzzle] -> StationUpdatePanel -> Station url: ", station_url)
 
 	if not _is_valid_url_format(station_url):
 		_show_error("Please enter a valid http:// or https:// URL.")
@@ -46,11 +48,11 @@ func _is_valid_url_format(text: String) -> bool:
 func _on_check_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	disabled = false
 	if result != HTTPRequest.RESULT_SUCCESS or response_code >= 400:
-		print("Puzzle -> StationUpdatePanel -> URL check failed. result: ", result, " code: ", response_code)
+		print("[Puzzle] -> StationUpdatePanel -> URL check failed. result: ", result, " code: ", response_code)
 		_show_error("That station couldn't be reached. Try another URL.")
 		return
 
-	print("Puzzle -> StationUpdatePanel -> URL verified, adding & switching station.")
+	print("[Puzzle] -> StationUpdatePanel -> URL verified, adding & switching station.")
 	stations_popup_menu.add_station(station_url,station_description)
 	Radio.change_station(station_url)
 	Settings._add_custom_station(station_url)  # only save it once it's confirmed good

@@ -1,4 +1,4 @@
-# res://assets/addons/icy-radio-streamer/radio.gd
+# res://assets/addons/icy-radio-streamer/[Radio]
 extends Node
 
 var icy_http: IcyHttpStream
@@ -10,7 +10,7 @@ var stream: AudioStreamGenerator
 var station_url: String = "https://listen.181fm.com/181-realcountry_128k.mp3"
 
 func _ready() -> void:
-	print("radio.gd -> _ready()")
+	print("[Radio] -> _ready()")
 	# stream assigned to radio_player must be an AudioStreamGenerator
 	stream = radio_player.stream
 	icy_http = IcyHttpStream.new()
@@ -32,7 +32,7 @@ func _ready() -> void:
 			if response_headers_dict.has("icy-br") and icy_audio_decoder.has_method("set_bitrate_hint"):
 				var kbps = int(response_headers_dict["icy-br"])
 				icy_audio_decoder.set_bitrate_hint(kbps)
-				print("Bitrate: %d kbps" % kbps)
+				print("[Radio] -> Bitrate: %d kbps" % kbps)
 
 			# wait for the decoder to detect the stream format information
 			icy_audio_decoder.stream_info_ready.connect(func():
@@ -41,7 +41,7 @@ func _ready() -> void:
 				# the sample rate could also be read from the response headers,
 				# but information obtained directly from the codec is more reliable
 				var rate: int = icy_audio_decoder.get_stream_sample_rate()
-				print("Mix rate: %d Hz" % rate)
+				print("[Radio] -> Mix rate: %d Hz" % rate)
 				stream.mix_rate = rate
 
 				# re-attach the playback now that the generator's final mix_rate is known,
@@ -52,7 +52,7 @@ func _ready() -> void:
 				icy_audio_decoder.set_buffer_thresholds(frames)
 			)
 		else:
-			push_error("Unsupported format: " + content_mime_type)
+			push_error("[Radio] -> Unsupported format: " + content_mime_type)
 			icy_http.cancel_request()
 
 		if icy_audio_decoder:
@@ -72,11 +72,11 @@ func _ready() -> void:
 			# decoder is ready, attach it to the IcyHttpStream so audio playback can begin
 			icy_http.set_audio_decoder(icy_audio_decoder)
 	)
-	print("radio.gd -> End of _ready()")
+	print("[Radio] -> End of _ready()")
 	#endregion
 	
 	icy_http.connection_closed.connect(func(result: IcyHttpStream.Result):
-		print("Icy Connection closed: ", result)
+		print("[Radio] -> Icy Connection closed: ", result)
 		
 		# disconnect the buffering signals when connections closes so they won't report false buffering
 		if icy_audio_decoder.buffering_started.is_connected(on_buffering_started):
@@ -87,7 +87,7 @@ func _ready() -> void:
 	)
 	
 	icy_http.metadata_received.connect(func(metadata: String):
-		print("Metadata: ", metadata)
+		print("[Radio] -> Metadata: ", metadata)
 	)
 	
 	start_radio()
@@ -110,35 +110,35 @@ func _ready() -> void:
 	timer.start()
 func change_station(selected_url) -> void:
 	station_url = selected_url
-	print("change_station() -> Station URL: ", selected_url)
+	print("[Radio] -> change_station() -> Station URL: ", selected_url)
 	Radio.stop_radio()
 	Radio.start_radio()
 	# Wait till initilized then Unpause the stream
-	print("Stations popupMenu -> await 3 seconds") 
+	print("[Radio] -> Stations popupMenu -> await 3 seconds") 
 	await get_tree().create_timer(3.0, true, true).timeout
-	print("Stations popupMenu -> Settings._apply_settings()")
+	print("[Radio] -> Stations popupMenu -> Settings._apply_settings()")
 	Settings._apply_settings() # apply and save settings
 		
 func start_radio() -> void:
-	print("radio.gd -> start_radio() -> station_url: ",station_url)
+	print("[Radio] -> start_radio() -> station_url: ",station_url)
 	var request_headers: PackedStringArray = ["User-Agent: Godot/4.5"];
 	icy_http.request(station_url, 5.0, true, request_headers)
 
 func stop_radio() -> void:
-	print("radio.gd -> stop_radio()")
+	print("[Radio] -> stop_radio()")
 	icy_http.cancel_request()
 	# the last audio bytes will still play because the generator buffer 
 	# have to be drained completely, so we stop audio manually
 	radio_player.stop() 
 
 func on_buffering_started() -> void:
-	print("radio.gd -> on_buffering_started()")
-	print("Buffering started (underrun detected)")
+	print("[Radio] -> on_buffering_started()")
+	print("[Radio] -> Buffering started (underrun detected)")
 	radio_player.stream_paused = true
 	
 func on_buffering_finished() -> void:
-	print("radio.gd -> on_buffering_finished()")
-	print("SUCCESS! Buffering complete. Pausing playback.")
+	print("[Radio] -> on_buffering_finished()")
+	print("[Radio] -> SUCCESS! Buffering complete. Pausing playback.")
 	radio_player.stream_paused = true
 
 	

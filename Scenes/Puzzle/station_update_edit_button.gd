@@ -12,9 +12,9 @@ func _ready() -> void:
 	radio_on.connect(settings_ui._on_music_on_pressed)
 	
 func _on_pressed() -> void:
-	
-	print(" ID:  ",station_update_station_id.text.to_int())
-	print("Station Name: ",station_name_line_edit.text)
+	print("[Puzzle] -> station_update_edit_button -> _n_pressed()")
+	print("[Puzzle] -> station_update_edit_button -> Station ID:  ",station_update_station_id.text.to_int())
+	print("[Puzzle] ->station_update_edit_button -> Station Name: ",station_name_line_edit.text)
 	stations_popup_menu.edit_station_at(station_update_station_id.text.to_int(),station_name_line_edit.text,station_url_line_edit.text)
 	
 	# turn on radio if its off

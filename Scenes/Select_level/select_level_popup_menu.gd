@@ -35,22 +35,23 @@ func _on_id_pressed(id: int) -> void:
 			print(" 7 level selected")
 			Globals.columns = 16
 			Globals.rows = 12
+		
 		7:
-			print(" 8 level selected")
-			Globals.columns = 24
-			Globals.rows = 24
-		8:
 			print(" 9 level selected")
 			Globals.columns = 16
 			Globals.rows = 16
-		9:
+		8:
 			print(" 10 level selected")
 			Globals.columns = 24
 			Globals.rows = 12
-		10:
+		9:
 			print(" 11 level selected")
 			Globals.columns = 32
 			Globals.rows = 18
+		10:
+			print(" 8 level selected")
+			Globals.columns = 24
+			Globals.rows = 24
 		11:
 			print(" 12 level selected")
 			Globals.columns = 36

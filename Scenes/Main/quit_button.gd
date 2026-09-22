@@ -2,7 +2,7 @@
 extends Button
 
 func _on_pressed() -> void:
-	print("Main -> quit_button.gd -> _on_pressed()")
+	print("[main] -> quit_button.gd -> _on_pressed()")
 		
 	if OS.has_feature("web"): 
 		# Attempt to close the browser window/tab  

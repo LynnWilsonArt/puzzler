@@ -33,7 +33,7 @@ var progress_bar : ProgressBar
 var progress_status_label : Label
 
 func _ready() -> void:
-	print("Game_script.gd -> _ready()")
+	print("[Game_Script] -> _ready()")
 	Globals._start_autosave_timer()
 	_create_progress_popup_ui()
 
@@ -60,7 +60,7 @@ func _ready() -> void:
 # ---------- PROGRESS UI ----------
 
 func _create_progress_popup_ui() -> void:
-	print("Game_script.gd -> _create_progress_popup_ui()")
+	print("[Game_Script] -> _create_progress_popup_ui()")
 	progress_layer = CanvasLayer.new()
 	progress_layer.layer = 100
 	progress_layer.visible = false
@@ -108,23 +108,23 @@ func _create_progress_popup_ui() -> void:
 	vbox.add_child(progress_bar)
 
 func _show_progress_popup(message: String) -> void:
-	print("Game_script.gd -> _show_progress_popup()")
+	print("[Game_Script] -> _show_progress_popup()")
 	if progress_layer:
 		progress_status_label.text = message
 		progress_bar.value = 0
 		progress_layer.visible = true
 
 func _hide_progress_popup() -> void:
-	print("Game_script.gd -> _hide_progress_popup()")
+	print("[Game_Script] -> _hide_progress_popup()")
 	if progress_layer:
 		progress_layer.visible = false
 
 func _on_api_request_started() -> void:
-	print(" Game_script.gd -> _on_api_progress_request_started()")
+	print(" [Game_Script] -> _on_api_progress_request_started()")
 	_show_progress_popup("Fetching image from server...")
 
 func _on_api_progress_updated(percent: float) -> void:
-	print("Game_script.gd -> _on_api_progress_updated()")
+	print("[Game_Script] -> _on_api_progress_updated()")
 	if progress_bar:
 		progress_bar.value = percent
 		if percent < 30.0:
@@ -137,7 +137,7 @@ func _on_api_progress_updated(percent: float) -> void:
 # ---------- PUZZLE FETCH & SETUP ----------
 
 func _on_get_puzzle() -> void:
-	print("Game_script.gd -> _on_get_puzzle()")
+	print("[Game_Script] -> _on_get_puzzle()")
 	puzzle_resolved = false
 	backup_attempts_made = 0
 	Api.fetch_puzzle_image(Globals.category)
@@ -145,7 +145,7 @@ func _on_get_puzzle() -> void:
 	timeout_timer.start()
 
 func _on_image_ready(server_imageTexture: ImageTexture, photographer: String = "") -> void:
-	print("Game_script.gd -> _on_image_ready()")
+	print("[Game_Script] -> _on_image_ready()")
 	if puzzle_resolved:
 		return
 
@@ -158,25 +158,25 @@ func _on_image_ready(server_imageTexture: ImageTexture, photographer: String = "
 	_start_puzzle_from_texture(server_imageTexture)
 
 func _on_api_request_failed(_err_msg = "") -> void:
-	print("Game_script.gd -> _on_api_request_failed()")
+	print("[Game_Script] -> _on_api_request_failed()")
 	if puzzle_resolved:
 		return
 	_fetch_backup_puzzle_image()
 
 func _on_fetch_timeout() -> void:
-	print("Game_script.gd -> _on_fetch_timeout()")
+	print("[Game_Script] -> _on_fetch_timeout()")
 	if puzzle_resolved:
 		return
 	_fetch_backup_puzzle_image()
 
 func _fetch_backup_puzzle_image() -> void:
-	print("Game_script.gd -> _fetch_backup_puzzle_image()")
+	print("[Game_Script] -> _fetch_backup_puzzle_image()")
 	if puzzle_resolved:
 		return
 
 	if backup_attempts_made >= backup_max_attempts:
 		_hide_progress_popup()
-		push_error("Game -> Game_script.gd -> Exhausted backup attempts.")
+		push_error("[Game_Script] -> Exhausted backup attempts.")
 		$NoInternetPopup.show()
 		return
 
@@ -188,9 +188,9 @@ func _fetch_backup_puzzle_image() -> void:
 	Api.fetch_puzzle_image("default")
 
 func _start_puzzle_from_texture(tex: Texture2D) -> void:
-	print("Game_script.gd -> _start_puzzle_from_texture()")
+	print("[Game_Script] -> _start_puzzle_from_texture()")
 	if tex == null:
-		push_error("Game -> Game_script.gd -> Received null texture!")
+		push_error("[Game_Script] -> Received null texture!")
 		return
 
 	puzzle_image = tex.get_image()
@@ -205,7 +205,7 @@ func _start_puzzle_from_texture(tex: Texture2D) -> void:
 	_save_puzzle()
 
 func _slice_image(tex : Texture2D) -> void:
-	print("Game_script.gd -> _slice_image()")
+	print("[Game_Script] -> _slice_image()")
 	pieces_data.clear()
 	var img = tex.get_image()
 	img.resize(int(grid_size.x), int(grid_size.y))
@@ -248,11 +248,11 @@ func _slice_image_to_map(tex: Texture2D) -> Dictionary:
 	return map
 
 func _randomize_pieces() -> void:
-	print("Game_script.gd -> _randomize_pieces()")
+	print("[Game_Script] -> _randomize_pieces()")
 	pieces_data.shuffle()
 
 func _place_pieces_on_grid() -> void:
-	print("Game_script.gd -> _place_pieces_on_grid()")
+	print("[Game_Script] -> _place_pieces_on_grid()")
 	first_selected_piece = null
 	swapping = false
 
@@ -294,7 +294,7 @@ func _build_piece(grid: GridContainer, slot_idx: int, tex: Texture2D, texture_id
 	return rect
 
 func _on_piece_clicked(piece : TextureRect) -> void:
-	print("Game_script.gd -> _on_piece_clicked()")
+	print("[Game_Script] -> _on_piece_clicked()")
 	if swapping:
 		return
 
@@ -335,7 +335,7 @@ func _on_piece_clicked(piece : TextureRect) -> void:
 	p2.animate_swap(p1, finish_callback)
 
 func _check_win_condition() -> void:
-	print("Game_script.gd -> _check_win_condition()")
+	print("[Game_Script] -> _check_win_condition()")
 	var grid : GridContainer = $Puzzle/GridContainer
 	for rect in grid.get_children():
 		if rect is TextureRect:
@@ -346,11 +346,23 @@ func _check_win_condition() -> void:
 	_trigger_victory()
 
 func _trigger_victory() -> void:
-	print("Game_script.gd -> _trigger_victory()")
+	print("[Game_Script] -> _trigger_victory()")
 	$Alert_Completed.popup()
 	await $Alert_Completed.confirmed
-	print("On victory drstroy banner ad")
-	AdMobBanner._destroy_banner_view()
+	
+	#--------------------------------------------------------------------------
+	# Destroy banner ad(not needed anymore)
+	# Then show the interstitial ad 
+	#---------------------------------------------------------------------------
+	print("[Game_Script] On victory drstroy banner ad")
+	# Destroy banner before showing interstitial ad
+	# Leaving scene -> going to end_game scene
+	AdManager.destroy_banner()
+	
+	# Show and wait for user to close before going to the end screen
+	# wait is handled in the _on_show_interstitial()
+	print("[Game_Script] -> _trigger_victory() -> _on_show_interstitial_ad()")
+	AdManager.show_interstitial()
 
 	swapping = true
 	puzzle_toggle_requested.emit(true)
@@ -361,7 +373,7 @@ func _trigger_victory() -> void:
 # ---------- SAVE & LOAD ----------
 
 func _save_puzzle() -> void:
-	print("Game_script.gd -> _save_puzzle()")
+	print("[Game_Script] -> _save_puzzle()")
 	var grid : GridContainer = $Puzzle/GridContainer
 	if grid.get_child_count() == 0 or puzzle_image == null:
 		return
@@ -389,7 +401,7 @@ func _save_puzzle() -> void:
 		file.close()
 
 func _load_puzzle() -> void:
-	print("Game_script.gd -> _load_puzzle()")
+	print("[Game_Script] -> _load_puzzle()")
 	if not FileAccess.file_exists(SAVE_PATH):
 		_on_get_puzzle()
 		return

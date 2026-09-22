@@ -9,13 +9,14 @@ extends Button
 
 
 func _ready() -> void:
-	print("Puzzle -> open_menu_button.gd -> _ready()")
+	print("[Puzzle]-> open_menu_button.gd -> _ready()")
 	# Hide on startup
 	puzzle_popup_menu.hide()
 
 
 func _on_pressed() -> void:
-	print("Puzzle -> open_menu_button.gd -> _on_pressed()")
+	print("[Puzzle]-> open_menu_button.gd -> _on_pressed()")
+	
 	puzzle_popup_menu.position = Vector2i(get_global_mouse_position())
 	puzzle_popup_menu.popup()
 	

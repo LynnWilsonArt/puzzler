@@ -8,6 +8,10 @@
 
 config_version=5
 
+[admob]
+
+general/android/app_id="ca-app-pub-4040214573171423~7829401396"
+
 [application]
 
 config/name="PuzzlerPlayStoreAds"
@@ -30,7 +34,7 @@ Api="*uid://vcl72bkf6uk4"
 Globals="*uid://bctar4inn8iw0"
 Settings="*uid://bjmvfw13nl5tu"
 Radio="*uid://dh0oj81pufivs"
-AdMobBanner="*uid://drj3mecv4wcui"
+AdManager="*uid://bqwq8u6v3868l"
 
 [display]
 
