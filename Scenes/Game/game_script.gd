@@ -195,8 +195,13 @@ func _start_puzzle_from_texture(tex: Texture2D) -> void:
 
 	puzzle_image = tex.get_image()
 	puzzle_image.resize(int(grid_size.x), int(grid_size.y))
+	# Add a frame to image
+	puzzle_image = _add_frame_to_image(puzzle_image)
 
 	var resized_tex = ImageTexture.create_from_image(puzzle_image)
+	
+	
+	
 	change_puzzle_image.emit(resized_tex)
 
 	_slice_image(resized_tex)
@@ -472,3 +477,37 @@ func _load_puzzle() -> void:
 
 		var piece_tex : Texture2D = texture_map.get(texture_id, null)
 		_build_piece(grid, slot_idx, piece_tex, texture_id, piece_width, piece_height, piece_script)
+		
+		
+#-------------------------------------------------------------------------------
+# Put a frame on a image
+#-------------------------------------------------------------------------------
+#  Overwrite image with a 15-pixel red border
+#	add_frame_and_overwrite("user://my_photo.jpg", Color.white, 15)
+#
+func _add_frame_to_image(img: Image, frame_color: Color = Color.BISQUE, border_thickness: int = 6) -> Image:
+	if img == null or img.is_empty():
+		push_error("Provided image is null or empty.")
+		return img
+
+	var framed_img := img.duplicate()
+	
+	# Explicitly state int typing instead of using inferred :=
+	var width: int = framed_img.get_width()
+	var height: int = framed_img.get_height()
+
+	# Draw top and bottom borders
+	for y in range(border_thickness):
+		for x in range(width):
+			framed_img.set_pixel(x, y, frame_color)                   # Top edge
+			framed_img.set_pixel(x, height - 1 - y, frame_color)     # Bottom edge
+
+	# Draw left and right borders
+	for x in range(border_thickness):
+		for y in range(height):
+			framed_img.set_pixel(x, y, frame_color)                   # Left edge
+			framed_img.set_pixel(width - 1 - x, y, frame_color)      # Right edge
+
+	return framed_img
+	
+	

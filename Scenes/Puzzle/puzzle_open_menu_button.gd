@@ -17,7 +17,7 @@ func _ready() -> void:
 func _on_pressed() -> void:
 	print("[Puzzle]-> open_menu_button.gd -> _on_pressed()")
 	
-	puzzle_popup_menu.position = Vector2i(get_global_mouse_position())
+	puzzle_popup_menu.position = Vector2i(50,95)
 	puzzle_popup_menu.popup()
 	
 	# Hide any other menus that are open

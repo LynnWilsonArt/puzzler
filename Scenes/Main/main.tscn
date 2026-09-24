@@ -13,11 +13,14 @@
 script = ExtResource("1_y3v7k")
 metadata/_edit_vertical_guides_ = [583.0]
 
-[node name="main" type="CanvasLayer" parent="." unique_id=1991471373]
+[node name="main" type="Control" parent="." unique_id=735907894]
+layout_mode = 3
+anchors_preset = 0
 
 [node name="TileMapLayer" type="TileMapLayer" parent="main" unique_id=853424891]
 
 [node name="TextureRect" type="TextureRect" parent="main" unique_id=910809572]
+layout_mode = 0
 offset_left = 1.0
 offset_top = -3.0
 offset_right = 1153.0
@@ -57,8 +60,7 @@ text = "Quit"
 script = ExtResource("5_4bx0a")
 
 [node name="SelectLevelMenu" parent="main/TextureRect" unique_id=734487808 instance=ExtResource("6_mg8qx")]
-offset = Vector2(488, 406)
-transform = Transform2D(1, 0, 0, 1, 488, 406)
+position = Vector2(488, 406)
 
 [node name="Version" type="Label" parent="main/TextureRect" unique_id=1070255671]
 layout_mode = 1
@@ -71,11 +73,9 @@ offset_right = 69.0
 offset_bottom = -2.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "V126r"
+text = "V128r"
 
 [node name="Category" parent="main/TextureRect" unique_id=1906510130 instance=ExtResource("7_xlvfx")]
-offset = Vector2(465, 458)
-transform = Transform2D(1, 0, 0, 1, 465, 458)
 
 [node name="HTTPRequest" type="HTTPRequest" parent="main" unique_id=1532807641]
 

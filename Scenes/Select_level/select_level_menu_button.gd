@@ -15,5 +15,5 @@ func _on_pressed() -> void:
 	print("[Select_level] -> select_level_open_menu_button.gd -> _on_pressed()")
 	# Display the popup menu
 	print("[Select_level] -> select_level_open_menu_button.gd -> show SelecrLevelPopupMenu")
-	select_level_popup_menu.position = Vector2i(get_global_mouse_position())
+	select_level_popup_menu.position = Vector2i(50,150)
 	select_level_popup_menu.popup()

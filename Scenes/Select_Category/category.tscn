@@ -5,19 +5,12 @@
 [ext_resource type="Script" uid="uid://41fbwndxdc35" path="res://Scenes/Select_Category/category_popup_menu.gd" id="3_they8"]
 [ext_resource type="Script" uid="uid://ncixlebaosjk" path="res://Scenes/Select_Category/category_menu_button.gd" id="4_x7hq0"]
 
-[node name="Category" type="CanvasLayer" unique_id=734487808]
+[node name="Category" type="Node2D" unique_id=39075934]
 
-[node name="CategoryContainer" type="PanelContainer" parent="." unique_id=216300760]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 125.0
-offset_bottom = 50.0
-theme_override_styles/panel = ExtResource("1_eueuv")
-
-[node name="CategoryPopupMenu" type="PopupMenu" parent="CategoryContainer" unique_id=747482595]
+[node name="CategoryPopupMenu" type="PopupMenu" parent="." unique_id=747482595]
 oversampling_override = 1.0
-position = Vector2i(59, 54)
-size = Vector2i(204, 518)
+position = Vector2i(50, 150)
+size = Vector2i(164, 272)
 theme = ExtResource("2_73dh3")
 item_count = 8
 item_0/text = "Aircraft"
@@ -38,8 +31,11 @@ item_7/text = "Landscapes"
 item_7/id = 7
 script = ExtResource("3_they8")
 
-[node name="CategoryButton" type="Button" parent="CategoryContainer" unique_id=1776515590]
-layout_mode = 2
+[node name="CategoryButton" type="Button" parent="." unique_id=1776515590]
+offset_left = 488.0
+offset_top = 480.0
+offset_right = 679.0
+offset_bottom = 510.0
 theme = ExtResource("2_73dh3")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = ExtResource("1_eueuv")
@@ -47,5 +43,5 @@ theme_override_styles/hover = ExtResource("1_eueuv")
 text = "Select Category"
 script = ExtResource("4_x7hq0")
 
-[connection signal="id_pressed" from="CategoryContainer/CategoryPopupMenu" to="CategoryContainer/CategoryPopupMenu" method="_on_id_pressed"]
-[connection signal="pressed" from="CategoryContainer/CategoryButton" to="CategoryContainer/CategoryButton" method="_on_pressed"]
+[connection signal="id_pressed" from="CategoryPopupMenu" to="CategoryPopupMenu" method="_on_id_pressed"]
+[connection signal="pressed" from="CategoryButton" to="CategoryButton" method="_on_pressed"]

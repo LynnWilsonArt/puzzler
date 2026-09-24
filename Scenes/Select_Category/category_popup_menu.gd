@@ -1,8 +1,10 @@
 # res://Scenes/Select_Category/category_popup_menu.gd
 extends PopupMenu
+@onready var category_popup_menu: PopupMenu = $"."
 
 
 func _on_id_pressed(id: int) -> void:
+	
 	print("[Select_Category] -> category_popup_menu.gd -> _on_id_pressed(id: int)")
 		
 	match id:

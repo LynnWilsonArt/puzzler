@@ -41,9 +41,9 @@ func _on_id_pressed(id: int) -> void:
 				print("[Puzzle]-> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		3: # New Puzzle Goto Main scene
-			print("[AdManager] -> New Puzzle -> Destroy Banner!")
+			print("[AdManager] -> Home -> Destroy Banner!")
 			AdManager.destroy_banner()
-			print("[Puzzle]-> handle_popup_menu_selections.gd -> New Puzzle Selected: ", id)
+			print("[Puzzle]-> handle_popup_menu_selections.gd -> Home Selected: ", id)
 			Globals._stop_autosave_timer()
 			Globals._g_delete_puzzle()
 			Globals._switch_scene("res://Scenes/Main/main.tscn")

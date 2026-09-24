@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://cntixowkd4x1v" path="res://assets/images/end_screen.jpg" id="4_mue7e"]
 [ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="5_agdlo"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="6_tsnm7"]
-[ext_resource type="Script" uid="uid://0ngi6nbal723" path="res://Scenes/End_game/load_shop.gd" id="7_mue7e"]
-[ext_resource type="Script" uid="uid://drkttt5dhqqjn" path="res://Scenes/End_game/new_puzzle_button.gd" id="7_wbltp"]
+[ext_resource type="Script" uid="uid://0ngi6nbal723" path="res://Scenes/End_game/remove_ads_button.gd" id="7_mue7e"]
+[ext_resource type="Script" uid="uid://drkttt5dhqqjn" path="res://Scenes/End_game/home_button.gd" id="7_wbltp"]
 [ext_resource type="Script" uid="uid://blah1dx52kgho" path="res://Scenes/End_game/quit_button.gd" id="8_tfboq"]
-[ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form.gd" id="10_7g37k"]
+[ext_resource type="Script" uid="uid://dy1gh47j8igw0" path="res://Scenes/End_game/contact_form_button.gd" id="10_7g37k"]
 
 [node name="end_game" type="Node2D" unique_id=1607308340]
 script = ExtResource("1_7g37k")
@@ -25,7 +25,7 @@ theme = ExtResource("5_agdlo")
 texture = ExtResource("4_mue7e")
 metadata/_edit_use_anchors_ = true
 
-[node name="New_Puzzle_Button" type="Button" parent="Puzzle/TextureRect" unique_id=1002687122]
+[node name="HomeButton" type="Button" parent="Puzzle/TextureRect" unique_id=1002687122]
 layout_mode = 1
 offset_left = 483.0
 offset_top = 375.0
@@ -34,10 +34,10 @@ offset_bottom = 413.0
 theme = ExtResource("5_agdlo")
 theme_override_styles/normal = ExtResource("6_tsnm7")
 theme_override_styles/hover = ExtResource("6_tsnm7")
-text = "New Puzzle"
+text = "Home"
 script = ExtResource("7_wbltp")
 
-[node name="RemoveAds" type="Button" parent="Puzzle/TextureRect" unique_id=371814713]
+[node name="RemoveAdsButton" type="Button" parent="Puzzle/TextureRect" unique_id=371814713]
 layout_mode = 0
 offset_left = 480.0
 offset_top = 421.0
@@ -50,7 +50,7 @@ theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "Remove Ads"
 script = ExtResource("7_mue7e")
 
-[node name="ContactForm" type="Button" parent="Puzzle/TextureRect" unique_id=464553988]
+[node name="ContactFormButton" type="Button" parent="Puzzle/TextureRect" unique_id=464553988]
 layout_mode = 0
 offset_left = 481.0
 offset_top = 470.0
@@ -74,7 +74,7 @@ theme_override_styles/hover = ExtResource("6_tsnm7")
 text = "Quit Game"
 script = ExtResource("8_tfboq")
 
-[connection signal="pressed" from="Puzzle/TextureRect/New_Puzzle_Button" to="Puzzle/TextureRect/New_Puzzle_Button" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/RemoveAds" to="Puzzle/TextureRect/RemoveAds" method="_on_pressed"]
-[connection signal="pressed" from="Puzzle/TextureRect/ContactForm" to="Puzzle/TextureRect/ContactForm" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/HomeButton" to="Puzzle/TextureRect/HomeButton" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/RemoveAdsButton" to="Puzzle/TextureRect/RemoveAdsButton" method="_on_pressed"]
+[connection signal="pressed" from="Puzzle/TextureRect/ContactFormButton" to="Puzzle/TextureRect/ContactFormButton" method="_on_pressed"]
 [connection signal="pressed" from="Puzzle/TextureRect/Quit_Button" to="Puzzle/TextureRect/Quit_Button" method="_on_pressed"]
