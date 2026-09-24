@@ -71,7 +71,7 @@ offset_right = 69.0
 offset_bottom = -2.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "V125it"
+text = "V126r"
 
 [node name="Category" parent="main/TextureRect" unique_id=1906510130 instance=ExtResource("7_xlvfx")]
 offset = Vector2(465, 458)
