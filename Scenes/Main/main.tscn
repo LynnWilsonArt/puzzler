@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://cywhkanar6hfu" path="res://Scenes/Main/main.gd" id="1_y3v7k"]
 [ext_resource type="StyleBox" uid="uid://doqk1eecpadh6" path="res://assets/fonts/new_style_box_flat.tres" id="3_hq80f"]
 [ext_resource type="Texture2D" uid="uid://bksrj7pc445xr" path="res://assets/images/mainScreen.jpg" id="3_y3v7k"]
-[ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://Scenes/Main/start_button.gd" id="4_4e88x"]
 [ext_resource type="Script" uid="uid://dha8cc3xrxh3v" path="res://Scenes/Main/quit_button.gd" id="5_4bx0a"]
+[ext_resource type="Script" uid="uid://d2xrjjsqh6au2" path="res://Scenes/Main/start_button.gd" id="5_y3v7k"]
 [ext_resource type="PackedScene" uid="uid://dhvlvj4dfjn5u" path="res://Scenes/Select_level/select_level.tscn" id="6_mg8qx"]
 [ext_resource type="PackedScene" uid="uid://ctu8okumy35hp" path="res://Scenes/Select_Category/category.tscn" id="7_xlvfx"]
 
@@ -42,7 +42,7 @@ theme = ExtResource("1_8em3v")
 theme_override_styles/normal = ExtResource("3_hq80f")
 theme_override_styles/hover = ExtResource("3_hq80f")
 text = "Play"
-script = ExtResource("4_4e88x")
+script = ExtResource("5_y3v7k")
 
 [node name="QuitButton" type="Button" parent="main/TextureRect" unique_id=930054890]
 layout_mode = 0
@@ -71,7 +71,7 @@ offset_right = 69.0
 offset_bottom = -2.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "V118Ads"
+text = "V125it"
 
 [node name="Category" parent="main/TextureRect" unique_id=1906510130 instance=ExtResource("7_xlvfx")]
 offset = Vector2(465, 458)

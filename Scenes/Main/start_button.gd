@@ -16,7 +16,7 @@ func _on_pressed() -> void:
 	# Show Ad banners 
 	print("[Main] -> StartButton -> Show Ad banners!")
 	AdManager.show_banner()
-		
+	
 	if game_scene_path != "":
 
 		# Switch directly via the file string path

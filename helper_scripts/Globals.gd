@@ -22,6 +22,7 @@ var banner_ad_time: int = 5 # seconds on screen
 # Sets puzzle size
 var puzzle_size_x: int = 1152
 var puzzle_size_y:int = 548
+var disable_ads_key: int = 0
 
 
 # Storing Array of Dictionaries: [{"station_name": String, "url": String}]

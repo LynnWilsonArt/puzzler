@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://buru83ilqqfk7"]
+
+[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_dqdqq"]
+[ext_resource type="Script" uid="uid://do521rc338jak" path="res://Scenes/Shop/Shop.gd" id="2_8dak6"]
+[ext_resource type="Script" uid="uid://d0dtps28kqotu" path="res://Scenes/Shop/cancel.gd" id="2_dqdqq"]
+
+[node name="Shop" type="Control" unique_id=396654363]
+layout_mode = 3
+anchors_preset = 0
+theme = ExtResource("1_dqdqq")
+script = ExtResource("2_8dak6")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1280547776]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+theme = ExtResource("1_dqdqq")
+color = Color(0.56078434, 0.34117648, 0.1882353, 1)
+
+[node name="RemoveAdsButton" type="Button" parent="ColorRect" unique_id=519624559]
+layout_mode = 0
+offset_left = 469.5
+offset_top = 200.0
+offset_right = 682.5
+offset_bottom = 230.0
+theme = ExtResource("1_dqdqq")
+text = "Remove Popup Ads"
+
+[node name="RemovePuoupAdsDescription" type="Label" parent="ColorRect" unique_id=164865322]
+layout_mode = 0
+offset_left = 308.5
+offset_top = 240.0
+offset_right = 843.5
+offset_bottom = 266.0
+theme_override_font_sizes/font_size = 20
+text = "Permanently disables full-screen pop-up ads between levels.
+Does not remove Banner Ads!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestorePurchaseButton" type="Button" parent="ColorRect" unique_id=1420702881]
+layout_mode = 0
+offset_left = 472.0
+offset_top = 414.0
+offset_right = 686.0
+offset_bottom = 452.0
+text = "Restore Purchases"
+
+[node name="Close" type="Button" parent="ColorRect" unique_id=933537453]
+layout_mode = 0
+offset_left = 528.5
+offset_top = 500.0
+offset_right = 623.5
+offset_bottom = 538.0
+text = "Close"
+script = ExtResource("2_dqdqq")
+
+[node name="StatusLabel" type="Label" parent="ColorRect" unique_id=692098873]
+layout_mode = 0
+offset_top = 350.0
+offset_right = 1152.0
+offset_bottom = 380.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ShopTitle" type="Label" parent="." unique_id=1472215734]
+layout_mode = 1
+offset_right = 1152.0
+offset_bottom = 125.0
+theme_override_font_sizes/font_size = 49
+text = "Purchase Products"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="ColorRect/Close" to="ColorRect/Close" method="_on_pressed"]

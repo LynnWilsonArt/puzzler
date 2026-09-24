@@ -350,6 +350,9 @@ func _trigger_victory() -> void:
 	$Alert_Completed.popup()
 	await $Alert_Completed.confirmed
 	
+	# stop autosave timer / Game over
+	Globals.autosave_timer.stop()
+	
 	#--------------------------------------------------------------------------
 	# Destroy banner ad(not needed anymore)
 	# Then show the interstitial ad 
@@ -358,18 +361,15 @@ func _trigger_victory() -> void:
 	# Destroy banner before showing interstitial ad
 	# Leaving scene -> going to end_game scene
 	AdManager.destroy_banner()
-	
-	# Show and wait for user to close before going to the end screen
-	# wait is handled in the _on_show_interstitial()
-	print("[Game_Script] -> _trigger_victory() -> _on_show_interstitial_ad()")
-	AdManager.show_interstitial()
-
+		
 	swapping = true
 	puzzle_toggle_requested.emit(true)
 
+	# Show interstitial Ad
 	if game_scene_path != "":
-		get_tree().change_scene_to_file(game_scene_path)
-
+		AdManager.show_interstitil_ad(game_scene_path)
+		
+	
 # ---------- SAVE & LOAD ----------
 
 func _save_puzzle() -> void:
