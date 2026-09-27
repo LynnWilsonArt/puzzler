@@ -22,7 +22,7 @@ $pixabay_api_key = $config['pixabay_api_key'];
 $passcode        = $config['passcode'];
 
 $base_dir = __DIR__ . "/category/";
-$max_images_per_category = 200;
+$max_images_per_category = 500;
 
 // Read input safely whether sent via POST, GET, or JSON body from Godot Web
 $input_data = [];
