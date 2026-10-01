@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://brrgxw78at72f"]
+
+[ext_resource type="Script" uid="uid://7q66ix061fg2" path="res://Scenes/Links/LynnButton.gd" id="1_5avuj"]
+[ext_resource type="Theme" uid="uid://clrpsvcpduvp" path="res://assets/themes/puzzler_theme.tres" id="1_fbdwd"]
+[ext_resource type="Script" uid="uid://fbin4uhwo74h" path="res://Scenes/Links/links.gd" id="2_n7ev3"]
+[ext_resource type="Script" uid="uid://u4mp2e7e8qhn" path="res://Scenes/Links/PuzzlerButton.gd" id="2_yrga4"]
+[ext_resource type="Script" uid="uid://cvns545jm57be" path="res://Scenes/Links/contact_button.gd" id="4_n7ev3"]
+[ext_resource type="Script" uid="uid://clshqagjug1h0" path="res://Scenes/Links/FollowOnFacebookButton.gd" id="5_lh3lq"]
+
+[node name="Links" type="Control" unique_id=324328933]
+layout_mode = 3
+anchors_preset = 0
+theme = ExtResource("1_fbdwd")
+script = ExtResource("2_n7ev3")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1796592978]
+layout_mode = 1
+offset_right = 500.0
+offset_bottom = 300.0
+color = Color(0.8490607, 0.532125, 0.30574226, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=1185134086]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -146.0
+offset_top = 47.0
+offset_right = 146.0
+offset_bottom = 253.0
+grow_horizontal = 2
+theme = ExtResource("1_fbdwd")
+
+[node name="PuzzlerWebsiteButton" type="Button" parent="ColorRect/VBoxContainer" unique_id=1225151007]
+layout_mode = 2
+theme = ExtResource("1_fbdwd")
+text = "Puzzler Website"
+script = ExtResource("2_yrga4")
+
+[node name="LynnWilsonArtWebsiteButton" type="Button" parent="ColorRect/VBoxContainer" unique_id=1474323421]
+layout_mode = 2
+theme = ExtResource("1_fbdwd")
+text = "Lynn Wilson Art Website"
+script = ExtResource("1_5avuj")
+
+[node name="FollowOnFacebook" type="Button" parent="ColorRect/VBoxContainer" unique_id=246873598]
+layout_mode = 2
+text = "Follow On Facebook"
+script = ExtResource("5_lh3lq")
+
+[node name="ContactButton" type="Button" parent="ColorRect/VBoxContainer" unique_id=416733032]
+layout_mode = 2
+text = "Contact Us"
+script = ExtResource("4_n7ev3")
+
+[node name="CloseButton" type="Button" parent="ColorRect/VBoxContainer" unique_id=1854381427]
+layout_mode = 2
+text = "Close"
+
+[connection signal="pressed" from="ColorRect/VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]

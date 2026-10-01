@@ -1,5 +1,7 @@
 @tool
 extends PanelContainer
+# res://addons/godot_bridge/dock.gd
+# Version 2.2.1
 
 var bridge  # reference to the EditorPlugin instance (godot_bridge/plugin.gd)
 
@@ -10,15 +12,58 @@ var status_label: Label
 var toggle_button: Button
 var command_checks: Dictionary = {}
 
+const READ_ONLY_COMMANDS = [
+	"ping",
+	"get_commands",
+	"get_scene_tree",
+	"get_selected_nodes",
+	"get_node_properties",
+	"get_node_signals",
+	"read_file",
+	"list_dir",
+	"get_open_script"
+]
+
+# Anything in plugin.gd's command_enabled that is not listed above is shown here
+# automatically, so new commands never go missing from the dock again.
+const MUTATING_COMMANDS = [
+	"write_file",
+	"spawn_node",
+	"spawn_packed_scene",
+	"remove_node",
+	"reparent_node",
+	"set_node_property",
+	"connect_signal",
+	"save_scene",
+	"open_scene",
+	"run_project",
+	"stop_project"
+]
+
 
 func _ready() -> void:
 	_build_ui()
 
 
+func _mutating_commands() -> Array:
+	var result: Array = MUTATING_COMMANDS.duplicate()
+	if bridge != null:
+		for key in bridge.command_enabled.keys():
+			if not READ_ONLY_COMMANDS.has(key) and not result.has(key):
+				result.append(key)
+	return result
+
+
 func _build_ui() -> void:
 	custom_minimum_size = Vector2(300, 460)
+
+	var scroll = ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(scroll)
+
 	var vbox = VBoxContainer.new()
-	add_child(vbox)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
 
 	var title = Label.new()
 	title.text = "Godot Bridge (Open WebUI)"
@@ -44,6 +89,7 @@ func _build_ui() -> void:
 	port_label.custom_minimum_size = Vector2(60, 0)
 	port_row.add_child(port_label)
 	port_edit = LineEdit.new()
+	port_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	port_row.add_child(port_edit)
 
 	var warn = Label.new()
@@ -72,18 +118,18 @@ func _build_ui() -> void:
 	commands_label.text = "Read-only commands"
 	vbox.add_child(commands_label)
 
-	for key in ["ping", "get_scene_tree", "read_file", "list_dir", "get_open_script"]:
+	for key in READ_ONLY_COMMANDS:
 		var cb = CheckBox.new()
 		cb.text = key
 		vbox.add_child(cb)
 		command_checks[key] = cb
 
 	var danger_label = Label.new()
-	danger_label.text = "Mutating commands (off by default)"
+	danger_label.text = "Mutating commands"
 	danger_label.add_theme_color_override("font_color", Color(1, 0.5, 0.5))
 	vbox.add_child(danger_label)
 
-	for key in ["write_file", "spawn_node"]:
+	for key in _mutating_commands():
 		var cb2 = CheckBox.new()
 		cb2.text = key
 		vbox.add_child(cb2)
@@ -119,33 +165,47 @@ func refresh() -> void:
 
 
 func _on_generate_token() -> void:
+	if bridge == null:
+		return
 	token_edit.text = bridge.generate_token()
 
 
 func _on_save() -> void:
+	if bridge == null:
+		return
 	bridge.bind_address = bind_edit.text.strip_edges()
 	bridge.port = int(port_edit.text.strip_edges())
 	bridge.auth_token = token_edit.text.strip_edges()
 	for key in command_checks.keys():
 		bridge.command_enabled[key] = command_checks[key].button_pressed
 	bridge.save_settings()
+
 	if bridge.is_running:
-		status_label.text = bridge.start_server()
-	_update_status()
+		var result_msg = bridge.start_server()
+		status_label.text = result_msg
+		_update_status(result_msg)
+	else:
+		_update_status()
 
 
 func _on_toggle() -> void:
+	if bridge == null:
+		return
 	if bridge.is_running:
 		bridge.stop_server()
+		_update_status("Stopped.")
 	else:
-		status_label.text = bridge.start_server()
-	_update_status()
+		var result_msg = bridge.start_server()
+		_update_status(result_msg)
 
 
-func _update_status() -> void:
+func _update_status(override_msg: String = "") -> void:
+	if bridge == null:
+		return
+
 	if bridge.is_running:
 		toggle_button.text = "Stop Server"
-		status_label.text = "Listening on %s:%d" % [bridge.bind_address, bridge.port]
+		status_label.text = override_msg if not override_msg.is_empty() else "Listening on %s:%d" % [bridge.bind_address, bridge.port]
 	else:
 		toggle_button.text = "Start Server"
-		status_label.text = "Stopped."
+		status_label.text = override_msg if not override_msg.is_empty() else "Stopped."

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bg42n1xmqv2yn"]
+
+[ext_resource type="Script" uid="uid://dgbqgvrqqc3yy" path="res://Scenes/Ads/banner.gd" id="1_kdhmq"]
+
+[node name="Banner" type="Node2D" unique_id=1669259874]
+script = ExtResource("1_kdhmq")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=981036539]
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2106627162]
+
+[node name="Timer" type="Timer" parent="." unique_id=2000244186]
+wait_time = 8.0

@@ -358,21 +358,17 @@ func _trigger_victory() -> void:
 	# stop autosave timer / Game over
 	Globals.autosave_timer.stop()
 	
-	#--------------------------------------------------------------------------
-	# Destroy banner ad(not needed anymore)
-	# Then show the interstitial ad 
-	#---------------------------------------------------------------------------
-	print("[Game_Script] On victory drstroy banner ad")
-	# Destroy banner before showing interstitial ad
-	# Leaving scene -> going to end_game scene
-	AdManager.destroy_banner()
-		
 	swapping = true
 	puzzle_toggle_requested.emit(true)
 
-	# Show interstitial Ad
+	# Show end game screen
 	if game_scene_path != "":
-		AdManager.show_interstitil_ad(game_scene_path)
+		print("Changing to end_game screen.", game_scene_path)
+		get_tree().change_scene_to_file(game_scene_path)
+	else:
+		push_error("Can't switch scenes: File Not Found!",game_scene_path)
+		print("Can't switch scenes: File Not Found!",game_scene_path)
+	
 		
 	
 # ---------- SAVE & LOAD ----------

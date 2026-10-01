@@ -11,7 +11,9 @@
 [ext_resource type="Script" uid="uid://cqu341ts6h5hy" path="res://Scenes/Puzzle/station_update_add_button.gd" id="10_wv2ay"]
 [ext_resource type="Script" uid="uid://deqgsfdlid2yl" path="res://Scenes/Puzzle/station_update_edit_button.gd" id="11_wv2ay"]
 [ext_resource type="Script" uid="uid://dwmi3qwmf2cxu" path="res://Scenes/Puzzle/station_update_delete_button.gd" id="12_k1ecr"]
+[ext_resource type="PackedScene" uid="uid://bg42n1xmqv2yn" path="res://Scenes/Ads/banner.tscn" id="14_eqdau"]
 [ext_resource type="Script" uid="uid://dmrgcknsth4dq" path="res://Scenes/Puzzle/station_update_clear_button.gd" id="14_iuh05"]
+[ext_resource type="PackedScene" uid="uid://brrgxw78at72f" path="res://Scenes/Links/links.tscn" id="15_eqdau"]
 [ext_resource type="Texture2D" uid="uid://dspppd5hukhf7" path="res://assets/images/181.fm.png" id="16_igoow"]
 
 [sub_resource type="GDScript" id="GDScript_wv2ay"]
@@ -258,6 +260,8 @@ grow_horizontal = 2
 theme = ExtResource("2_in6qw")
 color = Color(0.8490607, 0.532125, 0.30574226, 1)
 
+[node name="Sprite2D" type="Sprite2D" parent="ColorRect" unique_id=738097581]
+
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1080552055]
 layout_mode = 0
 offset_left = 20.0
@@ -278,7 +282,7 @@ position = Vector2i(50, 95)
 size = Vector2i(327, 314)
 theme = ExtResource("2_in6qw")
 theme_override_font_sizes/font_size = 24
-item_count = 9
+item_count = 10
 item_0/text = "Toggle Original Image"
 item_0/id = 0
 item_1/text = "Load Puzzle "
@@ -295,8 +299,10 @@ item_6/text = "Select Radio Station"
 item_6/id = 6
 item_7/text = "Update Stations"
 item_7/id = 7
-item_8/text = "Quit"
+item_8/text = "Links"
 item_8/id = 8
+item_9/text = "Quit"
+item_9/id = 9
 script = ExtResource("4_0i70x")
 
 [node name="StationsPopupMenu" type="PopupMenu" parent="PanelContainer/PuzzleOpenMenuButton/PuzzlePopupMenu" unique_id=183858871]
@@ -350,6 +356,17 @@ offset_left = 50.0
 offset_top = 100.0
 offset_right = 50.0
 offset_bottom = 100.0
+
+[node name="Links" parent="." unique_id=324328933 instance=ExtResource("15_eqdau")]
+visible = false
+layout_mode = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 50.0
+offset_bottom = 100.0
+
+[node name="Banner" parent="." unique_id=1669259874 instance=ExtResource("14_eqdau")]
+position = Vector2(576, 50)
 
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" to="StationUpdatePanel/StationsColorRect/StationUpdateSelectStationButton" method="_on_pressed"]
 [connection signal="pressed" from="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" to="StationUpdatePanel/StationsColorRect/StationUpdateAddButton" method="_on_pressed"]

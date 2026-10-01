@@ -8,6 +8,7 @@ extends PopupMenu
 @onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
 @onready var station_update_panel: PanelContainer = $"../../../StationUpdatePanel"
 @onready var settings_ui: Control = $"../../../SettingsUI"
+@onready var links: Control = $"../../../Links"
 
 
 
@@ -41,8 +42,7 @@ func _on_id_pressed(id: int) -> void:
 				print("[Puzzle]-> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")
 				
 		3: # New Puzzle Goto Main scene
-			print("[AdManager] -> Home -> Destroy Banner!")
-			AdManager.destroy_banner()
+			
 			print("[Puzzle]-> handle_popup_menu_selections.gd -> Home Selected: ", id)
 			Globals._stop_autosave_timer()
 			Globals._g_delete_puzzle()
@@ -72,10 +72,13 @@ func _on_id_pressed(id: int) -> void:
 			stations_popup_menu.show()
 			
 		7: # Show Station Update Panel
-				print("[Puzzle]-> puzzle_handle_popup_menu_selections.gd -> station update panel: ", id)
-				station_update_panel.show()
-		 
-		8: # Quit Game
+			print("[Puzzle]-> puzzle_handle_popup_menu_selections.gd -> station update panel: ", id)
+			station_update_panel.show()
+		8: # Load links scene
+			links.show()
+			
+			
+		9: # Quit Game
 			print("[Puzzle]-> Quit -> Destroyed Banners!")
 			if OS.has_feature("web"):  
 				print("[Puzzle]-> handle_popup_menu_selections.gd -> Quit - web!")
