@@ -23,6 +23,8 @@ var banner_ad_time: int = 5 # seconds on screen
 var puzzle_size_x: int = 1152
 var puzzle_size_y:int = 548
 var disable_ads_key: int = 0
+const CACHE_REFRESH_INTERVAL = 86400.0  # Refresh every 24 hours 
+const BANNER_REFRESH_INTERVAL = 180.0   # Change banner image every 5 minuites
 
 
 # Storing Array of Dictionaries: [{"station_name": String, "url": String}]
