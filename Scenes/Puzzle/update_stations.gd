@@ -1,3 +1,4 @@
+
 # res://Scenes/Puzzle/update_stations.gd
 extends PopupMenu
 
@@ -38,7 +39,6 @@ func add_station(url: String, description: String = "") -> bool:
 		error_label.text = " ERROR! Cannot add a empty url!"
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
-		
 		return false
 		
 	if has_station_url(trimmed_url):
@@ -85,7 +85,7 @@ func add_station(url: String, description: String = "") -> bool:
 func edit_station_at(index: int, new_name: String, new_url: String, validate_new_url: bool = true) -> bool:
 	if index < 0 or index >= Globals.stations_array.size():
 		printerr("Puzzle -> stations_popup_menu.gd -> Edit failed: Index %d out of bounds." % index)
-		error_label.text = "ERROR! Edit failed: Index %d out of bounds."
+		error_label.text = "ERROR! Edit failed: Index out of bounds."
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
 		return false
@@ -99,7 +99,6 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 		await get_tree().create_timer(4.0, true, true).timeout
 		error_label.text = ""
 		return false
-		
 
 	var current_station: Dictionary = Globals.stations_array[index]
 	var old_url: String = current_station.get("url", "")
@@ -113,7 +112,6 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 				error_label.text = "ERROR! URL already exists in list."
 				await get_tree().create_timer(4.0, true, true).timeout
 				error_label.text = ""
-				
 				return false
 
 		# Validate stream only when the URL changes
@@ -140,7 +138,7 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 	_rebuild_popup_menu()
 	_save_stations_to_json()
 	print("[Puzzle] -> stations_popup_menu.gd -> Successfully edited station at index %d: %s" % [index, display_title])
-	error_label.text = "SUCCESS!   Edit saved.."
+	error_label.text = "SUCCESS! Edit saved."
 	await get_tree().create_timer(4.0, true, true).timeout
 	error_label.text = ""
 	return true
@@ -159,7 +157,7 @@ func edit_station_by_url(target_url: String, new_name: String, new_url: String, 
 
 # --- NETWORK VALIDATION HELPERS ---
 
-## Inspects HTTP headers without downloading the continuous stream payload
+## Validate that a URL is a valid Icecast/Shoutcast MP3 stream.
 func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect_limit: int = 5) -> bool:
 	if redirect_limit <= 0:
 		return false
@@ -170,14 +168,14 @@ func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect
 
 	var client := HTTPClient.new()
 	var tls_options: TLSOptions = TLSOptions.client() if parsed.is_ssl else null
-	
+
 	var err := client.connect_to_host(parsed.host, parsed.port, tls_options)
 	if err != OK:
 		return false
 
 	var start_time: int = Time.get_ticks_msec()
 
-	# Wait for connection
+	# Wait for the connection to be established
 	while client.get_status() == HTTPClient.STATUS_CONNECTING or client.get_status() == HTTPClient.STATUS_RESOLVING:
 		client.poll()
 		await get_tree().process_frame
@@ -189,18 +187,17 @@ func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect
 		client.close()
 		return false
 
-	# Request headers only (Icy-MetaData prompts Icecast/Shoutcast header metadata)
+	# Request headers – Icy-Metadata triggers Icecast/Shoutcast metadata headers
 	var request_headers := PackedStringArray([
 		"User-Agent: GodotRadio/1.0",
 		"Icy-MetaData: 1"
 	])
-
 	err = client.request(HTTPClient.METHOD_GET, parsed.path, request_headers)
 	if err != OK:
 		client.close()
 		return false
 
-	# Poll until response headers arrive (STATUS_BODY)
+	# Wait for the response headers
 	while client.get_status() == HTTPClient.STATUS_REQUESTING:
 		client.poll()
 		await get_tree().process_frame
@@ -214,73 +211,115 @@ func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect
 
 	var response_code: int = client.get_response_code()
 	var response_headers: PackedStringArray = client.get_response_headers()
-	client.close() # Close immediately to prevent streaming endless audio data into RAM
 
-	# Handle HTTP Redirects (301, 302, 303, 307, 308)
+	# Handle HTTP redirects (301, 302, 303, 307, 308)
 	if response_code in [301, 302, 303, 307, 308]:
 		var redirect_url: String = _get_header_value(response_headers, "location")
 		if not redirect_url.is_empty():
 			if not redirect_url.begins_with("http"):
 				redirect_url = ("https://" if parsed.is_ssl else "http://") + parsed.host + redirect_url
+			client.close()
 			return await is_valid_icecast_stream(redirect_url, timeout_seconds, redirect_limit - 1)
 
+	# Only a 200 OK is acceptable
 	if response_code != 200:
+		client.close()
 		return false
 
-	return _contains_icecast_headers(response_headers)
+	# The headers must identify an audio stream
+	if not _contains_icecast_headers(response_headers):
+		client.close()
+		return false
+
+	# Check Content-Type explicitly for MP3
+	var content_type: String = _get_header_value(response_headers, "content-type").to_lower()
+	if not content_type.begins_with("audio/mpeg") and not content_type.begins_with("audio/mp3") and not content_type.begins_with("audio/x-mpeg"):
+		client.close()
+		return false
+
+	# Pull a tiny chunk of the body to confirm it contains MP3 frames.
+	var body_data: PackedByteArray = PackedByteArray()
+	var read_start_time: int = Time.get_ticks_msec()
+
+	while client.get_status() == HTTPClient.STATUS_BODY and (Time.get_ticks_msec() - read_start_time) / 1000.0 < timeout_seconds:
+		client.poll()
+		await get_tree().process_frame
+		var chunk: PackedByteArray = client.read_response_body_chunk()
+		if chunk.size() > 0:
+			body_data.append_array(chunk)
+			if body_data.size() >= 2048:  # 2 kB is safe to bypass initial ID3/metadata tags
+				break
+
+	client.close()
+
+	if body_data.size() == 0:
+		return false
+
+	# Verify the chunk contains valid MP3 frame headers (robust against ID3 tags)
+	return _is_mp3_frame_header(body_data)
 
 func _contains_icecast_headers(headers: PackedStringArray) -> bool:
 	for header in headers:
 		var h_lower: String = header.to_lower()
-		if h_lower.begins_with("server: icecast") \
-		or h_lower.begins_with("server: shoutcast") \
-		or h_lower.begins_with("icy-") \
-		or h_lower.begins_with("x-audiocast-") \
-		or "content-type: audio/" in h_lower \
-		or "content-type: application/ogg" in h_lower \
-		or "content-type: video/ogg" in h_lower:
+		if h_lower.begins_with("content-type: audio/mpeg") \
+		or h_lower.begins_with("content-type: audio/mp3") \
+		or h_lower.begins_with("content-type: audio/x-mpeg"):
 			return true
 	return false
 
 func _get_header_value(headers: PackedStringArray, key: String) -> String:
 	var prefix: String = key.to_lower() + ":"
 	for h in headers:
-		if h.to_lower().begins_with(prefix):
+		var h_lower: String = h.to_lower()
+		if h_lower.begins_with(prefix):
 			return h.substr(prefix.length()).strip_edges()
 	return ""
+
+## Robust MP3 frame header check that skips ID3v2 tags if present.
+func _is_mp3_frame_header(data: PackedByteArray) -> bool:
+	if data.size() < 4:
+		return false
+		
+	var start_index: int = 0
+	# Skip ID3v2 container tags if present at the start of the stream chunk
+	if data.size() >= 10 and data[0] == 0x49 and data[1] == 0x44 and data[2] == 0x33:
+		var size_bytes = (data[6] & 0x7F) << 21 | (data[7] & 0x7F) << 14 | (data[8] & 0x7F) << 7 | (data[9] & 0x7F)
+		start_index = 10 + size_bytes
+
+	# Scan for MP3 frame sync word (0xFF followed by upper 3 bits set to 1)
+	for i in range(start_index, data.size() - 1):
+		if data[i] == 0xFF and (data[i + 1] & 0xE0) == 0xE0:
+			return true
+			
+	return false
 
 func _parse_url(url: String) -> Dictionary:
 	var is_ssl: bool = url.begins_with("https://")
 	var scheme: String = "https://" if is_ssl else "http://"
-	
-	if not url.begins_with("http://") and not url.begins_with("https://"):
+
+	if not url.begins_with(scheme):
 		return {}
-		
+
 	var without_scheme: String = url.trim_prefix(scheme)
-	var path_split: PackedStringArray = without_scheme.split("/", true, 1)
-	var host_and_port: String = path_split[0]
-	var path: String = "/" + (path_split[1] if path_split.size() > 1 else "")
-	
+	var parts: PackedStringArray = without_scheme.split("/", true, 1)
+
+	var host_and_port: String = parts[0]
+	var path: String = "/" + (parts[1] if parts.size() > 1 else "")
+
 	var host: String = host_and_port
 	var port: int = 443 if is_ssl else 80
-	
+
 	if ":" in host_and_port:
-		var parts: PackedStringArray = host_and_port.split(":")
-		host = parts[0]
-		port = parts[1].to_int()
-		
+		var hp_parts: PackedStringArray = host_and_port.split(":")
+		host = hp_parts[0]
+		port = hp_parts[1].to_int()
+
 	return {
 		"host": host,
 		"port": port,
 		"path": path,
 		"is_ssl": is_ssl
 	}
-
-func has_station_url(url: String) -> bool:
-	for station in Globals.stations_array:
-		if station.get("url", "").strip_edges() == url.strip_edges():
-			return true
-	return false
 
 # --- DELETE FUNCTIONS ---
 
@@ -352,9 +391,16 @@ func _load_stations_from_json() -> void:
 			if not url.is_empty() and not has_station_url(url):
 				Globals.stations_array.append({"station_name": station_name, "url": url})
 
+func has_station_url(url: String) -> bool:
+	for station in Globals.stations_array:
+		if station.get("url", "").strip_edges() == url.strip_edges():
+			return true
+	return false
+
+# --- MENU SELECTION HANDLER ---
+
 func _on_id_pressed(id: int) -> void:
 	print("[Puzzle] -> stations_popup_menu.gd -> _on_id_pressed()")
-	
 	
 	if id >= 0 and id < Globals.stations_array.size():
 		var selected_station: Dictionary = Globals.stations_array[id]
@@ -365,11 +411,8 @@ func _on_id_pressed(id: int) -> void:
 		station_url_line_edit.text = selected_station.get("url")
 		station_name_line_edit.text = selected_station.get("station_name")
 		station_update_station_id.text = str(id)
-		# Station was selected. Turn radio on.
+		
 		# Station was selected. Turn radio on.
 		turn_on_radio.emit()
-		
-		
-	
 	else:
 		printerr("Puzzle -> stations_popup_menu.gd -> Selected ID %d is out of bounds." % id)
