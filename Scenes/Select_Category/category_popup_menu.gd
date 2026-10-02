@@ -9,43 +9,42 @@ func _on_id_pressed(id: int) -> void:
 		
 	match id:
 		0: 
-			print("Selection: 0 Category Aircraft")
-			Globals.category = "aircraft"
-			print("Globals.category = ",Globals.category)
-			
-		1: 
-			print("Selection: 1 Category Animals")
+			print("Selection: 0 Category Animals")
 			Globals.category ="animals"
 			print("Globals.category = ",Globals.category)
 						
-		2:
-			print("Selection: 2 Category Art")
+		1:
+			print("Selection: 1 Category Art")
 			Globals.category ="art"
 			print("Globals.category = ",Globals.category)
 		
-		3:
-			print("Selection: 3 Category Cars")
-			Globals.category ="cars"
+		2:
+			print("Selection: 2 Category Birds")
+			Globals.category ="birds"
 			print("Globals.category = ",Globals.category)
 			
-		4: 
-			print("Selection: 4 Category City Scapes")
+		3: 
+			print("Selection: 3 Category City Scapes")
 			Globals.category ="city"
 			print("Globals.category = ",Globals.category)
 		
-		5:
-			print("Selection: 5 Category Flowers")
+		4:
+			print("Selection: 4 Category Flowers")
 			Globals.category ="flowers"
 			print("Globals.category = ",Globals.category)
 			
-		6:
-			print("Selection: 6 Category Insects")
+		5:
+			print("Selection: 5 Category Insects")
 			Globals.category ="insects"
 			print("Globals.category = ",Globals.category)
 			
-		7:
-			print("Selection: 7 Category Landscapes")
+		6:
+			print("Selection: 6 Category Landscapes")
 			Globals.category ="landscapes"
+			print("Globals.category = ",Globals.category)
+		7: 
+			print("Selection: 7 Category Seascapes")
+			Globals.category = "seascapes"
 			print("Globals.category = ",Globals.category)
 			
 		
