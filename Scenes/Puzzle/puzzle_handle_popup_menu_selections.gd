@@ -1,9 +1,8 @@
 # res://Scenes/Puzzle/puzzle_handle_popup_menu_selections.gd
 extends PopupMenu
 
-
+@onready var game_scene: Node = $"../../../.."
 @onready var puzzle_node: Control = $"../../.."
-@onready var game_scene: Node2D = $"../../../.."
 @onready var puzzle_popup_menu: PopupMenu = $"."
 @onready var stations_popup_menu: PopupMenu = $StationsPopupMenu
 @onready var station_update_panel: PanelContainer = $"../../../StationUpdatePanel"
@@ -36,7 +35,7 @@ func _on_id_pressed(id: int) -> void:
 				
 		2: # Save puzzle
 			print("[Puzzle]-> handle_popup_menu_selections.gd ->  -> Saving puzzle from Puzzle -> PopupMenu -> Save button")
-			if puzzle_node and puzzle_node.has_method("_load_puzzle"):
+			if puzzle_node and puzzle_node.has_method("_save_puzzle"):
 				puzzle_node._save_puzzle()
 			else:
 				print("[Puzzle]-> handle_popup_menu_selections.gd -> ERROR! -> Puzzle node or load_puzzle() not found!")

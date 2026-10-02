@@ -1,154 +1,166 @@
+# res://Scenes/Ads/banner.gd
 extends Node2D
 
-# ------------------------------------------------------------------
-# 1️⃣  URLs of the four PNGs on your server
-# ------------------------------------------------------------------
-const IMAGE_URLS = [
-	"https://puzzler.lynnwilsonart.com/ads/banner/1.png",
-	"https://puzzler.lynnwilsonart.com/ads/banner/2.png",
-	"https://puzzler.lynnwilsonart.com/ads/banner/3.png",
-	"https://puzzler.lynnwilsonart.com/ads/banner/4.png",
-	"https://puzzler.lynnwilsonart.com/ads/banner/5.png"
-]
+@onready var http_request : HTTPRequest = $HTTPRequest
+@onready var timer : Timer = $Timer
+@onready var sprite : Sprite2D = $Sprite
+
+const BASE_URL : String = "https://puzzler.lynnwilsonart.com/ads/banner/"
+const CACHE_DIR : String = "user://banner_cache/"
+const NUM_IMAGES : int = 5          # change if you have a different count
+# Cache lifetime – 10 minutes = 600 seconds
+const REFRESH_INTERVAL : float = 600.0
+
+# How long each image stays on screen – 5 seconds
+const IMAGE_DISPLAY_TIME : float = 5.0
+
+var image_urls : Array[String] = []
+var textures : Array[Texture2D] = []
+var current_index : int = 0
+var downloaded_count : int = 0
+
+var request_queue : Array[String] = []
+var is_requesting : bool = false
+var current_request_index : int = -1
 
 # ------------------------------------------------------------------
-# 2️⃣  Runtime variables
-# ------------------------------------------------------------------
-var _textures : Array = []          # Holds ImageTexture objects in URL order
-var _current_index : int = 0        # Which image is currently shown
-var _downloaded_count : int = 0     # How many images have finished downloading
-
-# Queue of URLs that are waiting to be fetched
-var _request_queue : Array[String] = []
-# Flag that tells us whether we’re already in the middle of a request
-var _is_requesting : bool = false
-# Index of the URL currently being requested (used for fallback)
-var _current_request_index : int = -1
-
-# ------------------------------------------------------------------
-# 3️⃣  Called when the scene is ready
+# 1️⃣  Setup on ready
 # ------------------------------------------------------------------
 func _ready() -> void:
-	# Connect signals using Callable (GDScript 4 syntax)
-	$HTTPRequest.connect("request_completed", Callable(self, "_on_request_completed"))
-	$Timer.connect("timeout", Callable(self, "_on_timer_timeout"))
+	print("Banner -> _ready()")
+	
+	
+	http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+	timer.connect("timeout", Callable(self, "_on_timer_timeout"))
 
-	# Prepare the textures array so we can assign by index later
-	_textures.resize(IMAGE_URLS.size())
+	DirAccess.make_dir_absolute(CACHE_DIR)
 
-	# Enqueue all URLs – we’ll start them one by one
-	for url in IMAGE_URLS:
-		_request_queue.append(url)
+	# Build URLs
+	for i in range(NUM_IMAGES):
+		image_urls.append(BASE_URL + str(i + 1) + ".png")
 
-	# Timer is *not* started yet – we wait until *all* images are ready.
-	$Timer.wait_time = 8.0
-	$Timer.one_shot = false
-
-	# Kick off the first request
+	textures.resize(NUM_IMAGES)
+	_queue_all_images()
 	_try_start_next()
 
 # ------------------------------------------------------------------
-# 4️⃣  Helper that starts the next queued request (if any)
+# 2️⃣  Queue every URL for download / cache check
+# ------------------------------------------------------------------
+func _queue_all_images() -> void:
+	request_queue.clear()
+	for url in image_urls:
+		request_queue.append(url)
+
+# ------------------------------------------------------------------
+# 3️⃣  Start the next queued request (or use cache)
 # ------------------------------------------------------------------
 func _try_start_next() -> void:
-	# If we’re already in the middle of a request, do nothing
-	if _is_requesting:
+	if is_requesting or request_queue.is_empty():
 		return
 
-	# No URLs waiting – nothing to do
-	if _request_queue.is_empty():
-		return
+	var url = request_queue.pop_front()
+	current_request_index = image_urls.find(url)
 
-	# Grab the next URL and fire it off
-	var url = _request_queue.pop_front()
-	_current_request_index = IMAGE_URLS.find(url)
-	var err = $HTTPRequest.request(url)
-
+	var cache_path = CACHE_DIR + str(current_request_index + 1) + ".png"
+	if FileAccess.file_exists(cache_path):
+		var mod_time = FileAccess.get_modified_time(cache_path)
+		var now = Time.get_unix_time_from_system()
+		if now - mod_time < REFRESH_INTERVAL:
+			# Use cached image
+			textures[current_request_index] = _load_local_image(cache_path)
+			downloaded_count += 1
+			if downloaded_count == NUM_IMAGES:
+				_start_animation()
+			return
+	
+	# No valid cache – download from network
+	var err = http_request.request(url)
 	if err == OK:
-		_is_requesting = true
+		print("Requesting image from server")
+		is_requesting = true
 	else:
-		# If request() failed (e.g. ERR_BUSY), put the URL back on the queue
-		_request_queue.push_front(url)
-		_is_requesting = false
-
+		push_error("Failed to request %s: %s" % [url, err])
+#------------------------------------------------------------
+# Refresh cache
+#------------------------------------------------------------
+func _refresh_cache() -> void:
+	downloaded_count = 0
+	textures.resize(NUM_IMAGES)
+	_queue_all_images()
+	_try_start_next()
 # ------------------------------------------------------------------
-# 5️⃣  HTTPRequest callback – called for every finished download
+# 4️⃣  Handle HTTP responses (images only)
 # ------------------------------------------------------------------
 func _on_request_completed(result: int, response_code: int,
-	_headers: PackedStringArray, body: PackedByteArray) -> void:
+						   _headers: PackedStringArray, body: PackedByteArray) -> void:
 
-	# Mark that we’re no longer busy – next request can start
-	_is_requesting = false
+	is_requesting = false
 
-	var tex : ImageTexture
-
+	var tex : Texture2D = null
 	if result == OK and response_code == 200:
-		# Convert the raw PNG bytes into an ImageTexture
 		var img = Image.new()
 		var err = img.load_png_from_buffer(body)
 		if err == OK:
 			tex = ImageTexture.create_from_image(img)
-		else:
-			push_error("Failed to load image from buffer – falling back to local file")
-	else:
-		push_error("HTTP request failed (code %d) – falling back to local file" % response_code)
 
-	# If we couldn't create a texture from the network data, try local fallback
 	if tex == null:
-		tex = _load_local_image(_current_request_index)
+		# Fallback to local asset (if you ship one)
+		tex = _load_local_image(image_urls[current_request_index])
 		if tex == null:
-			push_error("Failed to load local fallback image for index %d" % _current_request_index)
-			# Create an empty placeholder to keep array size consistent
+			push_error("Could not load fallback for index %d" % current_request_index)
 			tex = ImageTexture.new()
 
-	# Store the texture at the correct index
-	_textures[_current_request_index] = tex
+	# Cache the downloaded PNG
+	var cache_path = CACHE_DIR + str(current_request_index + 1) + ".png"
+	var file = FileAccess.open(cache_path, FileAccess.WRITE)
+	if file:
+		file.store_buffer(body)
+		file.close()
+	else:
+		push_error("Could not write cache file: %s" % cache_path)
 
-	# Keep track of how many we have finished
-	_downloaded_count += 1
+	textures[current_request_index] = tex
+	downloaded_count += 1
 
-	# When *all* images are ready, start the animation
-	if _downloaded_count == IMAGE_URLS.size():
+	if downloaded_count == NUM_IMAGES:
 		_start_animation()
 
-	# Start the next queued request (if any)
 	_try_start_next()
 
 # ------------------------------------------------------------------
-# 6️⃣  Load a local image from res://assets/Ads/<index+1>.png
+# 5️⃣  Load a local image (from cache or res://assets)
 # ------------------------------------------------------------------
-func _load_local_image(index: int) -> ImageTexture:
-	var path = "res://assets/Ads/%d.png" % (index + 1)
+func _load_local_image(path: String) -> Texture2D:
 	var tex_res = load(path)
 	if tex_res is Texture2D:
-		var img = tex_res.get_image()
-		return ImageTexture.create_from_image(img)
-	push_error("Unable to load local image '%s'" % path)
+		return tex_res
+	push_error("Unable to load image '%s'" % path)
 	return null
 
 # ------------------------------------------------------------------
-# 7️⃣  Start the timer once all textures are loaded
+# 6️⃣  Start the banner animation
 # ------------------------------------------------------------------
 func _start_animation() -> void:
-	print("Animation has started.")
-	if _textures.is_empty():
+	if textures.is_empty():
 		push_error("No textures to animate")
 		return
 
-	# Show the first image immediately
-	$Sprite.texture = _textures[0]
-	_current_index = 0
+	sprite.texture = textures[0]
+	current_index = 0
 
-	# Start the timer – it will fire every 8 seconds
-	$Timer.start()
+	# Show each image for IMAGE_DISPLAY_TIME seconds
+	timer.wait_time = IMAGE_DISPLAY_TIME
+	timer.start()
+
+	# After the whole cycle, refresh the cache every REFRESH_INTERVAL seconds
+	get_tree().create_timer(REFRESH_INTERVAL).timeout.connect(_refresh_cache)
 
 # ------------------------------------------------------------------
-# 8️⃣  Timer callback – switch to the next image
+# 7️⃣  Timer callback – switch to next image
 # ------------------------------------------------------------------
 func _on_timer_timeout() -> void:
-	if _textures.is_empty():
+	if textures.is_empty():
 		return
 
-	# Advance index (wrap around)
-	_current_index = (_current_index + 1) % _textures.size()
-	$Sprite.texture = _textures[_current_index]
+	current_index = (current_index + 1) % textures.size()
+	sprite.texture = textures[current_index]

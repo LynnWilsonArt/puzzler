@@ -109,7 +109,7 @@ func _ready() -> void:
 	)
 	timer.start()
 func change_station(selected_url) -> void:
-	station_url = selected_url
+	station_url =  selected_url
 	print("[Radio] -> change_station() -> Station URL: ", selected_url)
 	Radio.stop_radio()
 	Radio.start_radio()
