@@ -106,3 +106,5 @@ func _load_puzzle() -> void:
 		game_root._load_puzzle()
 		_start_puzzle_timer()
 		_on_show_original_image_pressed()
+		
+		

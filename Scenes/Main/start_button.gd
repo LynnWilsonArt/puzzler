@@ -7,6 +7,7 @@ extends Button
 @export_file("*.tscn") 
 var game_scene_path: String = "res://Scenes/Game/game.tscn"
 
+
 func _on_pressed() -> void:
 	print("[Main] -> start_button.gd -> _on_pressed()")
 	# Add a print statement to verify the button physically registers your click

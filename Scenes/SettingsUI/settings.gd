@@ -100,9 +100,9 @@ func _load_settings() -> void:
 		var data: Dictionary = json_data
 		music_volume = float(data.get("music_volume", music_volume))
 		effects_volume = float(data.get("effects_volume", effects_volume))
-		Radio.station_url = String(data.get("station_url",station_url))
-		if !Radio.station_url:
-			Radio.station_url = DEFAULT_RADIO_URL
+		station_url = String(data.get("station_url",station_url))
+		if !station_url:
+			station_url = DEFAULT_RADIO_URL
 		sound_effects_mode = bool(data.get("sound_effects_mode",sound_effects_mode))
 		radio_mode = bool(data.get("radio_mode",radio_mode)) # sets radio the playing or not playing
 
@@ -157,9 +157,9 @@ func _set_music_volume(value: float) -> void:
 	music_volume = clampf(value, 0.0, 1.0)
 	var bus_idx = AudioServer.get_bus_index("Music")
 	print("[Settings.gd] -> _set_music_volume() -> Music vars, vol, bus_idx",effects_volume, bus_idx)
-	AudioServer.set_bus_volume_db(bus_idx, linear_to_db(music_volume))
+	#AudioServer.set_bus_volume_db(bus_idx, linear_to_db(music_volume))
+	RadioPlayer.set_volume(music_volume)
 	print("[Settings.gd] -> _set_music_volume() -> Music bus_idx: ", bus_idx)
-	
 	print("[Settings.gd] -> _set_music_volume() -> Done!")
 	
 # -------------------------------------------------------------------
@@ -170,7 +170,7 @@ func _save_settings() -> void:
 	var data: Dictionary[String, Variant] = {
 		"music_volume": music_volume, # radio volume
 		"effects_volume": effects_volume,
-		"station_url": Radio.station_url,
+		"station_url": station_url,
 		"sound_effects_mode": sound_effects_mode,
 		"radio_mode": radio_mode,
 		"custom_stations": custom_stations
@@ -186,7 +186,10 @@ func _set_bg_music_mode(mode) -> void:
 	print("[Settings.gd] -> _set_bg_music_mode(mode): ", mode)
 	# Sets music on or off
 	radio_mode = mode
-	Radio.radio_player.stream_paused = !mode
+	if mode:
+		RadioPlayer.play()
+	else:
+		RadioPlayer.pause() 
 #--------------------------------------------------------------------
 # Set sound effects mode (mute toggle only — does NOT trigger playback)
 #--------------------------------------------------------------------

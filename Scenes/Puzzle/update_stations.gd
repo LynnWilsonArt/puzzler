@@ -405,7 +405,7 @@ func _on_id_pressed(id: int) -> void:
 	if id >= 0 and id < Globals.stations_array.size():
 		var selected_station: Dictionary = Globals.stations_array[id]
 		print("[Puzzle] -> stations_popup_menu.gd -> Selection: ", selected_station.get("station_name"))
-		Radio.change_station(selected_station.get("url"))
+		RadioPlayer.change_station(selected_station.get("url"))
 		
 		# Set StationUpdatePanel station vars
 		station_url_line_edit.text = selected_station.get("url")

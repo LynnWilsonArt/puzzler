@@ -14,7 +14,7 @@ general/android/app_id="ca-app-pub-4040214573171423~7829401396"
 
 [application]
 
-config/name="Puzzler-Android-NoAds-UTD"
+config/name="PuzzlerV100-Web"
 run/main_scene="uid://cc88466fw4qg8"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.20664564, 0.096994065, 0.17802015, 1)
@@ -33,7 +33,7 @@ BackButtonHandler="*uid://bxh2i3xkndpy"
 Api="*uid://vcl72bkf6uk4"
 Globals="*uid://bctar4inn8iw0"
 Settings="*uid://bjmvfw13nl5tu"
-Radio="*uid://dh0oj81pufivs"
+RadioPlayer="*uid://crp31y5w7djnt"
 
 [display]
 

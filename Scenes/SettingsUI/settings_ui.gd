@@ -22,7 +22,6 @@ func _ready() -> void:
 func _on_music_volume_changed(music_val: float) -> void:
 	print("[SettingsUI.gd] ->    _on_music_volume_changer()")
 	Settings.music_volume = music_val / 100.0
-	#Settings.effects_volume = effects_val /100.0
 	Settings._apply_settings()
 	
 func _on_effects_volume_changed(effects_val: float) -> void:
