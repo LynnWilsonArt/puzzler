@@ -20,4 +20,4 @@ func _on_pressed() -> void:
 	var station_name = station_name_line_edit.text	
 	stations_popup_menu.add_station(url,station_name)
 	radio_on.emit()
-	RadioPlayer.change_url(url)
+	RadioPlayer.change_station(url)
