@@ -1,4 +1,3 @@
-
 # res://Scenes/Puzzle/update_stations.gd
 extends PopupMenu
 
@@ -12,9 +11,15 @@ const SAVE_PATH: String = "user://stations.json"
 
 signal turn_on_radio
 
+# --- WEB PROBE STATE (used only in web exports) ---
+var _probe_audio: JavaScriptObject
+var _probe_result: int = 0  # 0 = pending, 1 = ok, -1 = failed
+var _probe_cb_ok: JavaScriptObject   # keep references so callbacks aren't freed
+var _probe_cb_err: JavaScriptObject
+
 func _ready() -> void:
 	turn_on_radio.connect(settings_ui._on_music_on_pressed)
-	print("[Puzzle] -> stations_popup_menu.gd -> _ready()")
+	print("[Puzzle] -> update_stations.gd -> _ready()")
 	if not id_pressed.is_connected(_on_id_pressed):
 		id_pressed.connect(_on_id_pressed)
 	
@@ -31,6 +36,7 @@ func _rebuild_popup_menu() -> void:
 
 ## Validates the stream URL against Icecast standards, then adds it if valid.
 func add_station(url: String, description: String = "") -> bool:
+	print("[Puzzle] -> update_stations.gd -> add_station()")
 	var trimmed_url: String = url.strip_edges()
 	var trimmed_desc: String = description.strip_edges()
 	
@@ -48,11 +54,9 @@ func add_station(url: String, description: String = "") -> bool:
 		error_label.text = ""
 		return false
 
-	# Validate stream URL asynchronously using low-level HTTPClient
+	# Validate stream URL asynchronously
 	print("[Puzzle] -> stations_popup_menu.gd -> Validating Icecast stream: ", trimmed_url)
 	error_label.text = " Validating Icecast stream."
-	await get_tree().create_timer(2.0, true, true).timeout
-	error_label.text = ""
 		
 	var is_valid: bool = await is_valid_icecast_stream(trimmed_url)
 	
@@ -83,6 +87,7 @@ func add_station(url: String, description: String = "") -> bool:
 
 ## Edits an existing station at a given array index.
 func edit_station_at(index: int, new_name: String, new_url: String, validate_new_url: bool = true) -> bool:
+	print("[Puzzle] -> update_stations.gd -> edit_station_at_index()")
 	if index < 0 or index >= Globals.stations_array.size():
 		printerr("Puzzle -> stations_popup_menu.gd -> Edit failed: Index %d out of bounds." % index)
 		error_label.text = "ERROR! Edit failed: Index out of bounds."
@@ -118,8 +123,6 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 		if validate_new_url:
 			print("[Puzzle] -> stations_popup_menu.gd -> Validating updated stream: ", trimmed_url)
 			error_label.text = "Validating updated stream."
-			await get_tree().create_timer(4.0, true, true).timeout
-			error_label.text = ""
 			var is_valid: bool = await is_valid_icecast_stream(trimmed_url)
 			if not is_valid:
 				printerr("Puzzle -> stations_popup_menu.gd -> Updated URL is invalid or offline: ", trimmed_url)
@@ -145,6 +148,7 @@ func edit_station_at(index: int, new_name: String, new_url: String, validate_new
 
 ## Edits a station matching an existing target URL.
 func edit_station_by_url(target_url: String, new_name: String, new_url: String, validate_new_url: bool = true) -> bool:
+	print("[Puzzle] -> update_stations.gd -> edit_station_by_url()")
 	for i in range(Globals.stations_array.size()):
 		if Globals.stations_array[i].get("url", "").strip_edges() == target_url.strip_edges():
 			return await edit_station_at(i, new_name, new_url, validate_new_url)
@@ -157,8 +161,55 @@ func edit_station_by_url(target_url: String, new_name: String, new_url: String, 
 
 # --- NETWORK VALIDATION HELPERS ---
 
-## Validate that a URL is a valid Icecast/Shoutcast MP3 stream.
-func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect_limit: int = 5) -> bool:
+## Validate that a URL is a playable stream.
+## Web: asks the browser to load it with an <audio> element (raw sockets are not available).
+## Desktop/mobile: low-level HTTPClient check for Icecast/Shoutcast MP3 streams.
+func is_valid_icecast_stream(url: String, timeout_seconds: float = 8.0, redirect_limit: int = 5) -> bool:
+	print("[Puzzle] -> update_stations.gd -> is_valid_stream()")
+	if OS.has_feature("web"):
+		return await _validate_stream_web(url, timeout_seconds)
+	return await _validate_stream_native(url, timeout_seconds, redirect_limit)
+
+# --- WEB VALIDATION ---
+
+func _on_probe_ok(_args: Array) -> void:
+	_probe_result = 1
+
+func _on_probe_error(_args: Array) -> void:
+	_probe_result = -1
+
+## Web-only: asks the browser to load the stream and reports whether it can play.
+func _validate_stream_web(url: String, timeout_seconds: float) -> bool:
+	# An https page can't load http:// streams (mixed content is blocked).
+	var page_protocol: String = str(JavaScriptBridge.eval("window.location.protocol"))
+	if page_protocol == "https:" and url.begins_with("http://"):
+		printerr("[Puzzle] -> stations_popup_menu.gd -> Stream must be https:// on an https page: ", url)
+		return false
+
+	_probe_result = 0
+	_probe_audio = JavaScriptBridge.create_object("Audio")
+	_probe_cb_ok = JavaScriptBridge.create_callback(_on_probe_ok)
+	_probe_cb_err = JavaScriptBridge.create_callback(_on_probe_error)
+	_probe_audio.addEventListener("canplay", _probe_cb_ok)
+	_probe_audio.addEventListener("error", _probe_cb_err)
+	_probe_audio.src = url
+	_probe_audio.load()
+
+	var start_time: int = Time.get_ticks_msec()
+	while _probe_result == 0 and (Time.get_ticks_msec() - start_time) / 1000.0 < timeout_seconds:
+		await get_tree().process_frame
+
+	var ok: bool = (_probe_result == 1)
+
+	# Stop the download and release the element
+	_probe_audio.removeAttribute("src")
+	_probe_audio.load()
+	_probe_audio = null
+	return ok
+
+# --- NATIVE VALIDATION (desktop / mobile) ---
+
+func _validate_stream_native(url: String, timeout_seconds: float, redirect_limit: int) -> bool:
 	if redirect_limit <= 0:
 		return false
 
@@ -219,7 +270,7 @@ func is_valid_icecast_stream(url: String, timeout_seconds: float = 6.0, redirect
 			if not redirect_url.begins_with("http"):
 				redirect_url = ("https://" if parsed.is_ssl else "http://") + parsed.host + redirect_url
 			client.close()
-			return await is_valid_icecast_stream(redirect_url, timeout_seconds, redirect_limit - 1)
+			return await _validate_stream_native(redirect_url, timeout_seconds, redirect_limit - 1)
 
 	# Only a 200 OK is acceptable
 	if response_code != 200:
@@ -324,6 +375,7 @@ func _parse_url(url: String) -> Dictionary:
 # --- DELETE FUNCTIONS ---
 
 func delete_station_at(index: int) -> void:
+	print("[Puzzle] -> update_stations.gd -> delete_station_at()")
 	if index >= 0 and index < Globals.stations_array.size():
 		var removed: Dictionary = Globals.stations_array[index]
 		Globals.stations_array.remove_at(index)
@@ -337,6 +389,7 @@ func delete_station_at(index: int) -> void:
 		_save_stations_to_json()
 
 func delete_station_by_url(url: String) -> void:
+	print("[Puzzle] -> update_stations.gd -> delete_station_bu_url()")
 	for i in range(Globals.stations_array.size() - 1, -1, -1):
 		if Globals.stations_array[i].get("url") == url:
 			Globals.stations_array.remove_at(i)
@@ -354,6 +407,7 @@ func delete_station_by_url(url: String) -> void:
 # --- SAVE / LOAD FUNCTIONS ---
 
 func _save_stations_to_json() -> void:
+	print("[Puzzle] -> update_stations.gd -> _save_stations_json()")
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
 		var json_string: String = JSON.stringify(Globals.stations_array, "\t")
@@ -361,6 +415,7 @@ func _save_stations_to_json() -> void:
 		file.close()
 
 func _load_stations_from_json() -> void:
+	print("[Puzzle] -> update_stations.gd -> _load_stations_from_json()")
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 		
@@ -392,6 +447,7 @@ func _load_stations_from_json() -> void:
 				Globals.stations_array.append({"station_name": station_name, "url": url})
 
 func has_station_url(url: String) -> bool:
+	print("[Puzzle] -> update_stations.gd -> has_station_url()")
 	for station in Globals.stations_array:
 		if station.get("url", "").strip_edges() == url.strip_edges():
 			return true
@@ -400,7 +456,7 @@ func has_station_url(url: String) -> bool:
 # --- MENU SELECTION HANDLER ---
 
 func _on_id_pressed(id: int) -> void:
-	print("[Puzzle] -> stations_popup_menu.gd -> _on_id_pressed()")
+	print("[Puzzle] -> update_stations.gd -> _on_id_pressed()")
 	
 	if id >= 0 and id < Globals.stations_array.size():
 		var selected_station: Dictionary = Globals.stations_array[id]

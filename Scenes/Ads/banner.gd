@@ -28,7 +28,7 @@ var current_request_index : int = -1
 # 1️⃣ Setup on ready
 # ------------------------------------------------------------------
 func _ready() -> void:
-	print("Banner -> _ready()")
+	print("[Banner] -> _ready()")
 
 	# Modern Godot 4 signal connections
 	http_request.request_completed.connect(_on_request_completed)
@@ -50,7 +50,7 @@ func _ready() -> void:
 # 2️⃣ Queue every URL for download / cache check
 # ------------------------------------------------------------------
 func _queue_all_images() -> void:
-	print("Banner -> _queue_all_images()")
+	print("[Banner] -> _queue_all_images()")
 	request_queue.clear()
 	for url in image_urls:
 		request_queue.append(url)
@@ -59,7 +59,7 @@ func _queue_all_images() -> void:
 # 3️⃣ Start the next queued request (or use cache)
 # ------------------------------------------------------------------
 func _try_start_next() -> void:
-	print("Banner -> _try_start_next()")
+	print("[Banner] -> _try_start_next()")
 	if is_requesting or request_queue.is_empty():
 		return
 
@@ -95,7 +95,7 @@ func _try_start_next() -> void:
 # 4️⃣ Handle HTTP responses (images only)
 # ------------------------------------------------------------------
 func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	print("Banner -> _on_request_completed()")
+	print("[Banner] -> _on_request_completed()")
 	is_requesting = false
 
 	var tex : Texture2D = null
@@ -138,7 +138,7 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 # 5️⃣ Load a local image (from cache or res://assets) — FIXED STATIC CALL
 # ------------------------------------------------------------------
 func _load_local_image(path: String) -> Texture2D:
-	print("Banner -> _load_local_image(): ", path)
+	print("[Banner] -> _load_local_image(): ", path)
 	if not FileAccess.file_exists(path):
 		return null
 		
@@ -154,7 +154,7 @@ func _load_local_image(path: String) -> Texture2D:
 # 6️⃣ Start the banner animation
 # ------------------------------------------------------------------
 func _start_animation() -> void:
-	print("Banner -> _start_animation()")
+	print("[Banner] -> _start_animation()")
 	if textures.is_empty():
 		push_error("No textures to animate")
 		return
@@ -183,7 +183,7 @@ func _on_timer_timeout() -> void:
 # 8️⃣ Re‑download all images (overwrite cache)
 # ------------------------------------------------------------------
 func _refresh_cache() -> void:
-	print("Banner -> _refresh_cache()")
+	print("[Banner] -> _refresh_cache()")
 	downloaded_count = 0
 	textures.resize(NUM_IMAGES)
 	_queue_all_images()

@@ -13,6 +13,9 @@ extends Control
 
 func _ready() -> void:
 	print("[SettingsUI.gd] ->  ready()")
+	Settings._load_settings()
+	Settings._apply_settings()
+	
 	_update_ui_state()
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	effects_volume_slider.value_changed.connect(_on_effects_volume_changed)
@@ -20,18 +23,18 @@ func _ready() -> void:
 	print("[SettingsUI.gd] -> ready() -> radio_mode: ",Settings.radio_mode)
 	
 func _on_music_volume_changed(music_val: float) -> void:
-	print("[SettingsUI.gd] ->    _on_music_volume_changer()")
+	print("[SettingsUI.gd] ->    _on_music_volume_changed()")
 	Settings.music_volume = music_val / 100.0
 	Settings._apply_settings()
 	
 func _on_effects_volume_changed(effects_val: float) -> void:
-	print("[SettingsUI.gd] ->  _on_effects_volume_changes()")
+	print("[SettingsUI.gd] ->  _on_effects_volume_changed()")
 	Settings.effects_volume = effects_val / 100.0
 	Settings._apply_settings()
 	
 	
 func _on_close_button_pressed() -> void:
-	print("[SettingsUI.gd] ->  _on_close_presses()")
+	print("[SettingsUI.gd] ->  _on_close_pressed()")
 	Settings._save_settings()
 	hide()
 
@@ -47,14 +50,16 @@ func _update_ui_state() -> void:
 	effects_volume_slider.set_block_signals(true)
 	effects_volume_slider.value = Settings.effects_volume * 100.0
 	effects_volume_slider.set_block_signals(false)
-	
+	print("[SettingsUI.gd] -> _update_ui_state radio mode: ",Settings.radio_mode)
 	_update_button_visuals(Settings.radio_mode)
+	print("[SettingsUI.gd] -> _update_ui_state effects mode: ",Settings.sound_effects_mode)
 	_update_effects_button_visuals(Settings.sound_effects_mode)
 
 		
 # Radio Control Buttons
 func _on_music_on_pressed() -> void:
 	print("[SettingsUI.gd]  -> MusicOnButton pressed")
+	Settings._start_sound()
 	Settings._set_bg_music_mode(true)
 	_update_button_visuals(true)
 
@@ -69,12 +74,13 @@ func _update_button_visuals(is_on: bool) -> void:
 	
 # Effects Control Buttons
 func _on_effects_on_button_pressed() -> void:
-	print("[SettingsUI.gd]  -> MusicOnButton pressed")
+	print("[SettingsUI.gd]  -> EffectsOnButton pressed")
+	Settings._create_audio_effects_player()
 	Settings._set_effects_audio_mode(true)
-	_update_button_visuals(true)
+	_update_effects_button_visuals(true)
 
 func _on_effects_off_button_pressed() -> void:
-	print("[SettingsUI.gd]  -> MusicOffButton pressed")
+	print("[SettingsUI.gd]  -> EffectsOffButton pressed")
 	Settings._set_effects_audio_mode(false)
 	_update_effects_button_visuals(false)
 
