@@ -66,6 +66,7 @@ func _on_id_pressed(id: int) -> void:
 			print("[Puzzle]-> puzzle_handle_popup_menu_selections.gd -> show settings panel: ", id)
 			settings_ui.show()
 			
+			
 		6: #Show Station Selection Panel
 			print("[Puzzle]-> puzzle_handle_popup_menu_selections.gd -> show stations popup menu: ", id)
 			stations_popup_menu.show()
@@ -83,6 +84,7 @@ func _on_id_pressed(id: int) -> void:
 				print("[Puzzle]-> handle_popup_menu_selections.gd -> Quit - web!")
 				Globals._stop_autosave_timer()
 				Globals._g_save_puzzle()
+				
 				var win = JavaScriptBridge.get_interface("window")
 				if win:
 					win.location.href = Globals.web_home_page

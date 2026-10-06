@@ -32,13 +32,17 @@ const CONFIG_FILE := "user://settings.json"
 #--------------------------------------------------------------------
 func _ready() -> void:
 	print("[Settings.gd] -> _ready()")
-		
+	RadioPlayer.stop() # Kill lingering stream
+	_load_settings()
+	radio_mode = false
+	sound_effects_mode = false
 #-------------------------------------------------------------------
 # Start up audio engine
 #-------------------------------------------------------------------
 func _start_sound() -> void:
 	print("[Settings.gd] -> _start_sound()")
-	_load_settings()
+	radio_mode = true
+	sound_effects_mode = true
 	_apply_settings()
 	print("Url to play: ",station_url)
 	
@@ -78,9 +82,9 @@ func _apply_settings() -> void:
 	# Wait for radio to initilize befor applying settings
 	#await get_tree().create_timer(3.0, true, true).timeout
 	_set_bg_music_mode(radio_mode)
-	if not RadioPlayer.is_playing:
-		print("[Settings.gd] -> Radio not playing. Starting it.")
-		RadioPlayer.play()
+	#if not RadioPlayer.is_playing:
+		#print("[Settings.gd] -> Radio not playing. Starting it.")
+		#RadioPlayer.play()
 	_save_settings() # save the just applied settings.
 	settings_changed.emit() # updates the settings ui
 	print("[Settings.gd] -> _apply_settings() -> SUCCESS! Saved settings applied!")
@@ -126,7 +130,7 @@ func _load_settings() -> void:
 #------------------------------------------------------------------
 # Music Player
 #--------------------------------------------------------------------
-func _create_radio_palyer() -> void:
+func _create_radio_pyer() -> void:
 	print("[Settings.gd] -> _create_radio_player()")
 	music_player.bus = "Music"
 	add_child(music_player)
@@ -165,7 +169,7 @@ func _set_music_volume(value: float) -> void:
 	print("[Settings.gd] -> _set_music_volume(value)")
 	music_volume = clampf(value, 0.0, 1.0)
 	var bus_idx = AudioServer.get_bus_index("Music")
-	print("[Settings.gd] -> _set_music_volume() -> Music vars, vol, bus_idx",effects_volume, bus_idx)
+	print("[Settings.gd] -> _set_music_volume() -> Music vars, vol, bus_idx",music_volume, bus_idx)
 	#AudioServer.set_bus_volume_db(bus_idx, linear_to_db(music_volume))
 	RadioPlayer.set_volume(music_volume)
 	print("[Settings.gd] -> _set_music_volume() -> Music bus_idx: ", bus_idx)

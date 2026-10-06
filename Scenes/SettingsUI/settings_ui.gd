@@ -13,9 +13,6 @@ extends Control
 
 func _ready() -> void:
 	print("[SettingsUI.gd] ->  ready()")
-	Settings._load_settings()
-	Settings._apply_settings()
-	
 	_update_ui_state()
 	music_volume_slider.value_changed.connect(_on_music_volume_changed)
 	effects_volume_slider.value_changed.connect(_on_effects_volume_changed)
@@ -24,13 +21,14 @@ func _ready() -> void:
 	
 func _on_music_volume_changed(music_val: float) -> void:
 	print("[SettingsUI.gd] ->    _on_music_volume_changed()")
-	Settings.music_volume = music_val / 100.0
-	Settings._apply_settings()
+	var music_volume: float = music_val / 100.0
+	RadioPlayer.set_volume(music_volume)
 	
 func _on_effects_volume_changed(effects_val: float) -> void:
 	print("[SettingsUI.gd] ->  _on_effects_volume_changed()")
-	Settings.effects_volume = effects_val / 100.0
-	Settings._apply_settings()
+	var effects_volume: float = effects_val / 100.0
+	Settings._set_effects_volume(effects_volume)
+	
 	
 	
 func _on_close_button_pressed() -> void:
@@ -41,6 +39,7 @@ func _on_close_button_pressed() -> void:
 func _on_settings_changed() -> void:
 	print("[SettingsUI.gd] ->  _on_settings_changed()")
 	_update_ui_state()
+	
 func _update_ui_state() -> void:
 	print("[SettingsUI.gd] ->  _update_ui_state()")
 	music_volume_slider.set_block_signals(true)
@@ -59,13 +58,12 @@ func _update_ui_state() -> void:
 # Radio Control Buttons
 func _on_music_on_pressed() -> void:
 	print("[SettingsUI.gd]  -> MusicOnButton pressed")
-	Settings._start_sound()
-	Settings._set_bg_music_mode(true)
+	RadioPlayer.play()
 	_update_button_visuals(true)
 
 func _on_music_off_pressed() -> void:
 	print("[SettingsUI.gd]  -> MusicOffButton pressed")
-	Settings._set_bg_music_mode(false)
+	RadioPlayer.stop()
 	_update_button_visuals(false)
 
 func _update_button_visuals(is_on: bool) -> void:

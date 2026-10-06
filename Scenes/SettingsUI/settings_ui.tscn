@@ -52,6 +52,15 @@ offset_bottom = 35.0
 theme = ExtResource("2_iey1w")
 text = "Off"
 
+[node name="AndroidOnly" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=66482726]
+layout_mode = 0
+offset_left = 206.0
+offset_top = 40.0
+offset_right = 483.0
+offset_bottom = 59.0
+theme_override_font_sizes/font_size = 15
+text = "Music Volume only works on Android"
+
 [node name="EffectsToggleLabel" type="Label" parent="ColorRect/SettingsPanel/RadioToggleLabel" unique_id=1805493989]
 layout_mode = 0
 offset_top = 110.0
