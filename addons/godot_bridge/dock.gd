@@ -1,7 +1,7 @@
 @tool
 extends PanelContainer
 # res://addons/godot_bridge/dock.gd
-# Version 2.2.1
+# Version 2.4.1
 
 var bridge  # reference to the EditorPlugin instance (godot_bridge/plugin.gd)
 
@@ -19,24 +19,35 @@ const READ_ONLY_COMMANDS = [
 	"get_selected_nodes",
 	"get_node_properties",
 	"get_node_signals",
+	"get_open_scenes",
 	"read_file",
 	"list_dir",
-	"get_open_script"
+	"get_open_script",
+	"get_output",
+	"validate_script",
+	"class_info"
 ]
 
-# Anything in plugin.gd's command_enabled that is not listed above is shown here
-# automatically, so new commands never go missing from the dock again.
 const MUTATING_COMMANDS = [
 	"write_file",
+	"make_dir",
+	"delete_file",
 	"spawn_node",
 	"spawn_packed_scene",
 	"remove_node",
 	"reparent_node",
+	"rename_node",
 	"set_node_property",
+	"attach_script",
+	"add_to_group",
 	"connect_signal",
+	"create_scene",
 	"save_scene",
 	"open_scene",
+	"set_main_scene",
+	"add_input_action",
 	"run_project",
+	"run_current_scene",
 	"stop_project"
 ]
 

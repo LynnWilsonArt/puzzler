@@ -41,10 +41,6 @@ window/stretch/mode="viewport"
 window/stretch/aspect="ignore"
 window/handheld/orientation=4
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/godot_bridge/plugin.cfg")
-
 [input]
 
 toggle_puzzle={
