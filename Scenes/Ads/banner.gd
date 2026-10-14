@@ -5,15 +5,13 @@ extends Node2D
 @onready var timer : Timer = $Timer
 @onready var sprite : Sprite2D = $Sprite
 
-const BASE_URL : String = "https://images.lynnwilsonart.com/ads/banner/"
+const BASE_URL : String = "https://images.lynnwilsonart.com/banners/"
 const CACHE_DIR : String = "user://banner_cache/"
-const NUM_IMAGES : int = 5
 
-# Cache lifetime – 24 hours = 86400 seconds
-const REFRESH_INTERVAL : float = Globals.CACHE_REFRESH_INTERVAL
-
-# How long each image stays on screen – 5 minutes = 300 seconds
-const IMAGE_DISPLAY_TIME : float = Globals.BANNER_REFRESH_INTERVAL
+# Default fallback values if config loading fails
+var NUM_IMAGES : int = 5
+const REFRESH_INTERVAL : float = 86400.0 # 24 hours in seconds
+const IMAGE_DISPLAY_TIME : float = 10.0   # Seconds each image stays on screen
 
 var image_urls : Array[String] = []
 var textures : Array[Texture2D] = []
@@ -23,43 +21,79 @@ var downloaded_count : int = 0
 var request_queue : Array[String] = []
 var is_requesting : bool = false
 var current_request_index : int = -1
+var config_data: ConfigLoader = ConfigLoader.new()
 
 # ------------------------------------------------------------------
 # 1️⃣ Setup on ready
 # ------------------------------------------------------------------
 func _ready() -> void:
-	print("[Banner] -> _ready()")
+	print("Banner -> _ready()")
 
 	# Modern Godot 4 signal connections
 	http_request.request_completed.connect(_on_request_completed)
 	timer.timeout.connect(_on_timer_timeout)
+	
+	# Connect config loader signals
+	config_data.config_loaded.connect(_on_config_loaded)
+	config_data.config_failed.connect(_on_config_failed)
+	
+	# Safely add ConfigLoader to the tree on the next frame
+	add_child.call_deferred(config_data)
 
-	var err = DirAccess.make_dir_absolute(CACHE_DIR)
-	if err != OK and err != ERR_ALREADY_EXISTS:
-		push_error("Failed to create cache directory: %s" % err)
+	# Ensure cache directory exists
+	_ensure_cache_directory()
 
-	# Build URLs
-	for i in range(NUM_IMAGES):
-		image_urls.append(BASE_URL + str(i + 1) + ".png")
-
+	# Build initial URLs based on default count before config overrides
+	_rebuild_urls()
 	textures.resize(NUM_IMAGES)
 	_queue_all_images()
 	_try_start_next()
 
 # ------------------------------------------------------------------
+# Helper: Rebuild URL array based on NUM_IMAGES
+# ------------------------------------------------------------------
+func _rebuild_urls() -> void:
+	image_urls.clear()
+	for i in range(NUM_IMAGES):
+		image_urls.append(BASE_URL + str(i + 1) + ".png")
+
+# ------------------------------------------------------------------
+# Helper: Ensure cache directory exists
+# ------------------------------------------------------------------
+func _ensure_cache_directory() -> void:
+	var err = DirAccess.make_dir_absolute(CACHE_DIR)
+	if err != OK and err != ERR_ALREADY_EXISTS:
+		push_error("Failed to create cache directory: %s" % err)
+
+# ------------------------------------------------------------------
+# Helper: Clear the cache directory safely
+# ------------------------------------------------------------------
+func _clear_cache_directory() -> void:
+	var err: int = OK
+	
+	if DirAccess.dir_exists_absolute(CACHE_DIR):
+		for file in DirAccess.get_files_at(CACHE_DIR):
+			var full_path = CACHE_DIR + file
+			err = DirAccess.remove_absolute(full_path)
+			if err != OK:
+				push_error("Failed to delete old cache file: %s" % full_path)
+		print("Cache directory successfully cleared.")
+	
+	_ensure_cache_directory()
+
+# ------------------------------------------------------------------
 # 2️⃣ Queue every URL for download / cache check
 # ------------------------------------------------------------------
 func _queue_all_images() -> void:
-	print("[Banner] -> _queue_all_images()")
+	print("Banner -> _queue_all_images()")
 	request_queue.clear()
 	for url in image_urls:
 		request_queue.append(url)
 
 # ------------------------------------------------------------------
-# 3️⃣ Start the next queued request (or use cache)
+# 3️⃣ Start the next queued request (System-Time Cache Validation)
 # ------------------------------------------------------------------
 func _try_start_next() -> void:
-	print("[Banner] -> _try_start_next()")
 	if is_requesting or request_queue.is_empty():
 		return
 
@@ -67,21 +101,30 @@ func _try_start_next() -> void:
 	current_request_index = image_urls.find(url)
 
 	var cache_path = CACHE_DIR + str(current_request_index + 1) + ".png"
+	
 	if FileAccess.file_exists(cache_path):
 		var mod_time = FileAccess.get_modified_time(cache_path)
-		var now = Time.get_unix_time_from_system()
-		if now - mod_time < REFRESH_INTERVAL:
-			# Use cached image
-			textures[current_request_index] = _load_local_image(cache_path)
-			downloaded_count += 1
-			if downloaded_count == NUM_IMAGES:
-				_start_animation()
-			
-			# Continue processing the rest of the queue on cache hit
-			_try_start_next()
-			return
+		var current_time = Time.get_unix_time_from_system()
+		
+		# Check system time to see if refresh interval has passed since file was cached
+		if current_time < (mod_time + REFRESH_INTERVAL):
+			# Cache is still valid! Use cached image.
+			var tex = _load_local_image(cache_path)
+			if tex != null:
+				if current_request_index >= textures.size():
+					textures.resize(current_request_index + 1)
+				
+				textures[current_request_index] = tex
+				downloaded_count += 1
+				if downloaded_count >= NUM_IMAGES:
+					_start_animation()
+				
+				_try_start_next()
+				return
+		else:
+			print("Cache expired for image %d based on system time. Re-downloading..." % (current_request_index + 1))
 
-	# No valid cache – download from network
+	# Cache missing or expired – download from network
 	var err = http_request.request(url)
 	if err == OK:
 		print("Requesting image from server: ", url)
@@ -95,7 +138,7 @@ func _try_start_next() -> void:
 # 4️⃣ Handle HTTP responses (images only)
 # ------------------------------------------------------------------
 func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	print("[Banner] -> _on_request_completed()")
+	print("Banner -> _on_request_completed()")
 	is_requesting = false
 
 	var tex : Texture2D = null
@@ -126,23 +169,25 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 			placeholder.size = Vector2(200, 50)
 			tex = placeholder
 
+	# Safeguard against out-of-bounds array assignments during async callbacks
+	if current_request_index >= textures.size():
+		textures.resize(current_request_index + 1)
+
 	textures[current_request_index] = tex
 	downloaded_count += 1
 
-	if downloaded_count == NUM_IMAGES:
+	if downloaded_count >= NUM_IMAGES:
 		_start_animation()
 
 	_try_start_next()
 
 # ------------------------------------------------------------------
-# 5️⃣ Load a local image (from cache or res://assets) — FIXED STATIC CALL
+# 5️⃣ Load a local image
 # ------------------------------------------------------------------
 func _load_local_image(path: String) -> Texture2D:
-	print("[Banner] -> _load_local_image(): ", path)
 	if not FileAccess.file_exists(path):
 		return null
 		
-	# Correct static call to Image.load_from_file()
 	var img = Image.load_from_file(path)
 	if img != null:
 		return ImageTexture.create_from_image(img)
@@ -151,10 +196,10 @@ func _load_local_image(path: String) -> Texture2D:
 	return null
 
 # ------------------------------------------------------------------
-# 6️⃣ Start the banner animation
+# 6️⃣ Start the banner animation & system-time expiration checker
 # ------------------------------------------------------------------
 func _start_animation() -> void:
-	print("[Banner] -> _start_animation()")
+	print("Banner -> _start_animation()")
 	if textures.is_empty():
 		push_error("No textures to animate")
 		return
@@ -166,8 +211,27 @@ func _start_animation() -> void:
 	timer.wait_time = IMAGE_DISPLAY_TIME
 	timer.start()
 
-	# After the whole cycle, refresh the cache every REFRESH_INTERVAL seconds
-	get_tree().create_timer(REFRESH_INTERVAL).timeout.connect(_refresh_cache)
+	# Background timer to periodically check if system time has crossed expiration threshold
+	if not has_node("CacheCheckTimer"):
+		var cache_check_timer = Timer.new()
+		cache_check_timer.name = "CacheCheckTimer"
+		cache_check_timer.wait_time = 1800.0 # Check every 30 minutes
+		cache_check_timer.autostart = true
+		cache_check_timer.timeout.connect(_check_cache_expiration_system_time)
+		add_child(cache_check_timer)
+
+func _check_cache_expiration_system_time() -> void:
+	var first_cache = CACHE_DIR + "1.png"
+	if not FileAccess.file_exists(first_cache):
+		return
+		
+	var mod_time = FileAccess.get_modified_time(first_cache)
+	var current_time = Time.get_unix_time_from_system()
+	
+	if current_time >= (mod_time + REFRESH_INTERVAL):
+		print("System time check: Cache expired! Clearing and refreshing...")
+		_clear_cache_directory()
+		_refresh_cache()
 
 # ------------------------------------------------------------------
 # 7️⃣ Timer callback – switch to next image
@@ -180,11 +244,41 @@ func _on_timer_timeout() -> void:
 	sprite.texture = textures[current_index]
 
 # ------------------------------------------------------------------
-# 8️⃣ Re‑download all images (overwrite cache)
+# 8️⃣ Re‑download all images
 # ------------------------------------------------------------------
 func _refresh_cache() -> void:
-	print("[Banner] -> _refresh_cache()")
+	print("Banner -> _refresh_cache()")
 	downloaded_count = 0
 	textures.resize(NUM_IMAGES)
 	_queue_all_images()
 	_try_start_next()
+
+# ------------------------------------------------------------------
+# Config Data Loaded Successfully
+# ------------------------------------------------------------------
+func _on_config_loaded(data: Dictionary) -> void:
+	print("Config Loaded Successfully: ", data)
+	
+	var new_num_banners = int(data.get("number_banners", NUM_IMAGES))
+	
+	# If banner count dropped, clean up obsolete cached files
+	if new_num_banners < NUM_IMAGES:
+		for i in range(new_num_banners + 1, NUM_IMAGES + 1):
+			var old_cache_path = CACHE_DIR + str(i) + ".png"
+			if FileAccess.file_exists(old_cache_path):
+				DirAccess.remove_absolute(old_cache_path)
+				print("Removed obsolete cache file: ", old_cache_path)
+
+	NUM_IMAGES = new_num_banners
+	_rebuild_urls()
+	textures.resize(NUM_IMAGES)
+	downloaded_count = 0
+	
+	_queue_all_images()
+	_try_start_next()
+
+# ------------------------------------------------------------------
+# Config Data Failed to Load
+# ------------------------------------------------------------------
+func _on_config_failed(error_message: String) -> void:
+	push_warning("Config load failed (%s). Continuing with existing banner count: %d" % [error_message, NUM_IMAGES])
