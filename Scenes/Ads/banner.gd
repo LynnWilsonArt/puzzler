@@ -5,7 +5,7 @@ extends Node2D
 @onready var timer : Timer = $Timer
 @onready var sprite : Sprite2D = $Sprite
 
-const BASE_URL : String = "https://puzzler.lynnwilsonart.com/ads/banner/"
+const BASE_URL : String = "https://images.lynnwilsonart.com/ads/banner/"
 const CACHE_DIR : String = "user://banner_cache/"
 const NUM_IMAGES : int = 5
 
