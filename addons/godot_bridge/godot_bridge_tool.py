@@ -2,7 +2,7 @@
 title: godot-bridge-tool
 author: lynn
 description: Tool set for the Godot Bridge editor plugin (HTTP JSON API).
-version: 2.4.1
+version: 2.8.0
 requirements: pydantic
 """
 
@@ -46,7 +46,6 @@ class Tools:
             ) as resp:
                 text = resp.read().decode("utf-8", "replace").strip()
         except urllib.error.HTTPError as e:
-            # The plugin returns a JSON error body for 400/401/403/413 etc.
             text = e.read().decode("utf-8", "replace").strip()
             if not text:
                 text = json.dumps({"ok": False, "error": f"HTTP {e.code}"})
@@ -159,6 +158,18 @@ class Tools:
     # ------------------------------------------------------------------
     # Files
     # ------------------------------------------------------------------
+
+    def move_file(self, source: str, target: str) -> str:
+        """Move a file from source to target path."""
+        return self._call("move_file", self._p(source=source, target=target))
+
+    def copy_file(self, source: str, target: str) -> str:
+        """Copy a file from source to target path."""
+        return self._call("copy_file", self._p(source=source, target=target))
+
+    def delete_dir(self, path: str) -> str:
+        """Delete a directory and all its contents."""
+        return self._call("delete_dir", self._p(path=path))
 
     def write_file(self, path: str, content: str) -> str:
         """Replace the WHOLE file with the given content."""

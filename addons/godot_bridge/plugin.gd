@@ -1,13 +1,17 @@
 @tool
 extends EditorPlugin
 # res://addons/godot_bridge/plugin.gd
-## Godot Bridge Version 2.4.1
+## Godot Bridge Version 2.8.0
 
 const DOCK_SCRIPT_PATH = "res://addons/godot_bridge/dock.gd"
+const REPORTER_PATH = "res://addons/godot_bridge/error_reporter.gd"
+const AUTOLOAD_NAME = "GodotBridgeErrors"
 const SETTINGS_PATH = "res://addons/godot_bridge/settings.cfg"
 const MAX_BODY_BYTES = 5 * 1024 * 1024
+const MAX_HEADER_BYTES = 64 * 1024
 const CONNECTION_TIMEOUT_MSEC = 5000
 const MAX_READ_CHARS = 60000
+const MAX_LIST_ENTRIES = 5000
 const LOOPBACK_ADDRESSES = ["127.0.0.1", "localhost"]
 
 var tcp_server: TCPServer
@@ -23,6 +27,7 @@ var dock: Control
 var is_running: bool = false
 var _output_mark: int = 0
 var _capture: ErrorCapture
+var _debugger: BridgeDebugger
 
 ## Receives engine errors directly (Godot 4.5+ Logger API), so we don't
 ## depend on scraping the Output panel. GDScript parse errors raised by
@@ -63,6 +68,34 @@ class ErrorCapture extends Logger:
 	func _log_message(_message: String, _error: bool) -> void:
 		pass
 
+## Receives errors forwarded by error_reporter.gd from the running game.
+class BridgeDebugger extends EditorDebuggerPlugin:
+	const MAX_ERRORS = 500
+	var errors: Array = []
+
+	func _has_capture(prefix: String) -> bool:
+		return prefix == "godot_bridge"
+
+	func _capture(message: String, data: Array, _session_id: int) -> bool:
+		if message != "godot_bridge:error":
+			return false
+		if data.size() < 7:
+			return true
+		var text: String = str(data[3])
+		if not str(data[4]).is_empty():
+			text = str(data[4]) if text.is_empty() else text + " - " + str(data[4])
+		if errors.size() >= MAX_ERRORS:
+			errors.pop_front()
+		errors.append({
+			"function": str(data[0]),
+			"file": str(data[1]),
+			"line": int(data[2]),
+			"message": text,
+			"error_type": int(data[5]),
+			"stack": str(data[6]),
+		})
+		return true
+
 var command_enabled: Dictionary = {
 	"ping": true,
 	"get_commands": true,
@@ -75,11 +108,15 @@ var command_enabled: Dictionary = {
 	"list_dir": true,
 	"get_open_script": true,
 	"get_output": true,
+	"get_errors": true,
 	"validate_script": true,
 	"class_info": true,
 	"write_file": true,
 	"make_dir": true,
 	"delete_file": false,
+	"move_file": true,
+	"copy_file": true,
+	"delete_dir": true,
 	"spawn_node": true,
 	"spawn_packed_scene": true,
 	"remove_node": true,
@@ -103,42 +140,54 @@ const COMMAND_DOCS = {
 	"ping": "No payload. Returns project name and Godot version.",
 	"get_commands": "No payload. Lists every command, whether it is enabled, and its payload.",
 	"get_scene_tree": "Payload: {max_depth?: int}. Returns nodes with name, type, path, script.",
-	"get_selected_nodes": "No payload. Nodes currently selected in the editor.",
-	"get_node_properties": "Payload: {node_path, filter?: substring}.",
-	"get_node_signals": "Payload: {node_path, connected_only?: bool}.",
-	"get_open_scenes": "No payload. Scene files currently open in the editor.",
-	"read_file": "Payload: {path, offset?: int, limit?: int}.",
-	"list_dir": "Payload: {path?, recursive?: bool}.",
-	"get_open_script": "No payload. Script currently open in the script editor.",
-	"get_output": "Payload: {max_chars?: int, new_only?: bool}.",
-	"validate_script": "Payload: {path}. Parses the file from disk and returns line and message on failure.",
-	"class_info": "Payload: {class, filter?: substring}.",
-	"write_file": "Payload: {path, content}.",
-	"make_dir": "Payload: {path}.",
-	"delete_file": "Payload: {path}.",
-	"spawn_node": "Payload: {node_type, name?, parent?: node_path, properties?: {}}.",
-	"spawn_packed_scene": "Payload: {scene_path, name?, parent?: node_path, properties?: {}}.",
-	"remove_node": "Payload: {node_path}.",
-	"reparent_node": "Payload: {node_path, new_parent}.",
-	"rename_node": "Payload: {node_path, new_name}.",
-	"set_node_property": "Payload: {node_path, property, value}.",
-	"attach_script": "Payload: {node_path, script_path}.",
-	"add_to_group": "Payload: {node_path, group}.",
-	"connect_signal": "Payload: {source, target, signal, method}.",
-	"create_scene": "Payload: {path, root_type?, root_name?, overwrite?: bool}.",
-	"save_scene": "No payload.",
-	"open_scene": "Payload: {path}.",
-	"set_main_scene": "Payload: {path}.",
-	"add_input_action": "Payload: {action, keys: [\"W\", \"Up\"]}.",
-	"run_project": "No payload.",
-	"run_current_scene": "No payload.",
-	"stop_project": "No payload.",
+	"get_selected_nodes": "No payload. Returns selected nodes in the scene tree.",
+	"get_node_properties": "Payload: {node_path: string, filter?: string}. Returns properties of a node.",
+	"get_node_signals": "Payload: {node_path: string, connected_only?: bool}. Returns signals of a node.",
+	"get_open_scenes": "No payload. Returns list of open scenes.",
+	"read_file": "Payload: {path: string, offset?: int, limit?: int}. Returns file content.",
+	"list_dir": "Payload: {path: string, recursive?: bool}. Returns directory listing.",
+	"get_open_script": "No payload. Returns currently opened script.",
+	"get_output": "Payload: {new_only?: bool}. Returns editor output.",
+	"get_errors": "Payload: {limit?: int}. Returns {errors: editor Output-panel error lines, runtime_errors: errors from the running game, runtime_source: 'logger' or 'debugger_panel'}.",
+	"validate_script": "Payload: {path: string}. Validates a script.",
+	"class_info": "Payload: {class_name: string}. Returns class information.",
+	"write_file": "Payload: {path: string, content: string}. Replaces file content.",
+	"make_dir": "Payload: {path: string}. Creates directory.",
+	"delete_file": "Payload: {path: string}. Deletes a file.",
+	"move_file": "Payload: {source: string, target: string}. Moves a file from source to target.",
+	"copy_file": "Payload: {source: string, target: string}. Copies a file from source to target.",
+	"delete_dir": "Payload: {path: string}. Deletes a directory and all its contents.",
+	"spawn_node": "Payload: {node_type: string, name?: string, parent?: string, properties?: object}. Spawns a node.",
+	"spawn_packed_scene": "Payload: {scene_path: string, name?: string, parent?: string}. Instances a packed scene.",
+	"remove_node": "Payload: {node_path: string}. Removes a node.",
+	"reparent_node": "Payload: {node_path: string, new_parent: string}. Reparents a node.",
+	"rename_node": "Payload: {node_path: string, new_name: string}. Renames a node.",
+	"set_node_property": "Payload: {node_path: string, property: string, value: object}. Sets a node property.",
+	"attach_script": "Payload: {node_path: string, script_path: string}. Attaches a script to a node.",
+	"add_to_group": "Payload: {node_path: string, group: string}. Adds a node to a group.",
+	"connect_signal": "Payload: {source: string, target: string, signal: string, method: string}. Connects a signal.",
+	"create_scene": "Payload: {path: string}. Creates a new scene. Opening is deferred; poll get_open_scenes.",
+	"save_scene": "No payload. Saves the current scene (deferred).",
+	"open_scene": "Payload: {path: string}. Opens a scene (deferred).",
+	"set_main_scene": "Payload: {path: string}. Sets the main scene.",
+	"add_input_action": "Payload: {action: string, events: array, deadzone?: float}. Event objects: {type: 'key', key: 'W'}, {type: 'mouse_button', button: int}, {type: 'joypad_button', button: int}.",
+	"run_project": "No payload. Runs the project (deferred). Clears collected runtime errors.",
+	"run_current_scene": "No payload. Runs the current scene (deferred). Clears collected runtime errors.",
+	"stop_project": "No payload. Stops the running project.",
 }
+
 
 func _enter_tree() -> void:
 	_load_settings()
 	_capture = ErrorCapture.new()
 	OS.add_logger(_capture)
+
+	# Runtime error forwarding. Kept before the dock load so a dock failure can't skip it.
+	_debugger = BridgeDebugger.new()
+	add_debugger_plugin(_debugger)
+	if not ProjectSettings.has_setting("autoload/" + AUTOLOAD_NAME):
+		add_autoload_singleton(AUTOLOAD_NAME, REPORTER_PATH)
+
 	var dock_script = load(DOCK_SCRIPT_PATH)
 	if dock_script == null:
 		push_error("Godot Bridge: could not load %s." % DOCK_SCRIPT_PATH)
@@ -156,6 +205,11 @@ func _exit_tree() -> void:
 	if _capture:
 		OS.remove_logger(_capture)
 		_capture = null
+	if _debugger:
+		remove_debugger_plugin(_debugger)
+		_debugger = null
+	if ProjectSettings.has_setting("autoload/" + AUTOLOAD_NAME):
+		remove_autoload_singleton(AUTOLOAD_NAME)
 	if dock:
 		remove_control_from_docks(dock)
 		dock.queue_free()
@@ -270,35 +324,47 @@ func _service_connections() -> void:
 
 		if not conn["headers_parsed"]:
 			var header_end_byte := _find_header_end(conn["buffer"])
-			if header_end_byte != -1:
-				conn["headers_parsed"] = true
-				conn["header_end_byte"] = header_end_byte
-				var header_bytes: PackedByteArray = conn["buffer"].slice(0, header_end_byte - 4)
-				var header_text := header_bytes.get_string_from_utf8()
-				conn["header_text"] = header_text
-
-				if header_text.begins_with("OPTIONS"):
-					_queue_response(conn, 200, "{}")
+			if header_end_byte == -1:
+				if conn["buffer"].size() > MAX_HEADER_BYTES:
+					_queue_response(conn, 400, "{\"ok\":false,\"error\":\"Headers too large\"}")
 					connections.remove_at(i)
-				else:
-					var cl := 0
-					for line in header_text.split("\r\n"):
-						if line.to_lower().begins_with("content-length:"):
-							cl = int(line.substr(line.find(":") + 1).strip_edges())
+				i -= 1
+				continue
 
-					if cl > MAX_BODY_BYTES:
-						_queue_response(conn, 413, "{\"ok\":false,\"error\":\"Payload too large\"}")
-						connections.remove_at(i)
-					else:
-						conn["content_length"] = cl
+			conn["headers_parsed"] = true
+			conn["header_end_byte"] = header_end_byte
+			var header_bytes: PackedByteArray = conn["buffer"].slice(0, header_end_byte - 4)
+			var header_text := header_bytes.get_string_from_utf8()
+			conn["header_text"] = header_text
 
-		if conn["headers_parsed"] and conn.has("content_length"):
-			var body_available: int = conn["buffer"].size() - conn["header_end_byte"]
-			if body_available >= conn["content_length"]:
-				var body_bytes: PackedByteArray = conn["buffer"].slice(conn["header_end_byte"], conn["header_end_byte"] + conn["content_length"])
-				var body_text := body_bytes.get_string_from_utf8()
-				_handle_request(conn, conn["header_text"], body_text)
+			if header_text.begins_with("OPTIONS"):
+				_queue_response(conn, 200, "{}")
 				connections.remove_at(i)
+				i -= 1
+				continue
+
+			var cl := 0
+			for line in header_text.split("\r\n"):
+				if line.to_lower().begins_with("content-length:"):
+					cl = int(line.substr(line.find(":") + 1).strip_edges())
+
+			if cl > MAX_BODY_BYTES:
+				_queue_response(conn, 413, "{\"ok\":false,\"error\":\"Payload too large\"}")
+				connections.remove_at(i)
+				i -= 1
+				continue
+
+			conn["content_length"] = cl
+
+		# Headers are parsed at this point; wait for the full body.
+		var body_available: int = conn["buffer"].size() - int(conn["header_end_byte"])
+		if body_available >= int(conn["content_length"]):
+			var start: int = conn["header_end_byte"]
+			var body_bytes: PackedByteArray = conn["buffer"].slice(start, start + int(conn["content_length"]))
+			var body_text := body_bytes.get_string_from_utf8()
+			# Remove first so a failing command can't leave a stale entry behind.
+			connections.remove_at(i)
+			_handle_request(conn, conn["header_text"], body_text)
 
 		i -= 1
 
@@ -352,7 +418,7 @@ func _is_protected(path: String) -> bool:
 	return path.begins_with("res://addons/godot_bridge") or path.begins_with("res://.godot")
 
 func _is_write_protected(path: String) -> bool:
-	return _is_protected(path) or path == "res://project.godot"
+	return _is_protected(path) or path == "res://project.godot" or path == "res://"
 
 func _err(message: String) -> String:
 	return JSON.stringify({"ok": false, "error": message})
@@ -378,11 +444,15 @@ func _execute_command(command: String, payload) -> String:
 		"list_dir": return _cmd_list_dir(payload)
 		"get_open_script": return _cmd_get_open_script()
 		"get_output": return _cmd_get_output(payload)
+		"get_errors": return _cmd_get_errors(payload)
 		"validate_script": return _cmd_validate_script(payload)
 		"class_info": return _cmd_class_info(payload)
 		"write_file": return _cmd_write_file(payload)
 		"make_dir": return _cmd_make_dir(payload)
 		"delete_file": return _cmd_delete_file(payload)
+		"move_file": return _cmd_move_file(payload)
+		"copy_file": return _cmd_copy_file(payload)
+		"delete_dir": return _cmd_delete_dir(payload)
 		"spawn_node": return _cmd_spawn_node(payload)
 		"spawn_packed_scene": return _cmd_spawn_packed_scene(payload)
 		"remove_node": return _cmd_remove_node(payload)
@@ -398,16 +468,43 @@ func _execute_command(command: String, payload) -> String:
 		"set_main_scene": return _cmd_set_main_scene(payload)
 		"add_input_action": return _cmd_add_input_action(payload)
 		"run_project":
-			EditorInterface.play_main_scene()
-			return _ok({"message": "Playing main scene."})
+			if _debugger:
+				_debugger.errors.clear()
+			call_deferred("_do_play", false)
+			return _ok({"message": "Play scheduled (main scene)."})
 		"run_current_scene":
-			EditorInterface.play_current_scene()
-			return _ok({"message": "Playing current scene."})
+			if _debugger:
+				_debugger.errors.clear()
+			call_deferred("_do_play", true)
+			return _ok({"message": "Play scheduled (current scene)."})
 		"stop_project":
 			EditorInterface.stop_playing_scene()
 			return _ok({"message": "Stopped playing scene."})
 		_:
 			return _err("Unrecognized command: " + command)
+
+# ---------------------------------------------------------------------------
+# Deferred editor operations (run outside the _process / request handling)
+# ---------------------------------------------------------------------------
+
+func _do_save_scene() -> void:
+	EditorInterface.save_scene()
+
+func _do_play(current: bool) -> void:
+	if current:
+		EditorInterface.play_current_scene()
+	else:
+		EditorInterface.play_main_scene()
+
+func _do_open_scene(path: String) -> void:
+	if FileAccess.file_exists(path):
+		EditorInterface.open_scene_from_path(path)
+	else:
+		push_error("Godot Bridge: scene not found when opening: %s" % path)
+
+# ---------------------------------------------------------------------------
+# Read-only commands
+# ---------------------------------------------------------------------------
 
 func _cmd_ping() -> String:
 	return _ok({
@@ -485,6 +582,8 @@ func _cmd_read_file(p: Dictionary) -> String:
 	if safe.is_empty() or _is_protected(safe) or not FileAccess.file_exists(safe):
 		return _err("File not found or protected.")
 	var f := FileAccess.open(safe, FileAccess.READ)
+	if f == null:
+		return _err("Could not open file (error %d)." % FileAccess.get_open_error())
 	var content := f.get_as_text()
 	f.close()
 	var total := content.length()
@@ -498,16 +597,31 @@ func _cmd_list_dir(p: Dictionary) -> String:
 	var safe := _resolve_safe_path(str(p.get("path", "res://")))
 	if safe.is_empty() or DirAccess.open(safe) == null:
 		return _err("Could not open directory.")
-	var dir := DirAccess.open(safe)
+	var recursive := bool(p.get("recursive", false))
 	var entries := []
+	_collect_entries(safe, "", recursive, entries)
+	var truncated := entries.size() >= MAX_LIST_ENTRIES
+	return _ok({"path": safe, "entries": entries, "truncated": truncated})
+
+func _collect_entries(dir_path: String, rel_prefix: String, recursive: bool, out: Array) -> void:
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return
 	dir.list_dir_begin()
 	var fname := dir.get_next()
 	while fname != "":
+		if out.size() >= MAX_LIST_ENTRIES:
+			break
 		if not fname.begins_with("."):
-			entries.append({"name": fname, "is_dir": dir.current_is_dir()})
+			var is_dir := dir.current_is_dir()
+			var rel := rel_prefix + fname
+			out.append({"name": rel, "is_dir": is_dir})
+			if is_dir and recursive:
+				var child_path := dir_path.path_join(fname)
+				if not _is_protected(child_path):
+					_collect_entries(child_path, rel + "/", recursive, out)
 		fname = dir.get_next()
 	dir.list_dir_end()
-	return _ok({"path": safe, "entries": entries})
 
 func _cmd_get_open_script() -> String:
 	var script_editor := EditorInterface.get_script_editor()
@@ -535,9 +649,89 @@ func _cmd_get_output(p: Dictionary) -> String:
 	_output_mark = total
 	return _ok({"output": txt.strip_edges()})
 
-# ---------------------------------------------------------------------------
-# Script error checking
-# ---------------------------------------------------------------------------
+func _cmd_get_errors(p: Dictionary) -> String:
+	var limit := maxi(1, int(p.get("limit", 100)))
+
+	# 1. Editor-side errors (Output panel).
+	var found := []
+	var label := _log_label()
+	if label:
+		for line in label.get_parsed_text().split("\n"):
+			var l := line.strip_edges()
+			if l.begins_with("ERROR:") or l.begins_with("SCRIPT ERROR:") or l.begins_with("USER ERROR:") or l.begins_with("Parse Error:"):
+				found.append(l)
+		if found.size() > limit:
+			found = found.slice(found.size() - limit)
+
+	# 2. Runtime errors from the running game. Primary source: errors forwarded by
+	#    the in-game Logger. Fallback: read the editor's Debugger > Errors tab.
+	var runtime: Array = []
+	var source := "none"
+	if _debugger and not _debugger.errors.is_empty():
+		runtime = _debugger.errors.duplicate()
+		source = "logger"
+	else:
+		runtime = _read_debugger_errors()
+		if not runtime.is_empty():
+			source = "debugger_panel"
+	if runtime.size() > limit:
+		runtime = runtime.slice(runtime.size() - limit)
+
+	if label == null and _debugger == null and runtime.is_empty():
+		return _err("No error sources available.")
+
+	return _ok({
+		"errors": found,
+		"runtime_errors": runtime,
+		"runtime_source": source,
+		"count": found.size() + runtime.size(),
+	})
+
+## Reads the Debugger > Errors tab. Relies on editor-internal node layout, so it is
+## only used when the Logger pipeline has nothing.
+func _read_debugger_errors() -> Array:
+	var out: Array = []
+	var debuggers: Array = []
+	_collect_by_class(EditorInterface.get_base_control(), "ScriptEditorDebugger", debuggers)
+	for dbg in debuggers:
+		var errors_tab = dbg.find_child("Errors", true, false)
+		if errors_tab == null:
+			continue
+		var trees: Array = []
+		_collect_by_class(errors_tab, "Tree", trees)
+		for tree in trees:
+			var root: TreeItem = tree.get_root()
+			if root == null:
+				continue
+			var item := root.get_first_child()
+			while item:
+				var details: Array = []
+				var child := item.get_first_child()
+				while child:
+					details.append(_item_text(child, tree.columns))
+					child = child.get_next()
+				out.append({
+					"message": _item_text(item, tree.columns),
+					"details": details,
+				})
+				item = item.get_next()
+	return out
+
+func _collect_by_class(node: Node, cls: String, out: Array) -> void:
+	if node == null:
+		return
+	if node.get_class() == cls:
+		out.append(node)
+	for c in node.get_children():
+		_collect_by_class(c, cls, out)
+
+func _item_text(item: TreeItem, columns: int) -> String:
+	var parts: PackedStringArray = []
+	for col in range(columns):
+		var t := item.get_text(col).strip_edges()
+		if not t.is_empty():
+			parts.append(t)
+	return " ".join(parts)
 
 func _log_label() -> RichTextLabel:
 	var log_node := _find_by_class(EditorInterface.get_base_control(), "EditorLog")
@@ -545,8 +739,6 @@ func _log_label() -> RichTextLabel:
 		return null
 	return _find_by_class(log_node, "RichTextLabel") as RichTextLabel
 
-## Parses one file from disk. Returns {"code": int, "errors": Array, "messages": Array}.
-## code == OK means the script parsed cleanly.
 func _parse_check(path: String) -> Dictionary:
 	var gs := GDScript.new()
 	gs.source_code = FileAccess.get_file_as_string(path)
@@ -571,7 +763,6 @@ func _parse_check(path: String) -> Dictionary:
 		errors.append({"line": e["line"], "message": text, "reported_file": e["file"]})
 		messages.append("%s:%d: %s" % [path, e["line"], text])
 
-	# Fallback: scrape the Output panel if the logger captured nothing.
 	if messages.is_empty() and label:
 		var txt := label.get_parsed_text()
 		var fresh := txt.substr(before) if txt.length() >= before else txt
@@ -586,6 +777,8 @@ func _cmd_validate_script(p: Dictionary) -> String:
 	var safe := _resolve_safe_path(str(p.get("path", "")))
 	if safe.is_empty() or not FileAccess.file_exists(safe):
 		return _err("File not found.")
+	if not safe.ends_with(".gd"):
+		return _err("validate_script only supports .gd files.")
 	var r: Dictionary = _parse_check(safe)
 	if r["code"] == OK:
 		return _ok({"valid": true, "path": safe})
@@ -599,16 +792,19 @@ func _cmd_validate_script(p: Dictionary) -> String:
 		"messages": r["messages"],
 	})
 
-# ---------------------------------------------------------------------------
-
 func _cmd_class_info(p: Dictionary) -> String:
-	var cname := str(p.get("class", ""))
+	# Documented key is "class_name"; "class" is still accepted for compatibility.
+	var cname := str(p.get("class_name", p.get("class", "")))
 	if not ClassDB.class_exists(cname):
 		return _err("Unknown class: " + cname)
 	var methods := []
 	for m in ClassDB.class_get_method_list(cname, true):
 		methods.append(m["name"])
 	return _ok({"class": cname, "methods": methods})
+
+# ---------------------------------------------------------------------------
+# File commands
+# ---------------------------------------------------------------------------
 
 func _cmd_write_file(p: Dictionary) -> String:
 	if not p.has("content"):
@@ -618,6 +814,8 @@ func _cmd_write_file(p: Dictionary) -> String:
 		return _err("Invalid or protected path.")
 	DirAccess.make_dir_recursive_absolute(safe.get_base_dir())
 	var f := FileAccess.open(safe, FileAccess.WRITE)
+	if f == null:
+		return _err("Could not open file for writing (error %d)." % FileAccess.get_open_error())
 	f.store_string(str(p["content"]))
 	f.close()
 	EditorInterface.get_resource_filesystem().scan()
@@ -635,50 +833,228 @@ func _cmd_delete_file(p: Dictionary) -> String:
 	var safe := _resolve_safe_path(str(p.get("path", "")))
 	if safe.is_empty() or _is_write_protected(safe):
 		return _err("Invalid or protected path.")
-	DirAccess.remove_absolute(safe)
+	if not FileAccess.file_exists(safe):
+		return _err("File does not exist.")
+	if DirAccess.remove_absolute(safe) != OK:
+		return _err("Failed to delete file.")
 	EditorInterface.get_resource_filesystem().scan()
 	return _ok({"message": "Deleted " + safe})
+
+func _cmd_move_file(p: Dictionary) -> String:
+	var source_path := _resolve_safe_path(str(p.get("source", "")))
+	var target_path := _resolve_safe_path(str(p.get("target", "")))
+
+	if source_path.is_empty() or target_path.is_empty() or _is_write_protected(source_path) or _is_write_protected(target_path):
+		return _err("Invalid or protected path.")
+
+	if not FileAccess.file_exists(source_path):
+		return _err("Source file does not exist.")
+
+	var target_dir := target_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(target_dir):
+		DirAccess.make_dir_recursive_absolute(target_dir)
+
+	if DirAccess.copy_absolute(source_path, target_path) != OK:
+		return _err("Failed to copy file.")
+
+	var del_res := _cmd_delete_file({"path": source_path})
+	var json := JSON.new()
+	if json.parse(del_res) == OK and typeof(json.get_data()) == TYPE_DICTIONARY:
+		if not json.get_data().get("ok", false):
+			return del_res
+
+	return _ok({"message": "Moved file from %s to %s" % [source_path, target_path]})
+
+func _cmd_copy_file(p: Dictionary) -> String:
+	var source_path := _resolve_safe_path(str(p.get("source", "")))
+	var target_path := _resolve_safe_path(str(p.get("target", "")))
+
+	if source_path.is_empty() or target_path.is_empty() or _is_write_protected(source_path) or _is_write_protected(target_path):
+		return _err("Invalid or protected path.")
+
+	if not FileAccess.file_exists(source_path):
+		return _err("Source file does not exist.")
+
+	var target_dir := target_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(target_dir):
+		DirAccess.make_dir_recursive_absolute(target_dir)
+
+	# copy_absolute is byte-exact, so binary files survive (get_as_text would not).
+	if DirAccess.copy_absolute(source_path, target_path) != OK:
+		return _err("Failed to copy file.")
+
+	EditorInterface.get_resource_filesystem().scan()
+	return _ok({"message": "Copied file from %s to %s" % [source_path, target_path]})
+
+func _cmd_delete_dir(p: Dictionary) -> String:
+	var path := _resolve_safe_path(str(p.get("path", "")))
+
+	if path.is_empty() or _is_write_protected(path):
+		return _err("Invalid or protected path.")
+
+	var dir := DirAccess.open(path)
+	if dir == null:
+		return _err("Path is not a directory or does not exist.")
+
+	dir.list_dir_begin()
+	var fname := dir.get_next()
+	var has_files := false
+	while fname != "":
+		if fname != "." and fname != "..":
+			has_files = true
+			break
+		fname = dir.get_next()
+	dir.list_dir_end()
+
+	# Deleting contents requires the delete_file command to be enabled.
+	if has_files and not command_enabled.get("delete_file", false):
+		return _err("Delete file command is disabled.")
+
+	var result := _delete_directory_contents(path)
+	if result != OK:
+		return _err("Failed to delete directory contents.")
+
+	if DirAccess.remove_absolute(path) != OK:
+		return _err("Failed to delete directory.")
+
+	EditorInterface.get_resource_filesystem().scan()
+	return _ok({"message": "Deleted directory %s" % path, "had_files": has_files})
+
+func _delete_directory_contents(path: String) -> int:
+	var dir := DirAccess.open(path)
+	if dir == null:
+		return FAILED
+
+	dir.list_dir_begin()
+	var file_name := dir.get_next()
+	while file_name != "":
+		if file_name != "." and file_name != "..":
+			var full_path := path.path_join(file_name)
+			if dir.current_is_dir():
+				var res := _delete_directory_contents(full_path)
+				if res != OK:
+					dir.list_dir_end()
+					return res
+				if DirAccess.remove_absolute(full_path) != OK:
+					dir.list_dir_end()
+					return FAILED
+			else:
+				if DirAccess.remove_absolute(full_path) != OK:
+					dir.list_dir_end()
+					return FAILED
+		file_name = dir.get_next()
+	dir.list_dir_end()
+	return OK
+
+# ---------------------------------------------------------------------------
+# Node / scene commands
+# ---------------------------------------------------------------------------
 
 func _cmd_spawn_node(p: Dictionary) -> String:
 	var root := EditorInterface.get_edited_scene_root()
 	if root == null:
 		return _err("No scene open.")
 	var node_type := str(p.get("node_type", "Node"))
+	if not ClassDB.class_exists(node_type) or not ClassDB.can_instantiate(node_type) or not ClassDB.is_parent_class(node_type, "Node"):
+		return _err("Invalid or non-instantiable node type: " + node_type)
 	var parent_node := _resolve_parent(p)
+	if parent_node == null:
+		return _err("Parent node not found.")
 	var new_node := ClassDB.instantiate(node_type) as Node
+	if new_node == null:
+		return _err("Failed to instantiate: " + node_type)
 	new_node.name = str(p.get("name", node_type))
 	parent_node.add_child(new_node, true)
 	new_node.owner = root
+
+	var props = p.get("properties", {})
+	if typeof(props) == TYPE_DICTIONARY:
+		for key in props.keys():
+			if str(key) in new_node:
+				new_node.set(str(key), props[key])
+
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"node_path": _rel_path(new_node)})
 
 func _cmd_spawn_packed_scene(p: Dictionary) -> String:
 	var root := EditorInterface.get_edited_scene_root()
+	if root == null:
+		return _err("No scene open.")
 	var safe := _resolve_safe_path(str(p.get("scene_path", "")))
+	if safe.is_empty() or not ResourceLoader.exists(safe):
+		return _err("Scene not found.")
 	var packed := load(safe) as PackedScene
-	var instance := packed.instantiate()
+	if packed == null:
+		return _err("Failed to load scene as PackedScene.")
 	var parent_node := _resolve_parent(p)
+	if parent_node == null:
+		return _err("Parent node not found.")
+	var instance := packed.instantiate()
+	if instance == null:
+		return _err("Failed to instantiate scene.")
+	if p.has("name"):
+		instance.name = str(p["name"])
 	parent_node.add_child(instance, true)
 	instance.owner = root
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"node_path": _rel_path(instance)})
 
 func _cmd_remove_node(p: Dictionary) -> String:
+	var root := EditorInterface.get_edited_scene_root()
 	var node := _find_target_node(p, false)
 	if node == null:
 		return _err("Node not found.")
+	if node == root:
+		return _err("Cannot remove the scene root.")
+	var parent := node.get_parent()
+	if parent:
+		# Detach immediately so follow-up commands don't see the node; free afterwards.
+		parent.remove_child(node)
 	node.queue_free()
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"message": "Removed node"})
 
-func _cmd_reparent_node(_p: Dictionary) -> String:
-	return _err("Not implemented")
+func _cmd_reparent_node(p: Dictionary) -> String:
+	var root := EditorInterface.get_edited_scene_root()
+	if root == null:
+		return _err("No scene open.")
+	var node := _find_target_node(p, false)
+	if node == null:
+		return _err("Node not found.")
+	if node == root:
+		return _err("Cannot reparent the scene root.")
+	var new_parent := _find_target_node(p.get("new_parent", ""), false)
+	if new_parent == null:
+		return _err("New parent not found.")
+	if new_parent == node or node.is_ancestor_of(new_parent):
+		return _err("Cannot reparent a node under itself or its descendants.")
+	if new_parent == node.get_parent():
+		return _ok({"node_path": _rel_path(node), "message": "Already a child of that parent."})
+
+	# reparent() clears ownership, so remember which nodes belonged to the scene root.
+	var owned: Array = []
+	if node.owner == root:
+		owned.append(node)
+	for d in node.find_children("*", "", true, false):
+		if d.owner == root:
+			owned.append(d)
+
+	node.reparent(new_parent, true)
+
+	for n in owned:
+		if is_instance_valid(n):
+			n.owner = root
+
+	EditorInterface.mark_scene_as_unsaved()
+	return _ok({"node_path": _rel_path(node)})
 
 func _cmd_rename_node(p: Dictionary) -> String:
 	var node := _find_target_node(p, false)
 	if node == null:
 		return _err("Node not found.")
-	var new_name := str(p.get("new_name", ""))
+	var new_name := str(p.get("new_name", "")).strip_edges()
+	if new_name.is_empty():
+		return _err("new_name is required.")
 	node.name = new_name
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"node_path": _rel_path(node)})
@@ -688,7 +1064,11 @@ func _cmd_set_node_property(p: Dictionary) -> String:
 	if node == null:
 		return _err("Node not found.")
 	var prop := str(p.get("property", ""))
-	node.set(prop, p.get("value"))
+	if prop.is_empty() or not (prop in node):
+		return _err("Unknown property: " + prop)
+	if not p.has("value"):
+		return _err("value is required.")
+	node.set(prop, p["value"])
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"message": "Property updated"})
 
@@ -697,7 +1077,12 @@ func _cmd_attach_script(p: Dictionary) -> String:
 	if node == null:
 		return _err("Node not found.")
 	var safe := _resolve_safe_path(str(p.get("script_path", "")))
-	node.set_script(load(safe))
+	if safe.is_empty() or not ResourceLoader.exists(safe):
+		return _err("Script not found.")
+	var scr := load(safe) as Script
+	if scr == null:
+		return _err("Failed to load script (does it have parse errors?).")
+	node.set_script(scr)
 	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"message": "Script attached"})
 
@@ -705,7 +1090,11 @@ func _cmd_add_to_group(p: Dictionary) -> String:
 	var node := _find_target_node(p, false)
 	if node == null:
 		return _err("Node not found.")
-	node.add_to_group(str(p.get("group", "")))
+	var group := str(p.get("group", "")).strip_edges()
+	if group.is_empty():
+		return _err("group is required.")
+	node.add_to_group(group, true)
+	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"message": "Added to group"})
 
 func _cmd_connect_signal(p: Dictionary) -> String:
@@ -713,33 +1102,115 @@ func _cmd_connect_signal(p: Dictionary) -> String:
 	var target := _find_target_node(p.get("target", ""), false)
 	if source == null or target == null:
 		return _err("Source or target node not found.")
-	source.connect(str(p.get("signal", "")), Callable(target, str(p.get("method", ""))))
+	var sig := str(p.get("signal", ""))
+	var method := str(p.get("method", ""))
+	if not source.has_signal(sig):
+		return _err("Source has no signal: " + sig)
+	if method.is_empty():
+		return _err("method is required.")
+	var callable := Callable(target, method)
+	if source.is_connected(sig, callable):
+		return _ok({"message": "Signal already connected"})
+	var err := source.connect(sig, callable, CONNECT_PERSIST)
+	if err != OK:
+		return _err("Failed to connect signal (error %d)." % err)
+	EditorInterface.mark_scene_as_unsaved()
 	return _ok({"message": "Signal connected"})
 
 func _cmd_create_scene(p: Dictionary) -> String:
 	var safe := _resolve_safe_path(str(p.get("path", "")))
+	if safe.is_empty() or _is_write_protected(safe):
+		return _err("Invalid or protected path.")
+	if not safe.ends_with(".tscn") and not safe.ends_with(".scn"):
+		safe += ".tscn"
+	DirAccess.make_dir_recursive_absolute(safe.get_base_dir())
 	var new_root := Node2D.new()
+	new_root.name = safe.get_file().get_basename().to_pascal_case()
 	var packed := PackedScene.new()
-	packed.pack(new_root)
-	ResourceSaver.save(packed, safe)
-	EditorInterface.open_scene_from_path(safe)
-	return _ok({"path": safe})
+	var pack_err := packed.pack(new_root)
+	new_root.free()
+	if pack_err != OK:
+		return _err("Failed to pack scene (error %d)." % pack_err)
+	var save_err := ResourceSaver.save(packed, safe)
+	if save_err != OK:
+		return _err("Failed to save scene (error %d)." % save_err)
+	EditorInterface.get_resource_filesystem().scan()
+	call_deferred("_do_open_scene", safe)
+	return _ok({"path": safe, "message": "Scene created; opening is scheduled."})
 
 func _cmd_save_scene() -> String:
-	EditorInterface.save_scene()
-	return _ok({"message": "Saved"})
+	call_deferred("_do_save_scene")
+	return _ok({"message": "Save scheduled"})
 
 func _cmd_open_scene(p: Dictionary) -> String:
-	EditorInterface.open_scene_from_path(_resolve_safe_path(str(p.get("path", ""))))
-	return _ok({"message": "Opened"})
+	var safe := _resolve_safe_path(str(p.get("path", "")))
+	if safe.is_empty() or not FileAccess.file_exists(safe):
+		return _err("Scene not found.")
+	call_deferred("_do_open_scene", safe)
+	return _ok({"message": "Open scheduled"})
 
 func _cmd_set_main_scene(p: Dictionary) -> String:
-	ProjectSettings.set_setting("application/run/main_scene", _resolve_safe_path(str(p.get("path", ""))))
+	var safe := _resolve_safe_path(str(p.get("path", "")))
+	if safe.is_empty() or not FileAccess.file_exists(safe):
+		return _err("Scene not found.")
+	ProjectSettings.set_setting("application/run/main_scene", safe)
 	ProjectSettings.save()
 	return _ok({"message": "Main scene updated"})
 
-func _cmd_add_input_action(_p: Dictionary) -> String:
-	return _ok({"message": "Action added"})
+func _cmd_add_input_action(p: Dictionary) -> String:
+	var action := str(p.get("action", "")).strip_edges()
+	if action.is_empty():
+		return _err("action is required.")
+	var raw_events = p.get("events", [])
+	if typeof(raw_events) != TYPE_ARRAY:
+		return _err("events must be an array.")
+
+	var events: Array = []
+	for e in raw_events:
+		if typeof(e) != TYPE_DICTIONARY:
+			return _err("Each event must be an object.")
+		var ev := _build_input_event(e)
+		if ev == null:
+			return _err("Unsupported or invalid event: " + JSON.stringify(e))
+		events.append(ev)
+
+	var deadzone := float(p.get("deadzone", 0.5))
+	ProjectSettings.set_setting("input/" + action, {"deadzone": deadzone, "events": events})
+	ProjectSettings.save()
+
+	if InputMap.has_action(action):
+		InputMap.erase_action(action)
+	InputMap.add_action(action, deadzone)
+	for ev in events:
+		InputMap.action_add_event(action, ev)
+	return _ok({"message": "Action added", "action": action, "event_count": events.size()})
+
+func _build_input_event(e: Dictionary) -> InputEvent:
+	match str(e.get("type", "key")):
+		"key":
+			var keycode := OS.find_keycode_from_string(str(e.get("key", "")))
+			if keycode == KEY_NONE:
+				return null
+			var ev := InputEventKey.new()
+			ev.physical_keycode = keycode
+			ev.ctrl_pressed = bool(e.get("ctrl", false))
+			ev.shift_pressed = bool(e.get("shift", false))
+			ev.alt_pressed = bool(e.get("alt", false))
+			ev.meta_pressed = bool(e.get("meta", false))
+			return ev
+		"mouse_button":
+			var ev := InputEventMouseButton.new()
+			ev.button_index = int(e.get("button", 1))
+			return ev
+		"joypad_button":
+			var ev := InputEventJoypadButton.new()
+			ev.button_index = int(e.get("button", 0))
+			return ev
+	return null
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 func _find_target_node(target_info, _allow_fallback: bool = true) -> Node:
 	var root := EditorInterface.get_edited_scene_root()
@@ -750,12 +1221,14 @@ func _find_target_node(target_info, _allow_fallback: bool = true) -> Node:
 		path_str = str(target_info)
 	elif target_info is Dictionary:
 		path_str = str(target_info.get("node_path", target_info.get("path", "")))
-	if path_str == "." or path_str == root.name:
+	if path_str.is_empty():
+		return null
+	if path_str == "." or path_str == str(root.name):
 		return root
 	return root.get_node_or_null(NodePath(path_str))
 
 func _resolve_parent(p: Dictionary) -> Node:
-	if p.has("parent"):
+	if p.has("parent") and not str(p["parent"]).is_empty():
 		return _find_target_node(p["parent"], false)
 	return EditorInterface.get_edited_scene_root()
 
@@ -811,6 +1284,8 @@ func _queue_response(conn: Dictionary, status_code: int, response_body: String) 
 	response += "Content-Length: %d\r\n" % body_bytes.size()
 	if not cors_origin.is_empty():
 		response += "Access-Control-Allow-Origin: %s\r\n" % cors_origin
+		response += "Access-Control-Allow-Headers: Authorization, Content-Type\r\n"
+		response += "Access-Control-Allow-Methods: POST, OPTIONS\r\n"
 	response += "Connection: close\r\n\r\n"
 
 	var full_bytes := response.to_utf8_buffer()

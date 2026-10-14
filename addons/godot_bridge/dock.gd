@@ -1,7 +1,7 @@
 @tool
 extends PanelContainer
 # res://addons/godot_bridge/dock.gd
-# Version 2.4.1
+# Version 2.8.0
 
 var bridge  # reference to the EditorPlugin instance (godot_bridge/plugin.gd)
 
@@ -25,13 +25,16 @@ const READ_ONLY_COMMANDS = [
 	"get_open_script",
 	"get_output",
 	"validate_script",
-	"class_info"
-]
+    "class_info"
+]  
 
 const MUTATING_COMMANDS = [
 	"write_file",
 	"make_dir",
 	"delete_file",
+	"move_file",
+	"copy_file",
+	"delete_dir",
 	"spawn_node",
 	"spawn_packed_scene",
 	"remove_node",
@@ -48,8 +51,9 @@ const MUTATING_COMMANDS = [
 	"add_input_action",
 	"run_project",
 	"run_current_scene",
-	"stop_project"
-]
+    "stop_project"
+]  
+
 
 
 func _ready() -> void:
