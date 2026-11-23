@@ -11,5 +11,8 @@
 
 <h1>This Version Does Not Support The WebApp Export!</h1>
 
+PS.
+I am a 72 year old man on fixed income. If anyone makes money from this code. A little donation from time to time would greatly be appreciated. 
+
 
 
