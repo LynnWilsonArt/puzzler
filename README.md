@@ -10,8 +10,6 @@
 <ul>Radio streams provided by 181.fm - <b>You will need to get permission from the station you use for your default urls.</b></ul>
 
 <h1>This Version Does Not Support The WebApp Export!</h1>
-<body>
-  I'm still working on adding wasm libraries to the Icy-Radio-Streamer plugin.
-</body>
+
 
 
